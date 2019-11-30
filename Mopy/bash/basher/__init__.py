@@ -601,7 +601,7 @@ class INIList(balt.UIList):
     @staticmethod
     def filterOutDefaultTweaks(ini_tweaks):
         """Filter out default tweaks from tweaks iterable."""
-        return filter(lambda x: not bosh.iniInfos[x].is_default_tweak, ini_tweaks)
+        return [x for x in ini_tweaks if not bosh.iniInfos[x].is_default_tweak]
 
     def _toDelete(self, items):
         items = super(INIList, self)._toDelete(items)
@@ -876,7 +876,7 @@ class ModList(_ModsUIList):
             pinned = load_order.filter_pinned(self.GetSelected())
             if pinned:
                 msg = _(u"You can't reorder the following mods:\n" +
-                        u', '.join(map(unicode, pinned)))
+                        u', '.join(unicode(s) for s in pinned))
                 continue_key = u'bash.mods.dnd.pinned.continue'
         if msg:
             balt.askContinue(self, msg, continue_key)
@@ -2046,9 +2046,8 @@ class SaveList(balt.UIList):
         code = wrapped_evt.key_code
         # Ctrl+C: Copy file(s) to clipboard
         if wrapped_evt.is_cmd_down and code == ord(u'C'):
-            sel = map(lambda save: self.data_store[save].getPath().s,
-                      self.GetSelected())
-            balt.copyListToClipboard(sel)
+            balt.copyListToClipboard(
+                [self.data_store[s].abs_path.s for s in self.GetSelected()])
         super(SaveList, self)._handle_key_up(wrapped_evt)
 
     def _handle_left_down(self, wrapped_evt, lb_dex_and_flags):
@@ -2644,9 +2643,9 @@ class InstallersList(balt.UIList):
             self.addMarker()
         # Ctrl+C: Copy file(s) to clipboard
         elif wrapped_evt.is_cmd_down and code == ord(u'C'):
-            sel = map(lambda x: bass.dirs[u'installers'].join(x).s,
-                      self.GetSelected())
-            balt.copyListToClipboard(sel)
+            balt.copyListToClipboard(
+                [bass.dirs[u'installers'].join(x).s for x in
+                 self.GetSelected()])
         super(InstallersList, self)._handle_key_up(wrapped_evt)
 
     # Installer specific ------------------------------------------------------
@@ -2993,7 +2992,7 @@ class InstallersDetails(_SashDetailsPanel):
         """Handle check/uncheck of item."""
         installer = self.file_info
         self.gSubList.lb_select_index(lb_selection_dex)
-        for lb_selection_dex in range(self.gSubList.lb_get_items_count()):
+        for lb_selection_dex in xrange(self.gSubList.lb_get_items_count()):
             installer.subActives[lb_selection_dex+1] = self.gSubList.lb_is_checked_at_index(lb_selection_dex)
         if not balt.getKeyState_Shift():
             self.refreshCurrent(installer)
@@ -3352,9 +3351,9 @@ class ScreensList(balt.UIList):
         code = wrapped_evt.key_code
         # Ctrl+C: Copy file(s) to clipboard
         if wrapped_evt.is_cmd_down and code == ord(u'C'):
-            sel = map(lambda x: bosh.screen_infos.store_dir.join(x).s,
-                      self.GetSelected())
-            balt.copyListToClipboard(sel)
+            balt.copyListToClipboard(
+                [self.data_store[screen].abs_path.s for screen in
+                 self.GetSelected()])
         super(ScreensList, self)._handle_key_up(wrapped_evt)
 
 #------------------------------------------------------------------------------
@@ -3529,7 +3528,7 @@ class _Tab_Link(AppendableLink, CheckLink, EnabledLink):
             iMods = None
             iInstallers = None
             iDelete = None
-            for i in range(Link.Frame.notebook.GetPageCount()):
+            for i in xrange(Link.Frame.notebook.GetPageCount()):
                 pageTitle = Link.Frame.notebook.GetPageText(i)
                 if pageTitle == tabInfo[u'Mods'][1]:
                     iMods = i
@@ -3776,7 +3775,7 @@ class BashStatusBar(DnDStatusBar):
             self._addButton(link)
             button = self.buttons.pop()
             thisIndex, insertBefore = order.index(link.uid), 0
-            for i in range(len(self.buttons)):
+            for i in xrange(len(self.buttons)):
                 otherlink = self.GetLink(index=i)
                 indexOther = order.index(otherlink.uid)
                 if indexOther > thisIndex:

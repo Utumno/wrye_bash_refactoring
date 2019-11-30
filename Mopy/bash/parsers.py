@@ -1057,7 +1057,7 @@ class ItemStats(_HandleAliases):
         for top_grup_sig, attrs in self.class_attrs.iteritems():
             for record in modFile.tops[top_grup_sig].getActiveRecords():
                 self.class_fid_attr_value[top_grup_sig][record.fid].update(
-                    zip(attrs, [getattr(record, a) for a in attrs]))
+                    zip(attrs, (getattr(record, a) for a in attrs)))
 
     def writeToMod(self,modInfo):
         """Writes stats to specified mod."""

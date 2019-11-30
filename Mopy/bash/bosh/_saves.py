@@ -278,7 +278,7 @@ class SaveFile(object):
             self.globals = [unpack_many(ins, 'If') for num in xrange(globalsNum)]
             #--Pre-Created (Class, processes, spectator, sky)
             with sio() as buff:
-                for count in range(4):
+                for x in xrange(4):
                     siz = unpack_short(ins)
                     insCopy(buff, siz, 2)
                 insCopy(buff,4) #--Supposedly part of created info, but sticking it here since I don't decode it.
@@ -291,7 +291,7 @@ class SaveFile(object):
                 self.created.append(MreRecord(unpack_header(modReader), modReader))
             #--Pre-records: Quickkeys, reticule, interface, regions
             with sio() as buff:
-                for count in range(4):
+                for x in xrange(4):
                     siz = unpack_short(ins)
                     insCopy(buff, siz, 2)
                 self.preRecords = buff.getvalue()
