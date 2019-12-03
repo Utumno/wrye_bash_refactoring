@@ -137,8 +137,8 @@ class LoadOrder(object):
     def activeIndex(self, mname): return self.__mod_actIndex[mname]
 
     def __getstate__(self): # we pickle _activeOrdered to avoid recreating it
-        return {'_activeOrdered': self._activeOrdered,
-                '_loadOrder': self.loadOrder}
+        return {u'_activeOrdered': self._activeOrdered,
+                u'_loadOrder': self.loadOrder}
 
     def __setstate__(self, dct):
         self.__dict__.update(dct)   # update attributes
@@ -164,7 +164,7 @@ def _new_entry():
         lo_entry(time.time(), cached_lord)]
 
 def persist_orders(__keep_max=256):
-    _lords_pickle.vdata['_lords_pickle_version'] = _LORDS_PICKLE_VERSION
+    _lords_pickle.vdata[u'_lords_pickle_version'] = _LORDS_PICKLE_VERSION
     length = len(_saved_load_orders)
     if length > __keep_max:
         x, y = _keep_max(__keep_max, length)
@@ -370,7 +370,7 @@ def __load_pickled_load_orders():
         _active_mods_lists
     _lords_pickle = bolt.PickleDict(_lord_pickle_path)
     _lords_pickle.load()
-    if _lords_pickle.vdata.get('_lords_pickle_version', 1) < _LORDS_PICKLE_VERSION:
+    if _lords_pickle.vdata.get(u'_lords_pickle_version', 1) < _LORDS_PICKLE_VERSION:
         # used to load active lists from settings
         active_mods_list = __active_mods_sentinel
     else:
