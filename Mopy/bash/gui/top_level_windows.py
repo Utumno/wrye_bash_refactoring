@@ -222,7 +222,7 @@ class WizardDialog(DialogWindow, WithFirstShow):
         super(WizardDialog, self).__init__(parent, **kwargs)
         self.on_wiz_page_change = self._evt_handler(
             _adv.EVT_WIZARD_PAGE_CHANGING,
-            lambda event: [event.GetDirection(), event.GetPage()])
+            lambda event: [event.GetDirection(), self.parser.page])
         # needed to correctly save size/pos, on_closing seems not enough
         self._on_wiz_cancel = self._evt_handler(_adv.EVT_WIZARD_CANCEL)
         self._on_wiz_cancel.subscribe(self.save_size)
@@ -366,3 +366,10 @@ class CenteredSplash(_AComponent):
         self.destroy_component()
         ##: Apparently won't be hidden if warnTooManyModsBsas warns(?)
         self.visible = False
+
+# Wizard stuff to go with WizardDialog  ---------------------------------------
+class WizPage(PanelWin):
+    _wx_widget_type = _adv.WizardPage
+    def __init__(self, parent):
+        # call _AComponent init
+        super(PanelWin, self).__init__(parent)

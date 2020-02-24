@@ -28,15 +28,14 @@ from __future__ import division
 import os
 import traceback
 from collections import OrderedDict, defaultdict
-
-import wx.adv as wiz  # wxPython wizard class
 from . import ScriptParser         # generic parser class
 from . import balt, bass, bolt, bosh, bush, load_order
 from .ini_files import OBSEIniFile
 from .env import get_file_version
 from .gui import CENTER, CheckBox, GridLayout, HBoxedLayout, HLayout, \
     Label, LayoutOptions, RIGHT, Stretch, TextArea, VLayout, HyperlinkLabel, \
-    WizardDialog, EventResult, ListBox, CheckListBox, ImageWrapper, PictureWithCursor
+    WizardDialog, EventResult, ListBox, CheckListBox, ImageWrapper, \
+    PictureWithCursor, WizPage
 from .ScriptParser import error
 
 EXTRA_ARGS =   _(u"Extra arguments to '%s'.")
@@ -82,9 +81,9 @@ class InstallerWizard(WizardDialog):
             size_key=u'bash.wizard.size', pos_key=u'bash.wizard.pos')
         #'dummy' page tricks the wizard into always showing the "Next" button,
         #'next' will be set by the parser
-        class _PageDummy(wiz.WizardPage): pass
-        self.dummy = _PageDummy(self._native_widget) # todo de-wx!
-        self.next = None # todo rename
+        class _PageDummy(WizPage): pass
+        self.dummy = _PageDummy(self)
+        self._next_page = None
         #True prevents actually moving to the 'next' page.  We use this after the "Next"
         #button is pressed, while the parser is running to return the _actual_ next page
         #'finishing' is to allow the "Next" button to be used when it's name is changed to
@@ -113,9 +112,9 @@ class InstallerWizard(WizardDialog):
                     #Then show the page that the parser returns,
                     #rather than the dummy page
                     evt_page.OnNext()
-                    self.next = self.parser.Continue()
+                    self._next_page = self.parser.Continue()
                     self.blockChange = False
-                    self._native_widget.ShowPage(self.next)
+                    self._native_widget.ShowPage(self._next_page._native_widget)
                     return EventResult.CANCEL
                 else:
                     self.blockChange = True
@@ -124,27 +123,27 @@ class InstallerWizard(WizardDialog):
             # Previous, pop back to the last state,
             # and resume execution
             self.finishing = False
-            self.next = self.parser.Back()
+            self._next_page = self.parser.Back()
             self.blockChange = False
-            self._native_widget.ShowPage(self.next)
+            self._native_widget.ShowPage(self._next_page._native_widget)
             return EventResult.CANCEL
 
     def Run(self):
         page = self.parser.Begin(self.wizard_file)
         if page:
-            self.ret.canceled = not self._native_widget.RunWizard(page)
+            self.ret.canceled = not self._native_widget.RunWizard(page._native_widget)
         # Clean up temp files
         if self.parser.bArchive:
             bass.rmTempDir()
         return self.ret
 
-class PageInstaller(wiz.WizardPage):
+class PageInstaller(WizPage):
     """Base class for all the parser wizard pages, just to handle a couple
     simple things here."""
 
     def __init__(self, parent):
         self._wiz_parent = parent
-        super(PageInstaller, self).__init__(parent._native_widget)
+        super(PageInstaller, self).__init__(parent)
         self._enableForward(True)
 
     def _enableForward(self, do_enable):
@@ -178,7 +177,7 @@ class PageError(PageInstaller):
                       auto_tooltip=False),
              LayoutOptions(weight=1, expand=True))
         ]).apply_to(self)
-        self.Layout()
+        self.pnl_layout()
 
     def GetNext(self): return None
 
@@ -221,7 +220,7 @@ class PageSelect(PageInstaller):
             Label(self, _(u'Description:')),
             (self.textItem, LayoutOptions(weight=1))
         ]).apply_to(self)
-        self.Layout()
+        self.pnl_layout()
         self.bmp_item.on_mouse_middle_up.subscribe(self._click_on_image)
         self.bmp_item.on_mouse_left_dclick.subscribe(
             lambda selected_index: self._click_on_image())
@@ -371,7 +370,7 @@ class PageFinish(PageInstaller):
         layout.apply_to(self)
         self._enableForward(bAuto)
         self._wiz_parent.finishing = True
-        self.Layout()
+        self.pnl_layout()
 
     def OnCheckInstall(self, is_checked):
         self._wiz_parent.ret.should_install = is_checked
@@ -447,7 +446,7 @@ class PageVersions(PageInstaller):
             (self.checkOk, LayoutOptions(h_align=RIGHT, border=5))
         ]).apply_to(self)
         self._enableForward(False)
-        self.Layout()
+        self.pnl_layout()
 
 class WryeParser(ScriptParser.Parser):
     """A derived class of Parser, for handling BAIN install wizards."""
