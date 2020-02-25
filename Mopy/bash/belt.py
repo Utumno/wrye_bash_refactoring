@@ -153,7 +153,7 @@ class PageInstaller(WizPage):
         self._native_widget.GetPrev = types.MethodType(
             lambda _self: (dummy if parent.parser.choiceIdex > 0 else None),
             self._native_widget)
-        self._enableForward(True)
+        # self._enableForward(True)
 
     def _enableForward(self, do_enable):
         self._wiz_parent.enable_forward_btn(do_enable)
