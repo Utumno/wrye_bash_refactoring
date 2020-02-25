@@ -142,19 +142,11 @@ class PageInstaller(WizPage):
     simple things here."""
 
     def __init__(self, parent):
-        self._wiz_parent = parent
         super(PageInstaller, self).__init__(parent)
         self._enableForward(True)
 
     def _enableForward(self, do_enable):
         self._wiz_parent.enable_forward_btn(do_enable)
-
-    def GetNext(self): return self._wiz_parent.dummy
-
-    def GetPrev(self):
-        if self._wiz_parent.parser.choiceIdex > 0:
-            return self._wiz_parent.dummy
-        return None
 
     def OnNext(self):
         #This is what needs to be implemented by sub-classes,
@@ -178,10 +170,10 @@ class PageError(PageInstaller):
              LayoutOptions(weight=1, expand=True))
         ]).apply_to(self)
         self.pnl_layout()
-
-    def GetNext(self): return None
-
-    def GetPrev(self): return None
+        self._native_widget.GetNext = type(self._native_widget.GetNext)(
+            lambda _self: None, self, PageError)
+        self._native_widget.GetPrev = type(self._native_widget.GetPrev)(
+            lambda _self: None, self, PageError)
 
 class PageSelect(PageInstaller):
     """A page that shows a message up top, with a selection box on the left
@@ -344,7 +336,7 @@ class PageFinish(PageInstaller):
         self.checkInstall.on_checked.subscribe(self.OnCheckInstall)
         self._wiz_parent.ret.should_install = auto
         # Layout
-        layout = VLayout(item_expand=True, spacing=4, items=[
+        VLayout(item_expand=True, spacing=4, items=[
             HBoxedLayout(self, items=[textTitle]),
             (HLayout(item_expand=True, item_weight=1, spacing=5, items=[
                 VLayout(item_expand=True,
@@ -366,16 +358,15 @@ class PageFinish(PageInstaller):
                 Stretch(),
                 VLayout(spacing=2, items=[self.checkApply, self.checkInstall])
             ])
-        ])
-        layout.apply_to(self)
+        ]).apply_to(self)
         self._enableForward(bAuto)
         self._wiz_parent.finishing = True
         self.pnl_layout()
+        self._native_widget.GetNext = type(self._native_widget.GetNext)(
+            lambda _self: None, self, PageError)
 
     def OnCheckInstall(self, is_checked):
         self._wiz_parent.ret.should_install = is_checked
-
-    def GetNext(self): return None
 
     # Undo selecting/deselection of items for UI consistency
     def _on_select_subs(self, lb_selection_dex):
