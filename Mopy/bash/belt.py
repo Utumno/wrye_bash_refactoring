@@ -27,6 +27,7 @@ from __future__ import division
 
 import os
 import traceback
+import types
 from collections import OrderedDict, defaultdict
 from . import ScriptParser         # generic parser class
 from . import balt, bass, bolt, bosh, bush, load_order
@@ -81,8 +82,6 @@ class InstallerWizard(WizardDialog):
             size_key=u'bash.wizard.size', pos_key=u'bash.wizard.pos')
         #'dummy' page tricks the wizard into always showing the "Next" button,
         #'next' will be set by the parser
-        class _PageDummy(WizPage): pass
-        self.dummy = _PageDummy(self)
         self._next_page = None
         #True prevents actually moving to the 'next' page.  We use this after the "Next"
         #button is pressed, while the parser is running to return the _actual_ next page
@@ -143,6 +142,17 @@ class PageInstaller(WizPage):
 
     def __init__(self, parent):
         super(PageInstaller, self).__init__(parent)
+        # HACK!! unfortunately this is a limit of our API. wx.wizard.Wizard
+        # expects an instance of PyWizardPage in RunWizard, ShowPage and co
+        # so we have to monkey patch the method to return our "dummy" page
+        # *Please* find another way
+        # https://stackoverflow.com/a/394779/281545
+        dummy = type(self._native_widget)(parent._native_widget)
+        self._native_widget.GetNext = types.MethodType(lambda _self: dummy,
+                                                       self._native_widget)
+        self._native_widget.GetPrev = types.MethodType(
+            lambda _self: (dummy if parent.parser.choiceIdex > 0 else None),
+            self._native_widget)
         self._enableForward(True)
 
     def _enableForward(self, do_enable):
@@ -171,9 +181,9 @@ class PageError(PageInstaller):
         ]).apply_to(self)
         self.pnl_layout()
         self._native_widget.GetNext = type(self._native_widget.GetNext)(
-            lambda _self: None, self, PageError)
+            lambda _self: None, self._native_widget, type(self._native_widget))
         self._native_widget.GetPrev = type(self._native_widget.GetPrev)(
-            lambda _self: None, self, PageError)
+            lambda _self: None, self._native_widget, type(self._native_widget))
 
 class PageSelect(PageInstaller):
     """A page that shows a message up top, with a selection box on the left
@@ -363,7 +373,7 @@ class PageFinish(PageInstaller):
         self._wiz_parent.finishing = True
         self.pnl_layout()
         self._native_widget.GetNext = type(self._native_widget.GetNext)(
-            lambda _self: None, self, PageError)
+            lambda _self: None, self._native_widget, type(self._native_widget))
 
     def OnCheckInstall(self, is_checked):
         self._wiz_parent.ret.should_install = is_checked

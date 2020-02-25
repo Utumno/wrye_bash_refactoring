@@ -374,15 +374,3 @@ class WizPage(PanelWin):
         # call _AComponent init
         self._wiz_parent = parent
         super(PanelWin, self).__init__(parent)
-        # HACK!! unfortunately this is a limit of our API. wx.wizard.Wizard
-        # expects an instance of PyWizardPage in RunWizard, ShowPage and co
-        # so we have to monkey patch the method to return our "dummy" page
-        # *Please* find another way
-        # https://stackoverflow.com/a/394779/281545
-        self._native_widget.GetNext = type(self._native_widget.GetNext)(
-            lambda _self: _self._wiz_parent.dummy, self, WizPage)
-        self._native_widget.GetPrev = type(self._native_widget.GetPrev)(
-            lambda _self: (
-                _self._wiz_parent.dummy if
-                _self._wiz_parent.parser.choiceIdex > 0 else None),
-            self, WizPage)
