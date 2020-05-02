@@ -44,13 +44,12 @@ class MobBase(object):
     def __init__(self, header, loadFactory, ins=None, do_unpack=False):
         self.header = header
         self.size = header.size
-        if header.recType == b'GRUP':
+        try:
             self.label, self.groupType, self.stamp = (
                 header.label, header.groupType, header.stamp)
-        else: # TODO(ut) should MobBase used for *non* GRUP headers??
-            # Yes it's weird, but this is how it needs to work
-            self.label, self.groupType, self.stamp = (
-                header.flags1, header.fid, header.flags2)
+        except AttributeError:
+            raise ArgumentError(u'You need a GRP header to instantiate %r - '
+                                u'got:%r' % (self, header))
         self.debug = False
         self.data = None
         self.changed = False
