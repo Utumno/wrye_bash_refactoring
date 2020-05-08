@@ -26,7 +26,7 @@ from collections import defaultdict
 
 from ._mergeability import is_esl_capable
 from .. import balt, bolt, bush, bass, load_order
-from ..bolt import GPath, deprint, sio, structs_cache
+from ..bolt import GPath, deprint, sio, structs_cache, PluginStr, decoder
 from ..brec import ModReader, MreRecord, RecordHeader, SubrecordBlob, null1
 from ..exception import CancelError, ModError
 
@@ -437,7 +437,7 @@ class ModCleaner(object):
                                         eid = u''
                                         for subrec in record.iterate_subrecords(mel_sigs={b'EDID', b'XCLC'}):
                                             if subrec.mel_sig == b'EDID':
-                                                eid = bolt.decoder(subrec.mel_data)
+                                                eid = decoder(subrec.mel_data)
                                             elif subrec.mel_sig == b'XCLC':
                                                 pos = __unpacker2(
                                                     subrec.mel_data[:8])
@@ -566,10 +566,8 @@ class ModDetails(object):
                         subrec = SubrecordBlob(recs, rtyp, mel_sigs={b'EDID'})
                         if subrec.mel_data is not None:
                             # FIXME copied from readString
-                            eid = u'\n'.join(bolt.decoder(
-                                x, bolt.pluginEncoding,
-                                avoidEncodings=(u'utf8', u'utf-8')) for x
-                                in subrec.mel_data.rstrip(null1).split(b'\n'))
+                            eid = u'\n'.join([u'%s' % PluginStr(x) for x
+                                in subrec.mel_data.rstrip(null1).split(b'\n')])
                             break
                     records.append((header.fid, eid))
                     ins.seek(next_record) # we may have break'd at EDID

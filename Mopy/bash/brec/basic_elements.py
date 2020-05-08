@@ -30,8 +30,8 @@ from itertools import chain
 from .utils_constants import FID, null1, _make_hashable, FixedString, \
     _int_unpacker, get_structs
 from .. import bolt, exception
-from ..bolt import decoder, encode, structs_cache, struct_calcsize, \
-    struct_error
+from ..bolt import structs_cache, struct_calcsize, struct_error, PluginStr, \
+    ChardetStr
 
 #------------------------------------------------------------------------------
 class MelObject(object):
@@ -593,24 +593,24 @@ class MelGroups(MelGroup):
 
 #------------------------------------------------------------------------------
 class MelString(MelBase):
-    """Represents a mod record string element."""
+    """Represents a mod record string element. Will use bolt.pluginEncoding."""
+    _wrapper_bytes_type = PluginStr
 
     def __init__(self, mel_sig, attr, default=None, maxSize=0, minSize=0):
         super(MelString, self).__init__(mel_sig, attr, default)
         self.maxSize = maxSize
         self.minSize = minSize
-        self.encoding = None # will default to bolt.pluginEncoding
 
     def load_mel(self, record, ins, sub_type, size_, readId):
-        setattr(record, self.attr, ins.readString(size_, readId))
+        setattr(record, self.attr,
+                self._wrapper_bytes_type(ins.read(size_, readId)))
 
-    def packSub(self, out, string_val):
-        # type: (file, unicode) -> None
+    def packSub(self, out, string_val, force_encoding=None):
+        # type: (file, PluginStr) -> None
         """Writes out a string subrecord, properly encoding it beforehand and
-        respecting max_size, min_size and preferred_encoding if they are
-        set."""
-        byte_string = bolt.encode_complex_string(string_val, self.maxSize,
-            self.minSize, self.encoding)
+        respecting max_size, min_size."""
+        byte_string = string_val.reencode(
+            force_encoding or bolt.pluginEncoding, self.maxSize,self.minSize)
         # len of data will be recalculated in MelString._dump_bytes
         super(MelString, self).packSub(out, byte_string)
 
@@ -623,15 +623,17 @@ class MelString(MelBase):
 #------------------------------------------------------------------------------
 class MelUnicode(MelString):
     """Like MelString, but instead of using bolt.pluginEncoding to read the
-       string, it tries the encoding specified in the constructor instead"""
+       string, it tries the encoding specified in the constructor instead or
+       falls back to chardet. **Only** use for MreHeaderBase author and
+       description fields."""
+    _wrapper_bytes_type = ChardetStr
+
     def __init__(self, mel_sig, attr, default=None, maxSize=0, encoding=None):
         super(MelUnicode, self).__init__(mel_sig, attr, default, maxSize)
-        self.encoding = encoding # None == automatic detection
-
-    def load_mel(self, record, ins, sub_type, size_, readId):
-        value = u'\n'.join(decoder(x,self.encoding,avoidEncodings=('utf8','utf-8'))
-                           for x in bolt.cstrip(ins.read(size_, readId)).split('\n'))
-        setattr(record, self.attr, value)
+        if encoding is not None: # None == automatic detection via ChardetStr
+            class _PluginStr(PluginStr): # FIXME cache
+                _preferred_encoding = encoding
+            self._wrapper_bytes_type = _PluginStr
 
 #------------------------------------------------------------------------------
 class MelLString(MelString):
@@ -647,13 +649,18 @@ class MelStrings(MelString):
         mel_set_instance.listers.add(self.attr)
 
     def load_mel(self, record, ins, sub_type, size_, readId):
-        setattr(record, self.attr, ins.readStrings(size_, readId))
+        """>>>b'b\0a\0'.rstrip(b'\0').split(b'\0')
+           ['b', 'a']"""
+        value = [self._wrapper_bytes_type(x) for x in
+                 ins.read(size_, readId).rstrip(null1).split(null1)]
+        setattr(record, self.attr, value)
 
     def packSub(self, out, strings, force_encoding=None):
         """Writes out a strings array subrecord, encoding and adding a null
         terminator to each string separately."""
-        str_data = null1.join( # TODO use encode_complex_string?
-            encode(x, firstEncoding=bolt.pluginEncoding) for x in strings)
+        str_data = null1.join(
+            x.reencode(force_encoding or bolt.pluginEncoding, self.maxSize) for
+            x in strings)
         # call *MelBase* packSub which however will call MelString._dump_bytes
         super(MelString, self).packSub(out, str_data)
 

@@ -234,10 +234,7 @@ class _APreserver(ImportPatcher):
     # noinspection PyDefaultArgument
     def _inner_loop(self, keep, records, top_mod_rec, type_count,
                     __attrgetters=attrgetter_cache):
-        """Common pattern of the internal buildPatch() loop for all but:
-            - GraphicsPatcher: compares ci
-        """
-        ##: """Common pattern of the internal buildPatch() loop."""
+        """Common pattern of the internal buildPatch() loop."""
         loop_setattr = setattr_deep if self._deep_attrs else setattr
         id_data = self.id_data
         for record in records:
@@ -630,27 +627,3 @@ class ImportCellsPatcher(ImportPatcher):
 class ImportGraphicsPatcher(_APreserver):
     rec_attrs = bush.game.graphicsTypes
     _fid_rec_attrs = bush.game.graphicsFidTypes
-
-    def _inner_loop(self, keep, records, top_mod_rec, type_count,
-                    __attrgetters=attrgetter_cache):
-        id_data = self.id_data
-        for record in records:
-            fid = record.fid
-            if fid not in id_data: continue
-            for attr, value in id_data[fid].iteritems():
-                rec_attr = __attrgetters[attr](record)
-                if isinstance(rec_attr,
-                              basestring) and isinstance(value, basestring):
-                    if rec_attr.lower() != value.lower():
-                        break
-                    continue
-                elif attr in bush.game.graphicsModelAttrs:
-                    if rec_attr != value:
-                        break
-                    continue
-                if rec_attr != value: break
-            else: continue
-            for attr, value in id_data[fid].iteritems():
-                setattr(record, attr, value)
-            keep(fid)
-            type_count[top_mod_rec] += 1

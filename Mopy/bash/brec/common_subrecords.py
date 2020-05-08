@@ -34,7 +34,8 @@ from .basic_elements import MelBase, MelFid, MelGroup, MelGroups, MelLString, \
     MelOptFloat, MelOptFid, MelReadOnly,MelOptUInt32Flags, \
     MelUInt8Flags, MelOptUInt8Flags, MelOptSInt32
 from .utils_constants import _int_unpacker, FID, null1, null2, null3, null4
-from ..bolt import Flags, encode, struct_pack, struct_unpack, unpack_byte
+from ..bolt import Flags, encode, struct_pack, struct_unpack, unpack_byte, \
+    PluginStr
 from ..exception import ModError
 
 #------------------------------------------------------------------------------
@@ -537,31 +538,31 @@ class MelMODS(MelBase):
     def load_mel(self, record, ins, sub_type, size_, readId,
                  __unpacker=_int_unpacker):
         insUnpack = ins.unpack
-        insRead32 = ins.readString32
         count, = insUnpack(__unpacker, 4, readId)
         mods_data = []
         dataAppend = mods_data.append
         for x in xrange(count):
-            string = insRead32(readId)
+            strLen, = insUnpack(__unpacker, 4, readId)
+            pl_str = PluginStr(ins.read(strLen, readId))
             fid = ins.unpack(__unpacker, 4)[0]
             index, = insUnpack(__unpacker, 4, readId)
-            dataAppend((string,fid,index))
+            dataAppend((pl_str,fid,index))
         setattr(record, self.attr, mods_data)
 
     def pack_subrecord_data(self,record):
         mods_data = getattr(record, self.attr)
         if mods_data is not None:
             return b''.join(chain([struct_pack(u'I', len(mods_data))],
-                *([struct_pack(u'I', len(string)), encode(string),
+                *([struct_pack(u'I', len(pl_str)), encode(pl_str),
                    struct_pack(u'=2I', fid, index)]
-                  for (string, fid, index) in mods_data)))
+                  for (pl_str, fid, index) in mods_data)))
 
     def mapFids(self,record,function,save=False):
         attr = self.attr
         mods_data = getattr(record, attr)
         if mods_data is not None:
-            mods_data = [(string,function(fid),index) for (string,fid,index)
-                         in getattr(record, attr)]
+            mods_data = [(pl_str, function(fid), index) for
+                         (pl_str, fid, index) in getattr(record, attr)]
             if save: setattr(record, attr, mods_data)
 
 #------------------------------------------------------------------------------
