@@ -447,7 +447,7 @@ class PCFaces(object):
         #--Tes4
         tes4 = modFile.tes4
         if not tes4.author:
-            tes4.author = u'[wb]'
+            tes4.author = b'[wb]'
         if not tes4.description:
             tes4.description = _(u'Face dump from save game.')
         from . import modInfos ##: put it here so I know it's initialized...

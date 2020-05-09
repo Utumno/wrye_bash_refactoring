@@ -31,15 +31,22 @@ from .advanced_elements import FidNotNullDecider, AttrValDecider, MelArray, \
     MelUnion
 from .basic_elements import MelBase, MelFid, MelFloat, MelGroups, \
     MelLString, MelNull, MelStruct, MelUInt32, MelSInt32, MelFixedString, \
-    MelUnicode, MelGroup, AttrsCompare
+    MelUnicode, MelGroup, AttrsCompare, MelString
 from .common_subrecords import MelEdid
 from .record_structs import MelRecord, MelSet
 from .utils_constants import FID
 from .. import bolt, exception
-from ..bolt import decoder, GPath, struct_pack, structs_cache, ChardetStr
+from ..bolt import decoder, GPath, struct_pack, structs_cache, ChardetStr, encode
 from ..exception import StateError
 
 #------------------------------------------------------------------------------
+class _CaseSensitiveStr(ChardetStr):
+    _ci_comparison = False
+class _MelChardet(MelString):
+    """Falls back to chardet to decode the string and compares case
+    sensitive. **Only** use for MelAuth and MelDesc."""
+    _wrapper_bytes_type = _CaseSensitiveStr
+
 class MreHeaderBase(MelRecord):
     """File header.  Base class for all 'TES4' like records"""
     class MelMasterNames(MelBase):
@@ -88,28 +95,32 @@ class MreHeaderBase(MelRecord):
                 MelBase(b'DATA', '').packSub(
                     out, struct_pack(u'Q', master_size))
 
-    class MelAuthor(MelUnicode):
+    class MelAuthor(_MelChardet):
         def __init__(self):
             super(MreHeaderBase.MelAuthor, self).__init__(b'CNAM',
-                u'author_pstr', u'', 511)
+                u'author_pstr', ChardetStr(b''), 511)
 
-    class MelDescription(MelUnicode):
+    class MelDescription(_MelChardet):
         def __init__(self):
             super(MreHeaderBase.MelDescription, self).__init__(b'SNAM',
-                u'description_pstr', u'', 511)
+                u'description_pstr', ChardetStr(b''), 511)
 
     @property
     def description(self):
-        return self.description_pstr or u''
+        return self.description_pstr._decoded
     @description.setter
     def description(self, new_desc):
-        self.description_pstr = new_desc
+        if isinstance(new_desc, unicode):
+            new_desc = encode(new_desc)
+        self.description_pstr = _CaseSensitiveStr(new_desc)
     @property
     def author(self):
-        return self.author_pstr
+        return self.author_pstr._decoded
     @author.setter
     def author(self, val):
-        self.author_pstr = val
+        if isinstance(val, unicode):
+            val = encode(val)
+        self.author_pstr = _CaseSensitiveStr(val)
 
     def loadData(self, ins, endPos):
         super(MreHeaderBase, self).loadData(ins, endPos)

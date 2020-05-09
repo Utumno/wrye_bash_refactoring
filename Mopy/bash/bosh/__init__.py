@@ -2639,7 +2639,7 @@ class ModInfos(FileInfos):
         newFile = ModFile(newInfo)
         newFile.tes4.masters = wanted_masters
         if bashed_patch:
-            newFile.tes4.author = u'BASHED PATCH'
+            newFile.tes4.author = b'BASHED PATCH'
         if esm_flag:
             newFile.tes4.flags1.esm = True
         if esl_flag:

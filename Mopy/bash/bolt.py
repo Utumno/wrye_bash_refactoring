@@ -305,6 +305,8 @@ class PluginStr(bytes):
     """Plugin string - decode/clip when needed in comparisons. Base class
     will use pluginEncoding for decoding."""
     _preferred_encoding = None
+    _avoid_encodings = {u'utf8', u'utf-8'}
+    _ci_comparison = True
 
     @property
     def preferred_encoding(self):
@@ -320,6 +322,10 @@ class PluginStr(bytes):
             self._decoded_str = decoder(byte_str, self.preferred_encoding,
                 avoidEncodings=(u'utf8', u'utf-8'))
             return self._decoded_str
+
+    @property
+    def _cmp_key(self):
+        return self._decoded.lower() if self._ci_comparison else self._decoded
 
     def reencode(self, target_encoding, maxSize=None, minSize=0):
         """Decode then reencode the bytes if our preferred_encoding does not
@@ -338,42 +344,42 @@ class PluginStr(bytes):
 
     #--Hash/Compare
     def __hash__(self):
-        return hash(self._decoded.lower())
+        return hash(self._cmp_key)
     def __eq__(self, other):
         if isinstance(other, PluginStr):
-            return self._decoded.lower() == other._decoded.lower()
+            return self._cmp_key == other._cmp_key
         if isinstance(other, unicode):
-            return self._decoded.lower() == other.lower()
+            return self._cmp_key == (other.lower() if self._ci_comparison else other)
         return NotImplemented
     def __ne__(self, other):
         if isinstance(other, PluginStr):
-            return self._decoded.lower() != other._decoded.lower()
+            return self._cmp_key != other._cmp_key
         if isinstance(other, unicode):
-            return self._decoded.lower() != other.lower()
+            return self._cmp_key != (other.lower() if self._ci_comparison else other)
         return NotImplemented
     def __lt__(self, other):
         if isinstance(other, PluginStr):
-            return self._decoded.lower() < other._decoded.lower()
+            return self._cmp_key < other._cmp_key
         if isinstance(other, unicode):
-            return self._decoded.lower() != other.lower()
+            return self._cmp_key != (other.lower() if self._ci_comparison else other)
         return NotImplemented
     def __ge__(self, other):
         if isinstance(other, PluginStr):
-            return self._decoded.lower() >= other._decoded.lower()
+            return self._cmp_key >= other._cmp_key
         if isinstance(other, unicode):
-            return self._decoded.lower() != other.lower()
+            return self._cmp_key != (other.lower() if self._ci_comparison else other)
         return NotImplemented
     def __gt__(self, other):
         if isinstance(other, PluginStr):
-            return self._decoded.lower() > other._decoded.lower()
+            return self._cmp_key > other._cmp_key
         if isinstance(other, unicode):
-            return self._decoded.lower() != other.lower()
+            return self._cmp_key != (other.lower() if self._ci_comparison else other)
         return NotImplemented
     def __le__(self, other):
         if isinstance(other, PluginStr):
-            return self._decoded.lower() <= other._decoded.lower()
+            return self._cmp_key <= other._cmp_key
         if isinstance(other, unicode):
-            return self._decoded.lower() != other.lower()
+            return self._cmp_key != (other.lower() if self._ci_comparison else other)
         return NotImplemented
     #--repr
     def __repr__(self):

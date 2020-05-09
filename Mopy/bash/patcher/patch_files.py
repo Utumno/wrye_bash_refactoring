@@ -144,7 +144,7 @@ class PatchFile(ModFile):
     def __init__(self, modInfo, p_file_minfos):
         """Initialization."""
         ModFile.__init__(self,modInfo,None)
-        self.tes4.author = u'BASHED PATCH'
+        self.tes4.author = b'BASHED PATCH'
         self.tes4.masters = [p_file_minfos.masterName]
         self.longFids = True
         self.keepIds = set()
