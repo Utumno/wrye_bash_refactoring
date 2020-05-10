@@ -213,7 +213,7 @@ class MreGlob(MelRecord):
 
     melSet = MelSet(
         MelEdid(),
-        MelFixedString(b'FNAM', u'global_format', 1, u's'),
+        MelFixedString(b'FNAM', u'global_format', default=b's'),
         MelFloat(b'FLTV', u'global_value'),
     )
     __slots__ = melSet.getSlotsUsed()

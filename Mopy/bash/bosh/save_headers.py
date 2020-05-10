@@ -42,7 +42,7 @@ from ..bolt import decoder, cstrip, unpack_string, unpack_int, unpack_str8, \
     unpack_str_int_delim, unpack_str16_delim, unpack_str_byte_delim, \
     unpack_many, encode, struct_unpack, pack_int, pack_byte, pack_short, \
     pack_float, pack_string, pack_str8, pack_bzstr8, structs_cache, \
-    struct_error
+    struct_error, ChardetStr
 from ..exception import SaveHeaderError, raise_bolt_error, AbstractError
 
 # Utilities -------------------------------------------------------------------
@@ -54,7 +54,7 @@ class SaveFileHeader(object):
     save_magic = b'OVERRIDE'
     # common slots Bash code expects from SaveHeader (added header_size and
     # turned image to a property)
-    __slots__ = (u'header_size', u'pcName', u'pcLevel', u'pcLocation',
+    __slots__ = (u'header_size', u'pc_name_pstr', u'pcLevel', u'pcLocation',
                  u'gameDays', u'gameTicks', u'ssWidth', u'ssHeight', u'ssData',
                  u'masters', u'_save_path', u'_mastersStart')
     # map slots to (seek position, unpacker) - seek position negative means
@@ -93,12 +93,19 @@ class SaveFileHeader(object):
         self.load_masters(ins)
         # additional calculations - TODO(ut): rework decoding
         self.calc_time()
-        self.pcName = decoder(cstrip(self.pcName))
+        self.pc_name_pstr = ChardetStr(self.pc_name_pstr)
         self.pcLocation = decoder(cstrip(self.pcLocation), bolt.pluginEncoding,
                                  avoidEncodings=(u'utf8', u'utf-8'))
         self.masters = [bolt.GPath_no_norm(decoder(
             x, bolt.pluginEncoding, avoidEncodings=(u'utf8', u'utf-8')))
             for x in self.masters]
+
+    @property
+    def pcName(self):
+        return self.pc_name_pstr._decoded
+    @pcName.setter
+    def pcName(self, new_name):
+        self.pc_name_pstr = ChardetStr.from_basestring(new_name)
 
     def dump_header(self, out):
         raise AbstractError
@@ -197,7 +204,7 @@ class OblivionSaveHeader(SaveFileHeader):
         (u'header_version', (pack_int, unpack_int)),
         (u'header_size',    (pack_int, unpack_int)),
         (u'saveNum',        (pack_int, unpack_int)),
-        (u'pcName',         (lambda out, x: _pack_str8_1(
+        (u'pc_name_pstr',   (lambda out, x: _pack_str8_1(
             out, x.reencode(None)), unpack_str8)),
         (u'pcLevel',        (pack_short, unpack_short)),
         (u'pcLocation',     (_pack_str8_1, unpack_str8)),
@@ -262,7 +269,7 @@ class SkyrimSaveHeader(SaveFileHeader):
         (u'header_size', (00, unpack_int)),
         (u'version',     (00, unpack_int)),
         (u'saveNumber',  (00, unpack_int)),
-        (u'pcName',      (00, unpack_str16)),
+        (u'pc_name_pstr',(00, unpack_str16)),
         (u'pcLevel',     (00, unpack_int)),
         (u'pcLocation',  (00, unpack_str16)),
         (u'gameDate',    (00, unpack_str16)),
@@ -569,7 +576,7 @@ class FalloutNVSaveHeader(SaveFileHeader):
         (u'ssWidth',     (00, unpack_str_int_delim)),
         (u'ssHeight',    (00, unpack_str_int_delim)),
         (u'save_number', (00, unpack_str_int_delim)),
-        (u'pcName',      (00, unpack_str16_delim)),
+        (u'pc_name_pstr',(00, unpack_str16_delim)),
         (u'pcNick',      (00, unpack_str16_delim)),
         (u'pcLevel',     (00, unpack_str_int_delim)),
         (u'pcLocation',  (00, unpack_str16_delim)),
@@ -650,9 +657,9 @@ class MorrowindSaveHeader(SaveFileHeader):
         save_info = ModInfo(self._save_path, load_cache=True)
         ##: Figure out where some more of these are (e.g. level)
         self.header_size = save_info.header.size
-        self.pcName = save_info.header.pc_name
+        self.pc_name_pstr = save_info.header.pc_name_pstr # instance of ChardetStr
         self.pcLevel = 0
-        self.pcLocation = save_info.header.curr_cell
+        self.pcLocation = save_info.header.curr_cell # instance of PluginStr
         self.gameDays = self.gameTicks = 0
         self.masters = save_info.masterNames[:]
         self.pc_curr_health = save_info.header.pc_curr_health

@@ -1975,10 +1975,6 @@ class SaveList(balt.UIList):
     }
     #--Labels, why checking for header here - is this called on corrupt saves ?
     @staticmethod
-    def _headInfo(saveInfo, attr):
-        if not saveInfo.header: return u'-'
-        return getattr(saveInfo.header, attr)
-    @staticmethod
     def _playTime(saveInfo):
         if not saveInfo.header: return u'-'
         playMinutes = saveInfo.header.gameTicks // 60000
@@ -1988,10 +1984,10 @@ class SaveList(balt.UIList):
         (u'Modified', lambda self, p: format_date(self.data_store[p].mtime)),
         (u'Size',     lambda self, p: round_size(self.data_store[p].size)),
         (u'PlayTime', lambda self, p: self._playTime(self.data_store[p])),
-        (u'Player',   lambda self, p: self._headInfo(self.data_store[p],
-                                                     u'pcName')),
-        (u'Cell',     lambda self, p: self._headInfo(self.data_store[p],
-                                                     u'pcLocation')),
+        (u'Player',   lambda self, p: self.data_store[p].header and
+                        self.data_store[p].header.pcName or u'-'),
+        (u'Cell',     lambda self, p: self.data_store[p].header and
+                        self.data_store[p].header.pcLocation or u'-'),
     ])
 
     __ext_group = u'(\.(' + bush.game.Ess.ext[1:] + u'|' + \

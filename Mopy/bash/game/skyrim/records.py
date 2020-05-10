@@ -1989,7 +1989,7 @@ class MreDial(MelRecord):
         MelFid(b'QNAM','quest',),
         MelStruct(b'DATA','2BH',(DialTopicFlags,'flags_dt',0),'category',
                   'subtype',),
-        MelFixedString(b'SNAM', u'subtypeName', 4),
+        MelFixedString(b'SNAM', u'subtypeName', str_length=4),
         MelUInt32(b'TIFC', u'info_count'), # Updated in MobDial.dump
     )
     __slots__ = melSet.getSlotsUsed()

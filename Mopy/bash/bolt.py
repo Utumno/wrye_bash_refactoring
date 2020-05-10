@@ -197,8 +197,8 @@ def encode(text_str, encodings=encodingOrder, firstEncoding=None,
         else: return goodEncoding[0]
     raise UnicodeEncodeError(u'Text could not be encoded using any of the following encodings: %s' % encodings)
 
-def encode_complex_string(string_val, max_size=None, min_size=None,
-                          preferred_encoding=None):
+def _encode_complex_string(string_val, max_size=None, min_size=None,
+                           preferred_encoding=None):
     """Handles encoding of a string that must satisfy certain conditions. Any
     of the keyword arguments may be omitted, in which case they will simply not
     apply.
@@ -341,8 +341,12 @@ class PluginStr(bytes):
                 return self
             to_encode = self # hopefully will not try to encode it
         else: to_encode = self._decoded
-        return encode_complex_string(to_encode, maxSize, minSize,
+        return _encode_complex_string(to_encode, maxSize, minSize,
             target_encoding)
+
+    @classmethod
+    def from_basestring(cls, str_or_bytes):
+        return cls(encode(str_or_bytes, firstEncoding=cls.preferred_encoding or pluginEncoding))
 
     #--Hash/Compare
     def __hash__(self):
@@ -395,6 +399,10 @@ class ChardetStr(PluginStr):
     @property
     def preferred_encoding(self):
         return self._preferred_encoding # None == automatic detection
+
+    @classmethod
+    def from_basestring(cls, str_or_bytes):  # automatic detection
+        return cls(encode(str_or_bytes, firstEncoding=None))
 
     @property
     def _decoded(self):

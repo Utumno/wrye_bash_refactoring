@@ -27,8 +27,8 @@ from __future__ import division, print_function
 from collections import Counter
 from itertools import chain
 
-from .utils_constants import FID, null1, _make_hashable, FixedString, \
-    _int_unpacker, get_structs
+from .utils_constants import FID, null1, _make_hashable, _int_unpacker, \
+    get_structs
 from .. import bolt, exception
 from ..bolt import structs_cache, struct_calcsize, struct_error, PluginStr, \
     ChardetStr
@@ -592,12 +592,12 @@ class MelGroups(MelGroup):
         raise exception.AbstractError()
 
 #------------------------------------------------------------------------------
-class MelString(MelBase):
+class _MelString(MelBase):
     """Represents a mod record string element. Will use bolt.pluginEncoding."""
     _wrapper_bytes_type = PluginStr
 
     def __init__(self, mel_sig, attr, default=None, maxSize=0, minSize=0):
-        super(MelString, self).__init__(mel_sig, attr, default)
+        super(_MelString, self).__init__(mel_sig, attr, default)
         self.maxSize = maxSize
         self.minSize = minSize
 
@@ -605,14 +605,26 @@ class MelString(MelBase):
         setattr(record, self.attr,
                 self._wrapper_bytes_type(ins.read(size_, readId)))
 
-    def packSub(self, out, string_val, force_encoding=None):
+    def packSub(self, out, string_val, force_encoding=None): # TODO: use pack_subrecord_data ??
         # type: (file, PluginStr) -> None
         """Writes out a string subrecord, properly encoding it beforehand and
         respecting max_size, min_size."""
         byte_string = string_val.reencode(
-            force_encoding or bolt.pluginEncoding, self.maxSize,self.minSize)
+            force_encoding or bolt.pluginEncoding, self.maxSize, self.minSize)
         # len of data will be recalculated in MelString._dump_bytes
-        super(MelString, self).packSub(out, byte_string)
+        super(_MelString, self).packSub(out, byte_string)
+
+#------------------------------------------------------------------------------
+class MelFixedString(_MelString):
+    """Subrecord that stores a string of a constant length."""
+    def __init__(self, mel_sig, attr, default=b'', str_length=1): # Py3: keyword args
+        super(MelFixedString, self).__init__(mel_sig, attr, default,
+            maxSize=str_length, minSize=str_length)
+
+    # FIXME null terminator? (no)
+
+class MelString(_MelString):
+    """Add a terminating null character."""
 
     def _dump_bytes(self, out, byte_string, lenData):
         """Write a properly encoded string with a null terminator."""
@@ -723,7 +735,7 @@ class MelStruct(MelBase):
     def pack_subrecord_data(self, record):
         # Just in case, apply the action to itself before dumping to handle
         # e.g. a FixedString getting assigned a unicode value. Worst case,
-        # this is just a noop.
+        # this is just a noop. ##: TODO(ut): needed?
         values = [
             action(value).dump() if action else value for value, action in
             zip([getattr(record, a) for a in self.attrs], self.actions)]
@@ -774,14 +786,6 @@ def parseElements(*elements):
             if len(element) - attrIndex == 2:
                 defaults[index] = element[-1] # else leave to 0
     return tuple(attrs), tuple(defaults), tuple(actions), formAttrs
-
-#------------------------------------------------------------------------------
-class MelFixedString(MelStruct):
-    """Subrecord that stores a string of a constant length. Just a wrapper
-    around a struct with a single FixedString element."""
-    def __init__(self, signature, attr, str_length, default=b''):
-        super(MelFixedString, self).__init__(signature, u'%us' % str_length,
-            (FixedString(str_length, default), attr))
 
 # Simple primitive type wrappers ----------------------------------------------
 class MelFloat(_MelNum):
