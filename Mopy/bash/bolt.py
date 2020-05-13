@@ -124,13 +124,15 @@ def getbestencoding(bitstream):
     ## Debug: uncomment the following to output stats on encoding detection
     #print
     #print '%s: %s (%s)' % (repr(bitstream),encoding,confidence)
-    return encoding_,confidence
+    return unicode(  # PY3: needed?
+        encoding_) if encoding_ else encoding_, confidence
 
 def decoder(byte_str, encoding=None, avoidEncodings=(), returnEncoding=False):
     """Decode a byte string to unicode, using heuristics on encoding."""
     if isinstance(byte_str, unicode) or byte_str is None: return byte_str
     # Try the user specified encoding first
     if encoding:
+        # encoding = unicode(encoding) .....
         # TODO(ut) monkey patch
         if encoding == u'cp65001':
             encoding = u'utf-8'
