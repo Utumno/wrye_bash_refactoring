@@ -170,11 +170,11 @@ class MelCtda(MelUnion):
             new_comp_val = function(record.compValue)
             if save: record.compValue = new_comp_val
 
-    def dumpData(self, record, out):
+    def pack_subrecord_data(self, record):
         # See _build_struct comments above for an explanation of this
         record.compValue = struct_pack(u'fI'[record.operFlag.use_global],
                                        record.compValue)
-        super(MelCtda, self).dumpData(record, out)
+        return super(MelCtda, self).pack_subrecord_data(record)
 
     # Some small speed hacks --------------------------------------------------
     # To avoid having to ask 100s of unions to each set their defaults,
@@ -238,11 +238,11 @@ class MelCtdaFo3(MelCtda):
             new_param2 = function(record.param2)
             if save: record.param2 = new_param2
 
-    def dumpData(self, record, out):
+    def pack_subrecord_data(self, record):
         if record.ifunc == self._getvatsvalue_ifunc:
             record.param2 = struct_pack(self._vats_param2_fmt[record.param1],
                                         record.param2)
-        super(MelCtdaFo3, self).dumpData(record, out)
+        return super(MelCtdaFo3, self).pack_subrecord_data(record)
 
 #------------------------------------------------------------------------------
 class MelDecalData(MelOptStruct):
@@ -634,9 +634,10 @@ class MelOwnership(MelGroup):
             MelOptSInt32(b'XRNK', u'rank', None),
         )
 
-    def dumpData(self,record,out):
-        if record.ownership and record.ownership.owner: ##: use pack_subrecord_data ?
-            MelGroup.dumpData(self,record,out)
+    def pack_subrecord_data(self, record):
+        if record.ownership and record.ownership.owner:
+            return MelGroup.pack_subrecord_data(self, record)
+        return None
 
 class MelDebrData(MelStruct):
     def __init__(self):
