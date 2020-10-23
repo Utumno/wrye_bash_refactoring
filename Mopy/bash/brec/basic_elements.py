@@ -412,26 +412,6 @@ class MelNull(MelBase):
         pass
 
 #------------------------------------------------------------------------------
-# TODO(inf) DEPRECATED! - don't use for new usages -> MelArray(MelFid) instead.
-#  Not backwards-compatible (runtime interface differs), hence deprecation.
-class MelFidList(MelFids):
-    """Represents a listmod record fid elements. The only difference from
-    MelFids is how the data is stored. For MelFidList, the data is stored
-    as a single subrecord rather than as separate subrecords."""
-
-    def load_mel(self, record, ins, sub_type, size_, readId):
-        if not size_: return
-        fids = ins.unpack(structs_cache[u'%dI' % (size_ // 4)].unpack, size_,
-                          readId)
-        setattr(record, self.attr, list(fids))
-
-    def dumpData(self, record, out):
-        fids = getattr(record, self.attr)
-        if not fids: return
-        fids_packed = structs_cache[u'%dI' % len(fids)].pack(*fids)
-        self.packSub(out, fids_packed)
-
-#------------------------------------------------------------------------------
 class MelSequential(MelBase):
     """Represents a sequential, which is simply a way for one record element to
     delegate loading to multiple other record elements. It basically behaves
@@ -890,6 +870,9 @@ class MelXXXX(MelUInt32):
 #------------------------------------------------------------------------------
 class MelFid(MelUInt32):
     """Represents a mod record fid element."""
+
+    def __init__(self, mel_sig, element=u'FID_'):
+        super(MelFid, self).__init__(mel_sig, element)
 
     def hasFids(self,formElements):
         formElements.add(self)

@@ -39,7 +39,7 @@ class MreTes4(MreHeaderBase):
         MreHeaderBase.MelAuthor(),
         MreHeaderBase.MelDescription(),
         MreHeaderBase.MelMasterNames(),
-        MelFidList(b'ONAM', u'overrides',),
+        MelArray(u'overrides', MelFid(b'ONAM')),
         MelBase(b'SCRN', u'screenshot'),
         MelBase(b'INTV', u'unknownINTV'),
         MelBase(b'INCC', u'unknownINCC'),

@@ -30,7 +30,7 @@ from ... import brec
 from ...bolt import Flags, structs_cache
 from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
     MelString, MelSet, MelFid, MelOptStruct, MelFids, MreHeaderBase, \
-    MelBase, MelFidList, MreGmstBase, MelStrings, MelMODS, \
+    MelBase, MreGmstBase, MelStrings, MelMODS, \
     MelReferences, MelColorInterpolator, MelValueInterpolator, \
     MelUnion, AttrValDecider, MelRegnEntrySubrecord, SizeDecider, MelFloat, \
     MelSInt8, MelSInt16, MelSInt32, MelUInt8, MelUInt16, MelUInt32, \
@@ -293,7 +293,7 @@ class MreTes4(MreHeaderBase):
         MreHeaderBase.MelAuthor(),
         MreHeaderBase.MelDescription(),
         MreHeaderBase.MelMasterNames(),
-        MelFidList(b'ONAM','overrides'),
+        MelArray(u'overrides', MelFid(b'ONAM')),
         MelBase(b'SCRN', 'screenshot'),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -738,7 +738,7 @@ class MreCell(MelRecord):
         # last mod.
         MelOptFloat(b'XCLW', u'waterHeight', -2147483649),
         MelString(b'XNAM','waterNoiseTexture'),
-        MelFidList(b'XCLR','regions'),
+        MelArray(u'regions', MelFid(b'XCLR')),
         MelFid(b'XCIM','imageSpace'),
         MelOptUInt8(b'XCET', 'xcet_p'),
         MelFid(b'XEZN','encounterZone'),
@@ -854,7 +854,7 @@ class MreCpth(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelConditions(),
-        MelFidList(b'ANAM','relatedCameraPaths',),
+        MelArray(u'relatedCameraPaths', MelFid(b'ANAM')),
         MelUInt8(b'DATA', 'cameraZoom'),
         MelFids(b'SNAM','cameraShots',),
     )
@@ -1354,7 +1354,7 @@ class MreIdlm(MelRecord):
             old_versions={'B'}),
             counter='animation_count', counts='animations'),
         MelFloat(b'IDLT', 'idleTimerSetting'),
-        MelFidList(b'IDLA','animations'),
+        MelArray(u'animations', MelFid(b'IDLA')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1870,7 +1870,7 @@ class MreNavi(MelRecord):
             # so leaving this as MelBase for now
             MelBase(b'NVMI', 'nav_map_info'),
         ),
-        MelFidList(b'NVCI','unknownDoors',),
+        MelArray(u'unknownDoors', MelFid(b'NVCI')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1917,7 +1917,7 @@ class MreNote(MelRecord):
         MelPickupSound(),
         MelDropSound(),
         MelUInt8(b'DATA', 'dataType'),
-        MelFidList(b'ONAM','quests'),
+        MelArray(u'quests', MelFid(b'ONAM')),
         MelString(b'XNAM','texture'),
         MelUnion({
             3: MelFid(b'TNAM', u'textTopic'),
@@ -2126,7 +2126,7 @@ class MrePack(MelRecord):
                                         'unused'),
                               counter='animation_count', counts='animations'),
             MelFloat(b'IDLT', 'idleTimerSetting'),
-            MelFidList(b'IDLA','animations'),
+            MelArray(u'animations', MelFid(b'IDLA')),
             MelBase(b'IDLB','idlb_p'),
         ),
         MelBase(b'PKED','eatMarker'),
@@ -2535,8 +2535,8 @@ class MreRace(MelRecord):
             MelIcons(),
             MelModel()
         )),
-        MelFidList(b'HNAM','hairs'),
-        MelFidList(b'ENAM','eyes'),
+        MelArray(u'hairs', MelFid(b'HNAM')),
+        MelArray(u'eyes', MelFid(b'ENAM')),
         MelBase(b'MNAM', 'male_facegen_marker', b''),
         MelRaceFaceGen('maleFaceGen'),
         MelBase(b'FNAM', 'female_facegen_marker', b''),
@@ -3069,7 +3069,7 @@ class MreWatr(MelRecord):
             ('noiseLayer1UvScale',100.00000),('noiseLayer2UvScale',100.00000),('noiseLayer3UvScale',100.00000),
             ('noiseLayer1Amp',0.00000),('noiseLayer2Amp',0.00000),('noiseLayer3Amp',0.00000),
             old_versions={'10f3Bs3Bs3BsI32f'}),
-        MelFidList(b'GNAM','relatedWaters'),
+        MelArray(u'relatedWaters', MelFid(b'GNAM')),
     )
     __slots__ = melSet.getSlotsUsed()
 

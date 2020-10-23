@@ -28,7 +28,7 @@ from ... import brec, bolt
 from ...bolt import Flags, struct_pack, structs_cache, unpack_str16
 from ...brec import MelRecord, MelObject, MelGroups, MelStruct, FID, \
     MelGroup, MelString, MreLeveledListBase, MelSet, MelFid, MelNull, \
-    MelOptStruct, MelFids, MreHeaderBase, MelBase, MelFidList, \
+    MelOptStruct, MelFids, MreHeaderBase, MelBase, \
     MreGmstBase, MelLString, MelMODS, MelColorInterpolator, \
     MelValueInterpolator, MelUnion, AttrValDecider, MelRegnEntrySubrecord, \
     PartialLoadDecider, FlagDecider, MelFloat, MelSInt8, MelSInt32, MelUInt8, \
@@ -274,7 +274,7 @@ class MelKeywords(MelSequential):
         MelSequential.__init__(self,
             MelCounter(MelUInt32(b'KSIZ', u'keyword_count'),
                        counts=u'keywords'),
-            MelFidList(b'KWDA', u'keywords'),
+            MelArray(u'keywords', MelFid(b'KWDA')),
         )
 
 class MelLocation(MelUnion):
@@ -1228,10 +1228,10 @@ class MreTes4(MreHeaderBase):
         MreHeaderBase.MelAuthor(),
         MreHeaderBase.MelDescription(),
         MreHeaderBase.MelMasterNames(),
-        MelFidList(b'ONAM','overrides',),
-        MelBase(b'SCRN', 'screenshot'),
-        MelBase(b'INTV', 'unknownINTV'),
-        MelBase(b'INCC', 'unknownINCC'),
+        MelArray(u'overrides', MelFid(b'ONAM')),
+        MelBase(b'SCRN', u'screenshot'),
+        MelBase(b'INTV', u'unknownINTV'),
+        MelBase(b'INCC', u'unknownINCC'),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1776,7 +1776,7 @@ class MreCell(MelRecord):
         # Drop in interior cells for Skyrim, see #302 for discussion on this
         MelSkipInterior(MelOptFloat(b'XCLW', u'waterHeight', -2147483649)),
         MelString(b'XNAM','waterNoiseTexture'),
-        MelFidList(b'XCLR','regions'),
+        MelArray(u'regions', MelFid(b'XCLR')),
         MelFid(b'XLCN','location',),
         MelWaterVelocities(),
         MelFid(b'XCWT','water'),
@@ -1884,7 +1884,7 @@ class MreColl(MelRecord):
         MelUInt32Flags(b'GNAM', u'flags', CollisionLayerFlags,),
         MelString(b'MNAM', u'col_layer_name',),
         MelUInt32(b'INTV', 'interactablesCount'),
-        MelFidList(b'CNAM','collidesWith',),
+        MelArray(u'collidesWith', MelFid(b'CNAM')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -1922,7 +1922,7 @@ class MreCpth(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelConditions(),
-        MelFidList(b'ANAM','relatedCameraPaths',),
+        MelArray(u'relatedCameraPaths', MelFid(b'ANAM')),
         MelUInt8(b'DATA', 'cameraZoom'),
         MelFids(b'SNAM','cameraShots',),
     )
@@ -2247,7 +2247,7 @@ class MreEqup(MelRecord):
     rec_sig = b'EQUP'
     melSet = MelSet(
         MelEdid(),
-        MelFidList(b'PNAM','canBeEquipped'),
+        MelArray(u'canBeEquipped', MelFid(b'PNAM')),
         MelUInt32(b'DATA', 'useAllParents'), # actually a bool
     )
     __slots__ = melSet.getSlotsUsed()
@@ -2408,7 +2408,7 @@ class MreFsts(MelRecord):
         MelEdid(),
         MelStruct(b'XCNT','5I','walkForward','runForward','walkForwardAlt',
                   'runForwardAlt','walkForwardAlternate2',),
-        MelFidList(b'DATA','footstepSets'),
+        MelArray(u'footstepSets', MelFid(b'DATA')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -2619,7 +2619,7 @@ class MreIdlm(MelRecord):
         MelUInt8Flags(b'IDLF', u'flags', IdlmTypeFlags),
         MelCounter(MelUInt8(b'IDLC', 'animation_count'), counts='animations'),
         MelFloat(b'IDLT', 'idleTimerSetting'),
-        MelFidList(b'IDLA','animations'),
+        MelArray(u'animations', MelFid(b'IDLA')),
         MelModel(),
     )
     __slots__ = melSet.getSlotsUsed()
@@ -2936,7 +2936,7 @@ class MreLctn(MelRecord):
             MelStruct(b'LCPR', '2I2h', (FID, 'actor'), (FID, 'location'),
                       'gridX', 'gridY'),
         ),
-        MelFidList(b'RCPR','referenceCellPersistentReference',),
+        MelArray(u'referenceCellPersistentReference', MelFid(b'RCPR')),
         MelArray('actorCellUnique',
             MelStruct(b'ACUN', '3I', (FID, 'actor'), (FID, 'eef'),
                       (FID, 'location')),
@@ -2945,7 +2945,7 @@ class MreLctn(MelRecord):
             MelStruct(b'LCUN', '3I', (FID, 'actor'), (FID, 'eef'),
                       (FID, 'location')),
         ),
-        MelFidList(b'RCUN','referenceCellUnique',),
+        MelArray(u'referenceCellUnique', MelFid(b'RCUN')),
         MelArray('actorCellStaticReference',
             MelStruct(b'ACSR', '3I2h', (FID, 'locRefType'), (FID, 'marker'),
                       (FID, 'location'), 'gridX', 'gridY'),
@@ -2954,7 +2954,7 @@ class MreLctn(MelRecord):
             MelStruct(b'LCSR', '3I2h', (FID, 'locRefType'), (FID, 'marker'),
                       (FID, 'location'), 'gridX', 'gridY'),
         ),
-        MelFidList(b'RCSR','referenceCellStaticReference',),
+        MelArray(u'referenceCellStaticReference', MelFid(b'RCSR')),
         MelGroups(u'actorCellEncounterCell',
             MelArray(u'coordinates',
                 MelStruct(b'ACEC', u'2h', u'grid_x', u'grid_y'),
@@ -2973,8 +2973,8 @@ class MreLctn(MelRecord):
                      prelude=MelFid(b'RCEC', u'location'),
             ),
         ),
-        MelFidList(b'ACID','actorCellMarkerReference',),
-        MelFidList(b'LCID','locationCellMarkerReference',),
+        MelArray(u'actorCellMarkerReference', MelFid(b'ACID')),
+        MelArray(u'locationCellMarkerReference', MelFid(b'LCID')),
         MelArray('actorCellEnablePoint',
             MelStruct(b'ACEP', '2I2h', (FID, 'actor'), (FID,'ref'), 'gridX',
                       'gridY'),
@@ -3420,7 +3420,7 @@ class MreMusc(MelRecord):
         # Divided by 100 in TES5Edit, probably for editing only
         MelStruct(b'PNAM','2H','priority','duckingDB'),
         MelFloat(b'WNAM', 'fadeDuration'),
-        MelFidList(b'TNAM','musicTracks'),
+        MelArray(u'musicTracks', MelFid(b'TNAM')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -3442,7 +3442,7 @@ class MreMust(MelRecord):
         MelOptStruct(b'LNAM','2fI','loopBegins','loopEnds','loopCount',),
         MelConditionCounter(),
         MelConditions(),
-        MelFidList(b'SNAM','tracks',),
+        MelArray(u'tracks', MelFid(b'SNAM')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -3459,7 +3459,7 @@ class MreNavi(MelRecord):
         # If no mitigation is needed, then leave it as MelBase
         MelBase(b'NVMI','navigationMapInfos',),
         MelBase(b'NVPP','preferredPathing',),
-        MelFidList(b'NVSI','navigationMesh'),
+        MelArray(u'navigationMesh', MelFid(b'NVSI')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -3676,7 +3676,7 @@ class MreOtft(MelRecord):
 
     melSet = MelSet(
         MelEdid(),
-        MelFidList(b'INAM','items'),
+        MelArray(u'items', MelFid(b'INAM')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -3755,7 +3755,7 @@ class MrePack(MelRecord):
                                         'unknown'),
                               counter='animation_count', counts='animations'),
             MelFloat(b'IDLT', 'idleTimerSetting',),
-            MelFidList(b'IDLA', 'animations'),
+            MelArray(u'animations', MelFid(b'IDLA')),
             MelBase(b'IDLB', 'unknown1'),
         ),
         MelFid(b'CNAM', 'combatStyle',),
@@ -4271,8 +4271,8 @@ class MreRace(MelRecord):
             MelUInt32(b'INDX', u'body_part_index'), # required
             MelModel(),
         ),
-        MelFidList(b'HNAM', u'hairs'),
-        MelFidList(b'ENAM', u'eyes'),
+        MelArray(u'hairs', MelFid(b'HNAM')),
+        MelArray(u'eyes', MelFid(b'ENAM')),
         MelFid(b'GNAM', u'body_part_data'), # required
         MelBase(b'NAM2', u'marker_nam2_2'),
         MelBase(b'NAM3', u'behavior_graph_marker', b''), # required
@@ -4528,7 +4528,7 @@ class MreRefr(MelRecord):
         MelFid(b'XEZN','encounterZone'),
         MelOptStruct(b'XNDP', u'IH2s', (FID, u'navMesh'),
             u'teleportMarkerTriangle', u'unknown7'),
-        MelFidList(b'XLRT','locationRefType',),
+        MelArray(u'locationRefType', MelFid(b'XLRT')),
         MelNull(b'XIS2',),
         MelOwnership(),
         MelOptSInt32(b'XCNT', 'count'),
