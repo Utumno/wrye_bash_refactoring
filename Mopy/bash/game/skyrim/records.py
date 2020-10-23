@@ -28,7 +28,7 @@ from ... import brec, bolt
 from ...bolt import Flags, struct_pack, structs_cache, unpack_str16
 from ...brec import MelRecord, MelObject, MelGroups, MelStruct, FID, \
     MelGroup, MelString, MreLeveledListBase, MelSet, MelFid, MelNull, \
-    MelOptStruct, MelFids, MreHeaderBase, MelBase, \
+    MelOptStruct, MreHeaderBase, MelBase, \
     MreGmstBase, MelLString, MelMODS, MelColorInterpolator, \
     MelValueInterpolator, MelUnion, AttrValDecider, MelRegnEntrySubrecord, \
     PartialLoadDecider, FlagDecider, MelFloat, MelSInt8, MelSInt32, MelUInt8, \
@@ -1470,7 +1470,7 @@ class MreArma(MelRecord):
         MelOptFid(b'NAM1', 'skin1'),
         MelOptFid(b'NAM2', 'skin2'),
         MelOptFid(b'NAM3', 'skin3'),
-        MelFids(b'MODL','races'),
+        MelGroups(u'races', MelFid(b'MODL')),
         MelOptFid(b'SNDD', 'footstepSound'),
         MelOptFid(b'ONAM', 'art_object'),
     )
@@ -1503,7 +1503,7 @@ class MreArmo(MelRecord):
         MelOptFid(b'RNAM', 'race'),
         MelKeywords(),
         MelDescription(),
-        MelFids(b'MODL','addons'),
+        MelGroups(u'addons', MelFid(b'MODL')),
         MelStruct(b'DATA','=if','value','weight'),
         MelSInt32(b'DNAM', 'armorRating'),
         MelFid(b'TNAM','templateArmor'),
@@ -1924,7 +1924,7 @@ class MreCpth(MelRecord):
         MelConditions(),
         MelArray(u'relatedCameraPaths', MelFid(b'ANAM')),
         MelUInt8(b'DATA', 'cameraZoom'),
-        MelFids(b'SNAM','cameraShots',),
+        MelGroups(u'cameraShots', MelFid(b'SNAM')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -2022,7 +2022,7 @@ class MreDlvw(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelFid(b'QNAM','quest',),
-        MelFids(b'BNAM','branches',),
+        MelGroups(u'branches', MelFid(b'BNAM')),
         MelGroups('unknownTNAM',
             MelBase(b'TNAM','unknown',),
         ),
@@ -2564,7 +2564,7 @@ class MreHdpt(MelRecord):
         MelModel(),
         MelUInt8Flags(b'DATA', u'flags', HdptTypeFlags),
         MelUInt32(b'PNAM', 'hdptTypes'),
-        MelFids(b'HNAM','extraParts'),
+        MelGroups(u'extraParts', MelFid(b'HNAM')),
         MelGroups('partsData',
             MelUInt32(b'NAM0', 'headPartType',),
             MelString(b'NAM1','filename'),
@@ -2660,7 +2660,7 @@ class MreInfo(MelRecord):
         MelFid(b'TPIC', u'info_topic'),
         MelFid(b'PNAM','prevInfo',),
         MelUInt8(b'CNAM', 'favorLevel'),
-        MelFids(b'TCLT','linkTo',),
+        MelGroups(u'linkTo', MelFid(b'TCLT')),
         MelFid(b'DNAM','responseData',),
         MelGroups('responses',
             MelStruct(b'TRDT', u'2I4sB3sIB3s', u'emotionType', u'emotionValue',
@@ -3120,7 +3120,7 @@ class MreLtex(MelRecord):
         MelFid(b'MNAM','materialType',),
         MelStruct(b'HNAM', '2B', 'friction', 'restitution',),
         MelUInt8(b'SNAM', 'textureSpecularExponent'),
-        MelFids(b'GNAM','grasses'),
+        MelGroups(u'grasses', MelFid(b'GNAM')),
         MelSSEOnly(MelUInt32Flags(b'INAM', u'snow_flags', _SnowFlags))
     )
     __slots__ = melSet.getSlotsUsed()
@@ -3613,7 +3613,7 @@ class MreNpc(MreActorBase):
                   'energyLevel', 'responsibility', 'mood', 'assistance',
                   'aggroRadiusBehavior',
                   'aidtUnknown', 'warn', 'warnAttack', 'attack'),
-        MelFids(b'PKID', 'aiPackages',),
+        MelGroups(u'aiPackages', MelFid(b'PKID')),
         MelKeywords(),
         MelFid(b'CNAM', 'iclass'),
         MelFull(),
@@ -3630,7 +3630,7 @@ class MreNpc(MreActorBase):
             'destructionSO','illusionSO','restorationSO','enchantingSO',
             'health','magicka','stamina',('dnamUnused1',null2),
             'farawaymodeldistance','gearedupweapons',('dnamUnused2',null3)),
-        MelFids(b'PNAM', 'head_part_addons',),
+        MelGroups(u'head_part_addons', MelFid(b'PNAM')),
         MelOptFid(b'HCLF', u'hair_color'),
         MelOptFid(b'ZNAM', u'combatStyle'),
         MelOptFid(b'GNAM', u'gifts'),
@@ -4041,7 +4041,7 @@ class MreQust(MelRecord):
         MelStruct(b'DNAM', '=H2B4sI', (_questFlags, 'questFlags', 0),
                   'priority', 'formVersion', 'unknown', 'questType'),
         MelOptStruct(b'ENAM', u'4s', (u'event_name', null4)),
-        MelFids(b'QTGL','textDisplayGlobals'),
+        MelGroups(u'textDisplayGlobals', MelFid(b'QTGL')),
         MelString(b'FLTR','objectWindowFilter'),
         MelConditions('dialogueConditions'),
         MelBase(b'NEXT','marker'),
@@ -4113,9 +4113,9 @@ class MreQust(MelRecord):
             MelFid(b'GWOR','guardWarnOverridePackageList'),
             MelFid(b'ECOR','combatOverridePackageList'),
             MelFid(b'ALDN','displayName'),
-            MelFids(b'ALSP','aliasSpells'),
-            MelFids(b'ALFC','aliasFactions'),
-            MelFids(b'ALPC','aliasPackageData'),
+            MelGroups(u'aliasSpells', MelFid(b'ALSP')),
+            MelGroups(u'aliasFactions', MelFid(b'ALFC')),
+            MelGroups(u'aliasPackageData', MelFid(b'ALPC')),
             MelFid(b'VTCK','voiceType'),
             MelBase(b'ALED','aliasEnd'),
         ),
@@ -4487,7 +4487,7 @@ class MreRefr(MelRecord):
                 (roomDataFlags, u'roomFlags'), u'unknown1'),
             MelFid(b'LNAM', 'lightingTemplate'),
             MelFid(b'INAM', 'imageSpace'),
-            MelFids(b'XLRM','linkedRoom'),
+            MelGroups(u'linkedRoom', MelFid(b'XLRM')),
             ),
         MelBase(b'XMBP','multiboundPrimitiveMarker'),
         MelBase(b'XRGD','ragdollData'),
@@ -4497,7 +4497,7 @@ class MreRefr(MelRecord):
             MelStruct(b'XPWR', '2I', (FID, 'reference'),
                       (reflectFlags, 'reflection_type')),
         ),
-        MelFids(b'XLTW','litWaters'),
+        MelGroups(u'litWaters', MelFid(b'XLTW')),
         MelOptFid(b'XEMI', 'emittance'),
         MelOptStruct(b'XLIG', u'4f4s', u'fov90Delta', u'fadeDelta',
             u'end_distance_cap', u'shadowDepthBias', u'unknown2'),
@@ -4506,7 +4506,7 @@ class MreRefr(MelRecord):
                      'destinationPosY','destinationPosZ','destinationRotX',
                      'destinationRotY','destinationRotZ',
                      (_destinationFlags,'destinationFlags')),
-        MelFids(b'XTNM','teleportMessageBox'),
+        MelGroups(u'teleportMessageBox', MelFid(b'XTNM')),
         MelFid(b'XMBR','multiboundReference'),
         MelWaterVelocities(),
         MelOptStruct(b'XCVL', u'4sf4s', u'unknown3', u'angleX', u'unknown4'),
@@ -4769,7 +4769,7 @@ class MreScen(MelRecord):
             MelUInt32(b'SNAM', 'startPhase'),
             MelUInt32(b'ENAM', 'endPhase'),
             MelFloat(b'SNAM', 'timerSeconds'),
-            MelFids(b'PNAM','packages'),
+            MelGroups(u'packages', MelFid(b'PNAM')),
             MelFid(b'DATA','topic'),
             MelUInt32(b'HTID', 'headtrackActorID'),
             MelFloat(b'DMAX', 'loopingMax'),
@@ -5566,7 +5566,7 @@ class MreWthr(MelRecord):
         MelGroups('sounds',
             MelStruct(b'SNAM', '2I', (FID, 'sound'), 'type'),
         ),
-        MelFids(b'TNAM','skyStatics',),
+        MelGroups(u'skyStatics', MelFid(b'TNAM')),
         MelStruct(b'IMSP', '4I', (FID, 'image_space_sunrise'),
                   (FID, 'image_space_day'), (FID, 'image_space_sunset'),
                   (FID, 'image_space_night'),),

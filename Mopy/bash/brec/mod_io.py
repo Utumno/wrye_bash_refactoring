@@ -294,9 +294,5 @@ class ModReader(object):
             raise exception.ModReadError(self.inName, recType, endPos, self.size)
         return struct_unpacker(self.ins.read(size))
 
-    def unpackRef(self, __unpacker=_int_unpacker):
-        """Read a ref (fid)."""
-        return self.unpack(__unpacker, 4)[0]
-
     def unpackRecHeader(self, __head_unpack=unpack_header):
         return __head_unpack(self)

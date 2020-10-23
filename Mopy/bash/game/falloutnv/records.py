@@ -30,7 +30,7 @@ from ..fallout3.records import _MelModel # HACK - needed for tests
 from ...bolt import Flags, struct_calcsize
 from ...brec import MelModel # set in Mopy/bash/game/fallout3/records.py
 from ...brec import MelRecord, MelGroups, MelStruct, FID, MelGroup, \
-    MelString, MelSet, MelFid, MelOptStruct, MelFids, MelBase, \
+    MelString, MelSet, MelFid, MelOptStruct, MelBase, \
     MreGmstBase, MreHeaderBase, MelColorInterpolator, \
     MelValueInterpolator, MelRegnEntrySubrecord, MelFloat, MelSInt8, \
     MelSInt16, MelSInt32, MelUInt8, MelUInt32, MelOptFid, MelOptFloat, \
@@ -179,12 +179,12 @@ class MreAloc(MelRecord):
         MelUInt32(b'NAM5', 'dayStart'),
         MelUInt32(b'NAM6', 'nightStart'),
         MelUInt32(b'NAM7', 'retrigerDelay'),
-        MelFids(b'HNAM','neutralSets'),
-        MelFids(b'ZNAM','allySets'),
-        MelFids(b'XNAM','friendSets'),
-        MelFids(b'YNAM','enemySets'),
-        MelFids(b'LNAM','locationSets'),
-        MelFids(b'GNAM','battleSets'),
+        MelGroups(u'neutralSets', MelFid(b'HNAM')),
+        MelGroups(u'allySets', MelFid(b'ZNAM')),
+        MelGroups(u'friendSets', MelFid(b'XNAM')),
+        MelGroups(u'enemySets', MelFid(b'YNAM')),
+        MelGroups(u'locationSets', MelFid(b'LNAM')),
+        MelGroups(u'battleSets', MelFid(b'GNAM')),
         MelFid(b'RNAM','conditionalFaction'),
         MelUInt32(b'FNAM', 'fnam'),
     )
@@ -227,7 +227,7 @@ class MreAmmo(MelRecord):
                            old_versions={'2If'}),
         MelString(b'ONAM','shortName'),
         MelString(b'QNAM','abbrev'),
-        MelFids(b'RCIL','effects'),
+        MelGroups(u'effects', MelFid(b'RCIL')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -307,7 +307,7 @@ class MreAspc(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelBounds(),
-        MelFids(b'SNAM','soundLooping'),
+        MelGroups(u'soundLooping', MelFid(b'SNAM')),
         MelUInt32(b'WNAM', 'wallaTrigerCount'),
         MelFid(b'RDAT','useSoundFromRegion'),
         MelUInt32(b'ANAM', 'environmentType'),
@@ -349,7 +349,7 @@ class MreCdck(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelFull(),
-        MelFids(b'CARD','cards'),
+        MelGroups(u'cards', MelFid(b'CARD')),
         MelUInt32(b'DATA', 'count'), # 'Count (broken)' in xEdit - unused?
     )
     __slots__ = melSet.getSlotsUsed()
@@ -691,7 +691,7 @@ class MreHdpt(MelRecord):
         MelFull(),
         MelModel(),
         MelUInt8Flags(b'DATA', u'flags', _flags),
-        MelFids(b'HNAM','extraParts'),
+        MelGroups(u'extraParts', MelFid(b'HNAM')),
     )
     __slots__ = melSet.getSlotsUsed()
 
@@ -844,7 +844,7 @@ class MreInfo(MelRecord):
         MelFid(b'QSTI', u'info_quest'),
         MelFid(b'TPIC', u'info_topic'),
         MelFid(b'PNAM','prevInfo'),
-        MelFids(b'NAME','addTopics'),
+        MelGroups(u'addTopics', MelFid(b'NAME')),
         MelGroups('responses',
             MelStruct(b'TRDT','Ii4sB3sIB3s','emotionType','emotionValue',('unused1',null4),'responseNum',('unused2',b'\xcd\xcd\xcd'),
                       (FID,'sound'),'flags',('unused3',b'\xcd\xcd\xcd')),
@@ -855,9 +855,9 @@ class MreInfo(MelRecord):
             MelFid(b'LNAM','listenerAnimation'),
         ),
         MelConditions(),
-        MelFids(b'TCLT','choices'),
-        MelFids(b'TCLF','linksFrom'),
-        MelFids(b'TCFU','tcfu_p'),
+        MelGroups(u'choices', MelFid(b'TCLT')),
+        MelGroups(u'linksFrom', MelFid(b'TCLF')),
+        MelGroups(u'tcfu_p', MelFid(b'TCFU')),
         MelGroup('scriptBegin',
             MelEmbeddedScript(),
         ),
@@ -1285,7 +1285,7 @@ class MreRefr(MelRecord):
             MelStruct(b'XPWR', '2I', (FID, 'reference'),
                       (reflectFlags, 'reflection_type')),
         ),
-        MelFids(b'XLTW','litWaters'),
+        MelGroups(u'litWaters', MelFid(b'XLTW')),
         MelGroups('linkedDecals',
             MelStruct(b'XDCR', '2I', (FID, 'reference'), 'unknown'),
         ),
@@ -1309,7 +1309,7 @@ class MreRefr(MelRecord):
         ####if it's 4 byte it's the seed value directly.
         MelGroup('roomData',
             MelStruct(b'XRMR','H2s','linkedRoomsCount','unknown'),
-            MelFids(b'XLRM','linkedRoom'),
+            MelGroups(u'linkedRoom', MelFid(b'XLRM')),
         ),
         MelOptStruct(b'XOCP','9f','occlusionPlaneWidth','occlusionPlaneHeight','occlusionPlanePosX','occlusionPlanePosY','occlusionPlanePosZ',
                      'occlusionPlaneRot1','occlusionPlaneRot2','occlusionPlaneRot3','occlusionPlaneRot4'),
@@ -1372,7 +1372,7 @@ class MreRegn(MelRecord):
             MelRegnEntrySubrecord(7, MelOptUInt32(b'RDMD', 'musicType')),
             MelRegnEntrySubrecord(7, MelFid(b'RDMO', 'music')),
             MelRegnEntrySubrecord(7, MelFid(b'RDSI', 'incidentalMediaSet')),
-            MelRegnEntrySubrecord(7, MelFids(b'RDSB', 'battleMediaSets')),
+            MelRegnEntrySubrecord(7, MelGroups(u'battleMediaSets', MelFid(b'RDSB'))),
             MelRegnEntrySubrecord(7, MelArray('sounds',
                 MelStruct(b'RDSD', '3I', (FID, 'sound'), (sdflags, 'flags'),
                           'chance'),
@@ -1572,7 +1572,7 @@ class MreWeap(MelRecord):
             MelFid(b'WMI2','mod2'),
             MelFid(b'WMI3','mod3'),
         ),
-        MelFids(b'SNAM','soundGunShot3D'),
+        MelArray(u'soundGunShot3D', MelFid(b'SNAM')),
         MelFid(b'XNAM','soundGunShot2D'),
         MelFid(b'NAM7','soundGunShot3DLooping'),
         MelFid(b'TNAM','soundMeleeSwingGunNoAmmo'),
@@ -1580,7 +1580,7 @@ class MreWeap(MelRecord):
         MelFid(b'UNAM','idleSound',),
         MelFid(b'NAM9','equipSound',),
         MelFid(b'NAM8','unequipSound',),
-        MelFids(b'WMS1','soundMod1Shoot3Ds'),
+        MelArray(u'soundMod1Shoot3Ds', MelFid(b'WMS1')),
         MelFid(b'WMS2','soundMod1Shoot2D'),
         MelStruct(b'DATA','2IfHB','value','health','weight','damage','clipsize'),
         MelTruncatedStruct(b'DNAM', 'I2f4B5fI4B2f2I11fiI2fi4f3I3f2IsB2s6fI',

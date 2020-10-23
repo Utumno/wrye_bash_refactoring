@@ -363,35 +363,6 @@ class MelPartialCounter(MelCounter):
         self._counter_mel.dumpData(record, out)
 
 #------------------------------------------------------------------------------
-# TODO(inf) DEPRECATED! - don't use for new usages -> MelGroups(MelFid)
-#  instead. Same idea as with MelFidList.
-class MelFids(MelBase):
-    """Represents a mod record fid elements."""
-
-    def hasFids(self,formElements):
-        formElements.add(self)
-
-    def getDefaulters(self, mel_set_instance):
-        if self.attr in mel_set_instance.listers:
-            raise SyntaxError(
-                u'%s duplicate attr %s' % (self, self.attr))
-        mel_set_instance.listers.add(self.attr)
-
-    def load_mel(self, record, ins, sub_type, size_, readId):
-        fid = ins.unpackRef()
-        getattr(record, self.attr).append(fid)
-
-    def dumpData(self, record, out, __packer=structs_cache[u'I'].pack):
-        for fid in getattr(record, self.attr):
-            MelFid(self.mel_sig, '').packSub(out, __packer(fid))
-
-    def mapFids(self,record,function,save=False):
-        fids = getattr(record, self.attr)
-        for index,fid in enumerate(fids):
-            result = function(fid)
-            if save: fids[index] = result
-
-#------------------------------------------------------------------------------
 class MelNull(MelBase):
     """Represents an obsolete record. Reads bytes from instream, but then
     discards them and is otherwise inactive."""
