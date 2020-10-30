@@ -113,7 +113,7 @@ class _ChunkEntry(object):
 # Headers
 class _AHeader(_Dumpable):
     """Abstract base class for cosave headers."""
-    savefile_tag = u'OVERRIDE'
+    savefile_tag = _CosaveStr(b'OVERRIDE')
     __slots__ = ()
 
     def __init__(self, ins, cosave_path):
@@ -172,7 +172,7 @@ class _xSEHeader(_AHeader):
 
 class _PluggyHeader(_AHeader):
     """Header for pluggy cosaves. Just checks save file tag and version."""
-    savefile_tag = u'PluggySave'
+    savefile_tag = _CosaveStr(b'PluggySave')
     _max_supported_version = 0x01050001
     _min_supported_version = 0x01040000
     __slots__ = ()
@@ -230,7 +230,7 @@ class _xSEChunk(_AChunk):
 
     def write_chunk(self, out):
         # Don't forget to reverse signature when writing again
-        pack_4s(out, self._chunk_sig[::-1])
+        pack_4s(out, self._chunk_sig[::-1]) # TODO out.write(self._chunk_sig[::-1]) ?
         pack_int(out, self.chunk_version)
         pack_int(out, self.chunk_length())
         # If we haven't fully decoded this chunk, treat it as a binary blob
@@ -486,9 +486,9 @@ class _xSEChunkDATA(_xSEModListChunk):
             for x in xrange(256):
                 # This chunk always has 256 mods listed, any excess ones
                 # just get the string 'nomod' stored.
-                read_string = _unpack_cosave_space_str(ins)
-                if read_string.lower() != u'nomod':
-                    self.mod_names.append(read_string)
+                plugin_str = _unpack_cosave_space_str(ins)
+                if plugin_str != b'nomod': # PluginStr compare in lowercase
+                    self.mod_names.append(plugin_str)
         # Treat the remainder as a binary blob, no mod names in there
         read_size = ins.tell() - start_pos
         self.remaining_data = ins.read(self.data_len - read_size)
@@ -502,8 +502,8 @@ class _xSEChunkDATA(_xSEModListChunk):
             # the mod count as a string & space separator between it and mods
             total_len += len(unicode(len(self.mod_names))) + 1
         else:
-            total_len += 256 # space seperators between mods
-            total_len += len(u'nomod') * (256 - len(self.mod_names)) # 'nomod's
+            total_len += 256 # space separators between mods
+            total_len += len(b'nomod') * (256 - len(self.mod_names)) # 'nomod's
         total_len += sum(imap(len, self.mod_names)) # all present mods
         return total_len + len(self.remaining_data) # all other data
 
@@ -518,7 +518,7 @@ class _xSEChunkDATA(_xSEModListChunk):
         else:
             # Note that we need to append the 'nomod's we removed during
             # loading here again
-            all_mod_names = self.mod_names + [u'nomod'] * (
+            all_mod_names = self.mod_names + [_CosaveStr(b'nomod')] * (
                     256 - len(self.mod_names))
             for mod_name in all_mod_names:
                 _pack_cosave_space_str(out, mod_name)
@@ -1466,7 +1466,7 @@ class xSECosave(ACosave):
             log(_(u'  Type   Version  Size (in bytes)'))
             log(u'-' * 40)
             for chunk in plugin_chunk.chunks: # type: _xSEChunk
-                log(u'  %4s  %-4u        %u' % (chunk._chunk_sig,
+                log(u'  %4s  %-4u        %u' % (_CosaveStr(chunk._chunk_sig),
                                                 chunk.chunk_version,
                                                 chunk.chunk_length()))
                 if isinstance(chunk, _Dumpable):
@@ -1484,7 +1484,7 @@ class xSECosave(ACosave):
         :return: A human-readable version of the plugin chunk's signature."""
         raw_sig = plugin_chunk.plugin_signature
         if raw_sig == self._xse_signature:
-            readable_sig = self.cosave_header.savefile_tag
+            readable_sig = u'%s' % self.cosave_header.savefile_tag
         elif raw_sig == self._pluggy_signature:
             readable_sig = u'Pluggy'
         else:
@@ -1653,7 +1653,7 @@ def get_cosave_types(game_fsName, save_regex, cosave_tag, cosave_ext):
     # Check if the game even has a script extender
     if not cosave_tag: return []
     # Assign things that concern all games with script extenders
-    _xSEHeader.savefile_tag = cosave_tag
+    _xSEHeader.savefile_tag = _CosaveStr(cosave_tag)
     xSECosave.cosave_ext = cosave_ext
     ACosave.re_save = save_regex
     cosave_types = [xSECosave]
