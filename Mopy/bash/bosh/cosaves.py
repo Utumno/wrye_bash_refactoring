@@ -33,35 +33,32 @@ import re
 import string
 from itertools import imap
 from . import bak_file_pattern
-from ..bolt import sio, decoder, encode, struct_unpack, unpack_string, \
+from ..bolt import sio, struct_unpack, unpack_string, \
     unpack_int, unpack_short, unpack_4s, unpack_byte, unpack_str16, \
     unpack_float, unpack_double, unpack_int_signed, unpack_str32, AFile, \
     unpack_spaced_string, pack_int, pack_short, pack_double, pack_byte, \
-    pack_int_signed, pack_float, pack_4s, struct_error
+    pack_int_signed, pack_float, pack_4s, struct_error, PluginStr
 from ..exception import AbstractError, BoltError, CosaveError, \
     InvalidCosaveError, UnsupportedCosaveError
 
-#------------------------------------------------------------------------------
-# Utilities
+# Cosave strings encoding/decoding --------------------------------------------
 _cosave_encoding = u'cp1252' # TODO Do Pluggy files use this encoding as well?
-# decoder() / encode() with _cosave_encoding as encoding
-def _cosave_decode(byte_str): return decoder(byte_str,
-                                             encoding=_cosave_encoding)
-def _cosave_encode(uni_str): return encode(uni_str,
-                                           firstEncoding=_cosave_encoding)
+class _CosaveStr(PluginStr):
+    _preferred_encoding = _cosave_encoding
+    _avoid_encodings = set()
 # Convenient methods for reading and writing that use the methods from above
-def _unpack_cosave_str16(ins): return _cosave_decode(unpack_str16(ins))
-def _pack_cosave_str16(out, uni_str):
-    pack_short(out, len(uni_str))
-    out.write(_cosave_encode(uni_str))
-def _unpack_cosave_str32(ins): return _cosave_decode(unpack_str32(ins))
-def _pack_cosave_str32(out, uni_str):
-    pack_int(out, len(uni_str))
-    out.write(_cosave_encode(uni_str))
+def _unpack_cosave_str16(ins): return _CosaveStr(unpack_str16(ins))
+def _pack_cosave_str16(out, co_str):
+    pack_short(out, len(co_str))
+    out.write(co_str)
+def _unpack_cosave_str32(ins): return _CosaveStr(unpack_str32(ins))
+def _pack_cosave_str32(out, co_str):
+    pack_int(out, len(co_str))
+    out.write(co_str)
 def _unpack_cosave_space_str(ins):
-    return _cosave_decode(unpack_spaced_string(ins))
-def _pack_cosave_space_str(out, uni_str):
-    out.write(_cosave_encode(uni_str).replace(b' ', b'\x07') + b' ')
+    return _CosaveStr(unpack_spaced_string(ins))
+def _pack_cosave_space_str(out, co_str):
+    out.write(co_str.replace(b' ', b'\x07') + b' ')
 
 class _Remappable(object):
     """Mixin for objects inside cosaves that have to be updated when the names
@@ -125,7 +122,7 @@ class _AHeader(_Dumpable):
 
         :param ins: The input stream to read from.
         :param cosave_path: The path to the cosave."""
-        actual_tag = _cosave_decode(unpack_string(ins, len(self.savefile_tag)))
+        actual_tag = unpack_string(ins, len(self.savefile_tag))
         if actual_tag != self.savefile_tag:
             raise InvalidCosaveError(cosave_path.tail,
                 u'Header tag wrong: got %s, but expected %s' %
@@ -136,7 +133,7 @@ class _AHeader(_Dumpable):
         just writes the save file tag.
 
         :param out: The output stream to write to."""
-        out.write(_cosave_encode(self.savefile_tag))
+        out.write(self.savefile_tag)
 
     def dump_to_log(self, log, save_masters):
         log.setHeader(_(u'%s Header') % self.savefile_tag)
@@ -221,10 +218,10 @@ class _xSEChunk(_AChunk):
     # Whether or not we've fully decoded this chunk. If that is the case, the
     # fallback functionality is disabled.
     fully_decoded = False
-    __slots__ = (u'chunk_type', u'chunk_version', u'data_len', u'chunk_data')
+    __slots__ = (u'_chunk_sig', u'chunk_version', u'data_len', u'chunk_data')
 
     def __init__(self, ins, chunk_type):
-        self.chunk_type = chunk_type
+        self._chunk_sig = chunk_type # inverted chunk sig, see _get_xse_chunk
         self.chunk_version = unpack_int(ins)
         self.data_len = unpack_int(ins)
         # If we haven't fully decoded this chunk, treat it as a binary blob
@@ -233,7 +230,7 @@ class _xSEChunk(_AChunk):
 
     def write_chunk(self, out):
         # Don't forget to reverse signature when writing again
-        pack_4s(out, _cosave_encode(self.chunk_type[::-1]))
+        pack_4s(out, self._chunk_sig[::-1])
         pack_int(out, self.chunk_version)
         pack_int(out, self.chunk_length())
         # If we haven't fully decoded this chunk, treat it as a binary blob
@@ -260,7 +257,7 @@ class _xSEModListChunk(_xSEChunk, _Dumpable, _Remappable):
 
     def __init__(self, ins, chunk_type):
         super(_xSEModListChunk, self).__init__(ins, chunk_type)
-        self.mod_names = []
+        self.mod_names = [] # type: list[_CosaveStr]
 
     def read_mod_names(self, ins, mod_count):
         """Reads a list of mod names with length mod_count from the specified
@@ -703,15 +700,15 @@ class _xSEChunkSTVR(_xSEChunk, _Dumpable):
         log(_(u'   ID  : %u') % self.string_id)
         log(_(u'   Data: %s') % self.string_data)
 
-# Maps all decoded xSE chunk types to the classes that implement them
+# Maps all inverted xSE chunk signatures to the classes that implement them
 _xse_class_dict = {
-    u'ARVR': _xSEChunkARVR,
-    u'DATA': _xSEChunkDATA,
-    u'LIMD': _xSEChunkLIMD,
-    u'LMOD': _xSEChunkLMOD,
-    u'MODS': _xSEChunkMODS,
-    u'PLGN': _xSEChunkPLGN,
-    u'STVR': _xSEChunkSTVR,
+    b'ARVR': _xSEChunkARVR,
+    b'DATA': _xSEChunkDATA,
+    b'LIMD': _xSEChunkLIMD,
+    b'LMOD': _xSEChunkLMOD,
+    b'MODS': _xSEChunkMODS,
+    b'PLGN': _xSEChunkPLGN,
+    b'STVR': _xSEChunkSTVR,
 }
 
 def _get_xse_chunk(ins):
@@ -724,7 +721,7 @@ def _get_xse_chunk(ins):
     :return: A instance of a matching chunk class, or the generic one if no
         matching class was found."""
     # The chunk type strings are reversed in the cosaves
-    ch_type = _cosave_decode(unpack_4s(ins))[::-1]
+    ch_type = unpack_4s(ins)[::-1]
     ch_class = _xse_class_dict.get(ch_type, _xSEChunk)
     return ch_class(ins, ch_type)
 
@@ -1439,10 +1436,10 @@ class xSECosave(ACosave):
         # The first chunk is either a PLGN chunk (on SKSE64) or a MODS one
         xse_chunks = self._get_xse_plugin().chunks
         first_chunk = xse_chunks[0]
-        if first_chunk.chunk_type == u'PLGN':
+        if first_chunk._chunk_sig == b'PLGN':
             return [mod_entry.mod_name for mod_entry in
                     first_chunk.mod_entries]
-        elif first_chunk.chunk_type == u'MODS':
+        elif first_chunk._chunk_sig == b'MODS':
             return first_chunk.mod_names
         raise InvalidCosaveError(self.abs_path.tail,
             u'First chunk was not PLGN or MODS chunk.')
@@ -1457,7 +1454,7 @@ class xSECosave(ACosave):
             # is PLGN can we accurately return a master list.
             self.read_cosave(light=True)
             first_ch = self._get_xse_plugin().chunks[0] # type: _xSEChunk
-            return first_ch.chunk_type == u'PLGN'
+            return first_ch._chunk_sig == b'PLGN'
 
     def dump_to_log(self, log, save_masters):
         super(xSECosave, self).dump_to_log(log, save_masters)
@@ -1469,7 +1466,7 @@ class xSECosave(ACosave):
             log(_(u'  Type   Version  Size (in bytes)'))
             log(u'-' * 40)
             for chunk in plugin_chunk.chunks: # type: _xSEChunk
-                log(u'  %4s  %-4u        %u' % (chunk.chunk_type,
+                log(u'  %4s  %-4u        %u' % (chunk._chunk_sig,
                                                 chunk.chunk_version,
                                                 chunk.chunk_length()))
                 if isinstance(chunk, _Dumpable):

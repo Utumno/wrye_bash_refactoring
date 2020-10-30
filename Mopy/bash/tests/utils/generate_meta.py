@@ -37,7 +37,7 @@ import sys
 from .. import resource_to_displayName, set_game
 from ... import bush
 from ...bosh.cosaves import get_cosave_types, xSECosave, _xSEHeader, \
-    _xSEPluginChunk, _xSEChunk
+    _xSEPluginChunk, _xSEChunk, _cosave_encoding
 
 def generate_meta_bsa(target_file):
     print(u"Skipping '%s': bsa .meta generation not implemented yet" %
@@ -60,7 +60,7 @@ def generate_meta_cosave_xse(target_file):
         # xSE cosave header ---------------------------------------------------
         cosv_header = test_cosave.cosave_header # type: _xSEHeader
         out.write(u'[cosave_header]\n')
-        out.write(u'savefile_tag = "%s"\n' % cosv_header.savefile_tag)
+        out.write(u'savefile_tag = "%s"\n' % cosv_header.savefile_tag.encode(_cosave_encoding))
         out.write(u'format_version = %u\n' % cosv_header.format_version)
         out.write(u'se_version = %u\n' % cosv_header.se_version)
         out.write(u'se_minor_version = %u\n' % cosv_header.se_minor_version)

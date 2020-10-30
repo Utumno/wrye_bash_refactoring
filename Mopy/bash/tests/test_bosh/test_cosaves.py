@@ -25,9 +25,10 @@ import StringIO
 from .. import get_meta_value, iter_games, iter_resources, \
     resource_to_displayName, set_game
 from ... import bush
-from ...bolt import GPath, LogFile, floats_equal
+from ...bolt import LogFile, floats_equal
 from ...bosh.cosaves import get_cosave_types, xSECosave, _xSEHeader, \
     _xSEChunk, _xSEModListChunk, _xSEChunkPLGN, _Remappable, PluggyCosave
+from ...bosh.save_headers import _SaveMasterStr
 from ...exception import AbstractError
 
 # Helper functions ------------------------------------------------------------
@@ -110,12 +111,13 @@ class ATestACosave(object):
             test_log = LogFile(StringIO.StringIO())
             # This wouldn't work on SSE/FO4, but save_masters is only used for
             # ARVR and STVR, which don't exist in SKSE/F4SE
-            sv_masters = [GPath(m) for m in curr_cosave.get_master_list()]
+            sv_masters = curr_cosave.get_master_list()
             curr_cosave.dump_to_log(test_log, sv_masters)
             assert isinstance(test_log.out.getvalue(), unicode)
             # Remapping should make the new filename appear in the log
             curr_cosave.remap_plugins({
-                curr_cosave.get_master_list()[0]: _impossible_master})
+                curr_cosave.get_master_list()[0]: _SaveMasterStr(
+                    _impossible_master)})
             curr_cosave.dump_to_log(test_log, sv_masters)
             assert _impossible_master in test_log.out.getvalue()
         self._do_map_cosaves(_check_dump_to_log)
@@ -154,7 +156,7 @@ class TestxSECosave(ATestACosave):
             # must *always* be present, otherwise the cosave is invalid
             assert len(curr_cosave.cosave_chunks) == 1
             assert len(curr_cosave.cosave_chunks[0].chunks) == 1
-            assert (curr_cosave.cosave_chunks[0].chunks[0].chunk_type
+            assert (curr_cosave.cosave_chunks[0].chunks[0]._chunk_sig
                     in _valid_first_chunk_sigs)
         self._do_map_cosaves(_check_reading_light)
 
@@ -246,7 +248,7 @@ class ATest_xSEChunk(object):
 
     def _wants_chunk(self, curr_chunk):  # type: (_xSEChunk) -> bool
         """Whether or not _map_chunks should map over this chunk."""
-        return curr_chunk.chunk_type == self._target_chunk_sig
+        return curr_chunk._chunk_sig == self._target_chunk_sig
 
     # Actual test cases -------------------------------------------------------
     def test_chunk_length(self):
