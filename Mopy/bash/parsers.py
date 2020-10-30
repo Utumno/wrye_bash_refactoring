@@ -155,7 +155,7 @@ class _AParser(_HandleAliases):
                         self._read_record_fp(record)
             self._fp_mods.add(mod_to_read.fileInfo.name)
         # Process the mod's masters first, but see if we need to sort them
-        master_names = loaded_mod.tes4.masters
+        master_names = loaded_mod.tes4.masters_paths
         if self._needs_fp_master_sort:
             master_names = load_order.get_ordered(master_names)
         for mod_name in master_names:
@@ -819,7 +819,8 @@ class FidReplacer(_HandleAliases):
         modFile = ModFile(modInfo,loadFactory)
         modFile.load(True)
         # Create filtered versions of our mappings
-        masters_list = set(modFile.tes4.masters + [modFile.fileInfo.name])
+        masters_list = set(modFile.tes4.masters_paths) | {
+            modFile.fileInfo.name}
         filt_fids = {oldId for oldId in self.old_eid if
                      oldId[0] in masters_list}
         filt_fids.update(newId for newId in self.new_eid

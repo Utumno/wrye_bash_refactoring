@@ -135,7 +135,7 @@ class _AMerger(ImportPatcher):
             can_remove = self._remove_tag in applied_tags
             id_entries = {}
             en_key = self._entry_key
-            for master in modFile.tes4.masters:
+            for master in modFile.tes4.masters_paths:
                 if master in mod_id_entries:
                     id_entries.update(mod_id_entries[master])
             for fid,entries in mod_id_entries[modName].iteritems():

@@ -181,7 +181,7 @@ class ModFile(object):
         self.fileInfo = fileInfo
         self.loadFactory = loadFactory or LoadFactory(True)
         #--Variables to load
-        self.tes4 = bush.game.plugin_header_class(RecHeader())
+        self.tes4 = bush.game.plugin_header_class(RecHeader()) # type: brec.MreHeaderBase
         self.tes4.setChanged()
         self.strings = bolt.StringTable()
         self.tops = _RecGroupDict(self) #--Top groups.
@@ -313,7 +313,7 @@ class ModFile(object):
 
     def getLongMapper(self):
         """Returns a mapping function to map short fids to long fids."""
-        masters_list = self.tes4.masters+[self.fileInfo.name]
+        masters_list = self.tes4.masters_paths + [self.fileInfo.name]
         maxMaster = len(masters_list)-1
         def mapper(fid):
             if fid is None: return None
@@ -324,7 +324,7 @@ class ModFile(object):
 
     def getShortMapper(self):
         """Returns a mapping function to map long fids to short fids."""
-        masters_list = self.tes4.masters + [self.fileInfo.name]
+        masters_list = self.tes4.masters_paths + [self.fileInfo.name]
         indices = {mname: index for index, mname in enumerate(masters_list)}
         has_expanded_range = bush.game.Esp.expanded_plugin_range
         if (has_expanded_range and len(masters_list) > 1

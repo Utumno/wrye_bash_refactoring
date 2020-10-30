@@ -2663,7 +2663,7 @@ class ModInfos(FileInfos):
         a lowered number bashed patch exists, will create the next in the
         sequence."""
         for num in xrange(10):
-            modName = GPath(u'Bashed Patch, %d.esp' % num)
+            modName = u'Bashed Patch, %d.esp' % num
             if modName not in self:
                 self.create_new_mod(modName, selected=selected_mods,
                                     wanted_masters=[], bashed_patch=True)

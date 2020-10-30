@@ -149,6 +149,10 @@ class MreHeaderBase(MelRecord):
     @property
     def num_masters(self): return len(self.plugin_masters)
 
+    @property
+    def masters_paths(self): # TODO: drop!
+        return [GPath(u'%s' % x) for x in self.masters]
+
     __slots__ = []
 
 #------------------------------------------------------------------------------

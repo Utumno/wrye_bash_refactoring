@@ -270,7 +270,7 @@ class CreateNewPlugin(DialogWindow):
         self._master_search.on_text_changed.subscribe(self._handle_search)
         self._masters_box = CheckListBox(self)
         # Initially populate the masters list, checking only the game master
-        m_keys = [m.s for m in load_order.cached_lo_tuple()]
+        m_keys = [m for m in load_order.cached_lo_tuple()]
         m_values = [m == bush.game.master_file for m in m_keys]
         self._masters_box.set_all_items(m_keys, m_values)
         self._masters_dict = OrderedDict(izip(m_keys, m_values))

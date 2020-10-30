@@ -157,7 +157,7 @@ class _AListsMerger(ListPatcher):
                     if is_delev:
                         id_master_items = self.masterItems.get(list_fid)
                         if id_master_items:
-                            for de_master in modFile.tes4.masters:
+                            for de_master in modFile.tes4.masters_paths:
                                 if de_master in id_master_items:
                                     delevs |= id_master_items[de_master]
                             # TODO(inf) Double-check that this works correctly,

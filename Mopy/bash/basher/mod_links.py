@@ -1433,7 +1433,7 @@ class Mod_DecompileAll(_NotObLink):
             scpt_grp = modFile.tops[b'SCPT']
             if scpt_grp.getNumRecords(False):
                 loadFactory = mod_files.LoadFactory(False, MreRecord.type_class[b'SCPT'])
-                for master in modFile.tes4.masters:
+                for master in modFile.tes4.masters_paths:
                     masterFile = mod_files.ModFile(bosh.modInfos[master], loadFactory)
                     masterFile.load(True)
                     for record in masterFile.tops[b'SCPT'].getActiveRecords():

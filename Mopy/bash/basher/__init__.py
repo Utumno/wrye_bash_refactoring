@@ -543,7 +543,7 @@ class MasterList(_ModsUIList):
     #--GetMasters
     def GetNewMasters(self):
         """Returns new master list."""
-        return [v.curr_name for k, v in
+        return [v.curr_name.s for k, v in # FIXME those should be unicode not paths
                 sorted(self.data_store.items(), key=itemgetter(0))]
 
 #------------------------------------------------------------------------------

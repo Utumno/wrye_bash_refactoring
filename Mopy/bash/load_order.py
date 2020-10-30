@@ -203,7 +203,7 @@ def cached_lo_tuple():
     """Return the currently cached load order (including inactive mods) as a
     tuple.
 
-    :rtype: tuple[bolt.Path]"""
+    :rtype: tuple[bolt.CIStr]"""
     return cached_lord.loadOrder
 
 def cached_is_active(mod):
