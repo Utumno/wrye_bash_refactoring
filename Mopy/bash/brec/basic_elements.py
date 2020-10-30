@@ -633,21 +633,6 @@ class MelString(_MelString):
         out.write(null1) # then write it out
 
 #------------------------------------------------------------------------------
-class MelUnicode(MelString):
-    """Like MelString, but instead of using bolt.pluginEncoding to read the
-       string, it tries the encoding specified in the constructor instead or
-       falls back to chardet. **Only** use for MreHeaderBase author and
-       description fields."""
-    _wrapper_bytes_type = ChardetStr
-
-    def __init__(self, mel_sig, attr, default=None, maxSize=0, encoding=None):
-        super(MelUnicode, self).__init__(mel_sig, attr, default, maxSize)
-        if encoding is not None: # None == automatic detection via ChardetStr
-            class _PluginStr(PluginStr): # FIXME cache
-                _preferred_encoding = encoding
-            self._wrapper_bytes_type = _PluginStr
-
-#------------------------------------------------------------------------------
 class MelLString(MelString):
     """Represents a mod record localized string."""
     def load_mel(self, record, ins, sub_type, size_, readId):
@@ -834,6 +819,10 @@ class _MelFlags(_MelNum):
 class MelUInt8Flags(MelUInt8, _MelFlags): pass
 class MelUInt16Flags(MelUInt16, _MelFlags): pass
 class MelUInt32Flags(MelUInt32, _MelFlags): pass
+
+class MelULong64(_MelNum):
+    """Unsigned 32-bit integer."""
+    _unpacker, _packer, static_size = get_structs(u'=Q')
 
 #------------------------------------------------------------------------------
 class MelXXXX(MelUInt32):
