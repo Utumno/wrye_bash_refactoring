@@ -214,17 +214,19 @@ def _encode_complex_string(string_val, max_size=None, min_size=None,
     :return: The encoded string."""
     preferred_encoding = preferred_encoding or pluginEncoding
     if max_size:
-        string_val = winNewLines(string_val.rstrip())
+        string_val = winNewLines(string_val.rstrip()) # FIXME drop or disable for bytes
         truncated_size = min(max_size, len(string_val))
-        test, tested_encoding = encode(string_val,
+        test, tested_encoding = encode(string_val, # if string_val is bytes then tested_encoding is None
                                        firstEncoding=preferred_encoding,
                                        returnEncoding=True)
         extra_encoded = len(test) - max_size
         if extra_encoded > 0:
             total = 0
             i = -1
+            if isinstance(string_val, PluginStr):
+                string_val = string_val._decoded
             while total < extra_encoded:
-                total += len(string_val[i].encode(tested_encoding))
+                total += len(string_val[i].encode(tested_encoding or preferred_encoding))
                 i -= 1
             truncated_size += i + 1
             string_val = string_val[:truncated_size]
@@ -309,6 +311,7 @@ class PluginStr(bytes):
     _preferred_encoding = None
     _avoid_encodings = {u'utf8', u'utf-8'}
     _ci_comparison = True
+    _min_size = 0 # FIXME rename
 
     @property
     def preferred_encoding(self):
@@ -341,8 +344,8 @@ class PluginStr(bytes):
         # TODO self._preferred_encoding? would force reencoding in most cases
         if self.preferred_encoding == target_encoding:
             if not minSize and maxSize is None:
-                return self
-            to_encode = self # hopefully will not try to encode it
+                return self.rstrip()
+            to_encode = self.rstrip() # will not try to encode it except if max_size
         else: to_encode = self._decoded
         return _encode_complex_string(to_encode, maxSize, minSize,
             target_encoding)
@@ -538,6 +541,9 @@ def GPath(str_or_uni, do_normpath=True):
 ##: generally points at file names, masters etc. using Paths, which they should
 # not - hunt down and just use strings
 GPath_no_norm = partial(GPath, do_normpath=True)
+GPath_no_norm.__doc__ = """Alternative to GPath that does not call normpath.
+It is up to the caller to ensure that the precondition
+name == os.path.normpath(name) holds for all values passed into this method."""
 
 def GPathPurge():
     """Cleans out the _gpaths dictionary of any unused bolt.Path objects.

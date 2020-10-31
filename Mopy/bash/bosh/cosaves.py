@@ -66,11 +66,12 @@ class _Remappable(object):
     __slots__ = ()
 
     def remap_plugins(self, plugin_renames):
+        # type: (dict[PluginStr, PluginStr]) -> object
         """Remaps the names of relevant plugin entries in this object.
 
         :param plugin_renames: A dictionary containing the renames: key is the
             name of the plugin before the renaming, value is the name
-            afterwards."""
+            afterwards. Values should be already encoded (may not be cp1252 !)"""
         raise AbstractError()
 
 class _Dumpable(object):
