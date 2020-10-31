@@ -25,7 +25,7 @@ from . import SaveInfo
 from ._saves import SreNPC, SaveFile
 from .. import bush, bolt
 from ..bolt import Flags, encode, sio, Path, struct_pack, struct_unpack, \
-    pack_int, pack_byte
+    pack_int, pack_byte, PluginStr
 from ..brec import getModIndex, MreRecord, genFid, RecHeader, null2
 from ..exception import SaveFileError, StateError
 from ..mod_files import LoadFactory, MasterMap, ModFile
@@ -408,7 +408,7 @@ class PCFaces(object):
         faces = {}
         for npc in modFile.tops[b'NPC_'].getActiveRecords():
             face = PCFaces.PCFace()
-            face.face_masters = modFile.tes4.masters + [modInfo.name]
+            face.face_masters = list(modInfo.masterNames + (modInfo.name,))
             for field in (u'eid', u'race', u'eye', u'hair', u'hairLength',
                           u'hairRed', u'hairBlue', u'hairGreen', u'unused3',
                           u'fggs_p', u'fgga_p', u'fgts_p', u'level', u'skills',
@@ -421,7 +421,6 @@ class PCFaces(object):
             face.gender = npc.flags.female
             face.pcName = npc.full
             faces[face.eid] = face
-            #print face.pcName, face.race, face.hair, face.eye, face.hairLength, face.hairRed, face.hairBlue, face.hairGreen, face.unused3
         return faces
 
     @staticmethod
@@ -440,12 +439,12 @@ class PCFaces(object):
         return faces
 
     @staticmethod
-    def mod_addFace(modInfo,face):
+    def mod_addFace(modInfo, face, game_master_name):
         """Writes a pcFace to a mod file."""
         #--Mod File
         loadFactory = LoadFactory(True,MreRecord.type_class[b'NPC_'])
         modFile = ModFile(modInfo,loadFactory)
-        if modInfo.getPath().exists():
+        if modInfo.getPath().exists(): ##: may not exist??
             modFile.load(True)
         #--Tes4
         tes4 = modFile.tes4
@@ -453,10 +452,10 @@ class PCFaces(object):
             tes4.author = b'[wb]'
         if not tes4.description:
             tes4.description = _(u'Face dump from save game.')
-        from . import modInfos ##: put it here so I know it's initialized...
-        if modInfos.masterName not in tes4.masters:
-            tes4.masters.append(modInfos.masterName)
-        masterMap = MasterMap(face.face_masters,tes4.masters+[modInfo.name])
+        if game_master_name not in tes4.masters_paths: ##: what is this about?
+            modFile.tes4.masters.insert(0, PluginStr(game_master_name.s.encode(u'cp1252')))
+        masterMap = MasterMap(face.face_masters,
+            tes4.masters_paths + [modInfo.name])
         #--Eid
         npcEids = {record.eid for record in modFile.tops[b'NPC_'].records}
         eidForm = u''.join((u'sg', bush.game.raceShortNames.get(face.race, u'Unk'),

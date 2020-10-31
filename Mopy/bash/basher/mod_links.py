@@ -1693,7 +1693,8 @@ class Mod_Face_Import(OneItemLink):
         srcInfo = bosh.SaveInfo(srcPath)
         srcFace = bosh.faces.PCFaces.save_getPlayerFace(srcInfo)
         #--Save Face
-        npc = bosh.faces.PCFaces.mod_addFace(self._selected_info, srcFace)
+        npc = bosh.faces.PCFaces.mod_addFace(self._selected_info, srcFace,
+            bosh.ModInfos.masterName)
         #--Save Face picture? # FIXME(ut) does not save face picture but save screen ?!
         imagePath = bosh.modInfos.store_dir.join(u'Docs', u'Images', npc.eid + u'.jpg')
         if not imagePath.exists():
