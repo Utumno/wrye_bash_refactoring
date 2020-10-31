@@ -1178,12 +1178,11 @@ class SaveInfo(FileInfo):
         with self.abs_path.open(u'rb') as ins:
             with self.abs_path.temp.open(u'wb') as out:
                 oldMasters = self.header.writeMasters(ins, out)
-        oldMasters = [GPath_no_norm(decoder(x)) for x in oldMasters]
         self.abs_path.untemp()
         # Cosaves - note that we have to use self.header.masters since in
         # FO4/SSE _get_masters() returns the correct interleaved order, but
         # oldMasters has the 'regular first, then ESLs' order
-        master_map = {x.s: y.s for x, y in zip(oldMasters, self.header.masters)
+        master_map = {x: y for x, y in zip(oldMasters, self.header.masters)
                       if x != y}
         if master_map:
             for co_file in self._co_saves.values():

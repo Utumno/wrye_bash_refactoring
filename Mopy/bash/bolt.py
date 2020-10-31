@@ -525,27 +525,19 @@ class sio(StringIO.StringIO):
 #------------------------------------------------------------------------------
 _gpaths = {}
 
-def GPath(str_or_uni):
+def GPath(str_or_uni, do_normpath=True):
     """Path factory and cache.
 
     :rtype: Path"""
     if isinstance(str_or_uni, Path) or str_or_uni is None: return str_or_uni
     if not str_or_uni: return Path(u'') # needed, os.path.normpath(u'') = u'.'!
     if str_or_uni in _gpaths: return _gpaths[str_or_uni]
-    return _gpaths.setdefault(str_or_uni, Path(os.path.normpath(str_or_uni)))
+    return _gpaths.setdefault(str_or_uni,
+        Path(os.path.normpath(str_or_uni) if do_normpath else str_or_uni))
 
 ##: generally points at file names, masters etc. using Paths, which they should
 # not - hunt down and just use strings
-def GPath_no_norm(str_or_uni):
-    """Alternative to GPath that does not call normpath. It is up to the caller
-    to ensure that the precondition name == os.path.normpath(name) holds for
-    all values pased into this method.
-
-    :rtype: Path"""
-    if isinstance(str_or_uni, Path) or str_or_uni is None: return str_or_uni
-    if not str_or_uni: return Path(u'') # needed, os.path.normpath(u'') = u'.'!
-    if str_or_uni in _gpaths: return _gpaths[str_or_uni]
-    return _gpaths.setdefault(str_or_uni, Path(str_or_uni))
+GPath_no_norm = partial(GPath, do_normpath=True)
 
 def GPathPurge():
     """Cleans out the _gpaths dictionary of any unused bolt.Path objects.
