@@ -98,7 +98,7 @@ class ModReadError(ModError):
         else:
             message = (u'%s: Attempted to read past (%s) end (%s) of '
                        u'file/buffer.' % (record_sig, try_pos, max_pos))
-        super(ModReadError, self).__init__(in_name.s, message)
+        super(ModReadError, self).__init__(in_name, message)
 
 class ModSizeError(ModError):
     """Mod Error: Record/subrecord has wrong size."""
@@ -112,14 +112,14 @@ class ModSizeError(ModError):
         message_form = (u'%s: Expected one of sizes [%s], but got %u' % (
             record_sig, u', '.join([u'%s' % x for x in expected_sizes]),
             actual_size))
-        super(ModSizeError, self).__init__(in_name.s, message_form)
+        super(ModSizeError, self).__init__(in_name, message_form)
 
 class ModFidMismatchError(ModError):
     """Mod Error: Two FormIDs that should be equal are not."""
     def __init__(self, in_name, record_sig, fid_expected, fid_actual):
-        message_form = (u'%s: FormIDs do not match - expected %r but got %r'
+        message_form = (u'%r: FormIDs do not match - expected %r but got %r'
                         % (record_sig, fid_expected, fid_actual))
-        super(ModFidMismatchError, self).__init__(in_name.s, message_form)
+        super(ModFidMismatchError, self).__init__(in_name, message_form)
 
 class ModSigMismatchError(ModError):
     """Mod Error: A record is getting overriden by a record with a different
@@ -129,7 +129,7 @@ class ModSigMismatchError(ModError):
                         u'record with the same FormID but a different type. '
                         u'This is undefined behavior and could lead to '
                         u'crashes.') % record
-        super(ModSigMismatchError, self).__init__(in_name.s, message_form)
+        super(ModSigMismatchError, self).__init__(in_name, message_form)
 
 # Shell (OS) File Operation exceptions ----------------------------------------
 class FileOperationError(OSError):

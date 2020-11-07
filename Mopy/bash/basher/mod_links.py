@@ -29,6 +29,7 @@ from __future__ import print_function
 import collections
 import copy
 import io
+import os
 import re
 import traceback
 from itertools import izip
@@ -42,7 +43,7 @@ from .patcher_dialog import PatchDialog, all_gui_patchers
 from .. import bass, bosh, bolt, balt, bush, mod_files, load_order
 from ..balt import ItemLink, Link, CheckLink, EnabledLink, AppendableLink, \
     TransLink, SeparatorLink, ChoiceLink, OneItemLink, ListBoxes, MenuLink
-from ..bolt import GPath, SubProgress
+from ..bolt import GPath, SubProgress, cext_, CIstr
 from ..bosh import faces
 from ..brec import MreRecord
 from ..exception import AbstractError, BoltError, CancelError
@@ -155,9 +156,10 @@ class Mod_CreateDummyMasters(OneItemLink):
             # Add the appropriate flags based on extension. This is obviously
             # just a guess - you can have a .esm file without an ESM flag in
             # Skyrim LE - but these are also just dummy masters.
-            if newInfo.name.cext in (u'.esm', u'.esl'):
+            ext_lower = cext_(newInfo.name)
+            if ext_lower in (u'.esm', u'.esl'):
                 newFile.tes4.flags1.esm = True
-            if newInfo.name.cext == u'.esl':
+            if ext_lower == u'.esl':
                 newFile.tes4.flags1.eslFile = True
             newFile.safeSave()
         to_select = []
@@ -589,7 +591,7 @@ class Mod_Details(OneItemLink):
     _help = _(u'Show Mod Details')
 
     def Execute(self):
-        with balt.Progress(self._selected_item.s) as progress:
+        with balt.Progress(self._selected_item) as progress:
             mod_details = bosh.mods_metadata.ModDetails()
             mod_details.readFromMod(self._selected_info,
                                     SubProgress(progress, 0.1, 0.7))
@@ -715,7 +717,7 @@ class Mod_CopyModInfo(ItemLink):
             else: info_txt += u'\n\n'
             #-- Name of file, plus a link if we can figure it out
             inst = fileInfo.get_table_prop(u'installer', u'')
-            if not inst: info_txt += fileName.s
+            if not inst: info_txt += fileName
             else: info_txt += _(u'URL: %s') % _getUrl(inst)
             labels = self.window.labels
             for col in self.window.cols:
@@ -909,7 +911,7 @@ class Mod_MarkMergeable(ItemLink):
             return_results=True)
         yes = [x for x in self.selected if
                x not in tagged_no_merge and x in bosh.modInfos.mergeable]
-        no = set(self.selected) - set(yes)
+        no = set(self.selected) - set(yes) ##: TODO(ut) LowerSet
         no = [u'%s:%s' % (x, y) for x, y in result.iteritems() if x in no]
         if bush.game.check_esl:
             message = u'== %s\n\n' % _(
@@ -919,7 +921,7 @@ class Mod_MarkMergeable(ItemLink):
         if yes:
             message += u'=== ' + (
                 _(u'ESL Capable') if bush.game.check_esl else _(
-                    u'Mergeable')) + u'\n* ' + u'\n\n* '.join(x.s for x in yes)
+                    u'Mergeable')) + u'\n* ' + u'\n\n* '.join(yes)
         if yes and no:
             message += u'\n\n'
         if no:
@@ -1141,7 +1143,7 @@ class Mod_ExportPatchConfig(_Mod_BP_Link):
     def Execute(self):
         #--Config
         config = self._selected_info.get_table_prop(u'bash.patch.configs', {})
-        exportConfig(patch_name=self._selected_item.s, config=config,
+        exportConfig(patch_name=self._selected_item, config=config,
             win=self.window, outDir=bass.dirs[u'patches'])
 
 # Cleaning submenu ------------------------------------------------------------
@@ -1233,9 +1235,9 @@ class Mod_ScanDirty(ItemLink):
         error = []
         for i,modInfo in enumerate(modInfos):
             udrs,itms,fog = ret[i]
-            if modInfo.name == GPath(u'Unofficial Oblivion Patch.esp'):
+            if modInfo.name.lower() == u'Unofficial Oblivion Patch.esp'.lower():
                 # Record for non-SI users, shows up as ITM if SI is installed (OK)
-                itms.discard((GPath(u'Oblivion.esm'),0x00AA3C))
+                itms.discard((CIstr(u'Oblivion.esm'), 0x00AA3C))
             if modInfo.isBP(): itms = set()
             if udrs or itms:
                 pos = len(dirty)
@@ -1416,8 +1418,7 @@ class Mod_DecompileAll(_NotObLink):
         message = _(u"This command will remove the effects of a 'compile all' by removing all scripts whose texts appear to be identical to the version that they override.")
         if not self._askContinue(message, u'bash.decompileAll.continue',
                                  _(u'Decompile All')): return
-        for fileName, fileInfo in self.iselected_pairs():
-            file_name_s = fileName.s
+        for fileInfo in self.iselected_infos():
             if fileInfo.match_oblivion_re():
                 self._showWarning(_(u'Skipping %s') % fileInfo,
                                   _(u'Decompile All'))
@@ -1454,15 +1455,15 @@ class Mod_DecompileAll(_NotObLink):
                 scpt_grp.setChanged()
             if len(removed) >= 50 or badGenericLore:
                 modFile.safeSave()
-                self._showOk((_(u'Scripts removed: %d.') + u'\n' +
-                              _(u'Scripts remaining: %d')) %
-                             (len(removed), len(scpt_grp.records)), file_name_s)
+                m =(_(u'Scripts removed: %d.') + u'\n' +
+                    _(u'Scripts remaining: %d')) % (
+                    len(removed), len(scpt_grp.records))
             elif removed:
-                self._showOk(_(u'Only %d scripts were identical.  This is '
-                               u'probably intentional, so no changes have '
-                               u'been made.') % len(removed), file_name_s)
+                m = _(u'Only %d scripts were identical.  This is probably '
+                u'intentional, so no changes have been made.') % len(removed)
             else:
-                self._showOk(_(u'No changes required.'), file_name_s)
+                m = _(u'No changes required.')
+            self._showOk(m, fileInfo.ci_name)
 
 #------------------------------------------------------------------------------
 class _Esm_Esl_Flip(EnabledLink):
@@ -1579,7 +1580,7 @@ class Mod_FlipMasters(OneItemLink, _Esm_Esl_Flip):
         enable = len(selection) == 1 and len(modinfo_masters) > 1
         self.espMasters = [master for master in modinfo_masters
                            if master in present_mods and
-                           __reEspExt.search(master.s)] if enable else []
+                           __reEspExt.search(master)] if enable else []
         self.enable = bool(self.espMasters)
         for mastername in self.espMasters:
             masterInfo = bosh.modInfos.get(mastername, None)
@@ -1723,7 +1724,7 @@ class _Import_Export_Link(AppendableLink):
 
 class _Mod_Export_Link(_Import_Export_Link, ItemLink):
     def Execute(self):
-        textName = self.selected[0].root + self.__class__.csvFile
+        textName = os.path.splitext(self.selected[0])[0] + self.__class__.csvFile
         textDir = bass.dirs[u'patches']
         textDir.makedirs()
         #--File dialog

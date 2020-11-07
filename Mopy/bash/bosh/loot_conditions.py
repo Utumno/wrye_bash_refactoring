@@ -134,7 +134,7 @@ def _fn_active(path_or_regex):
         # Regex means we have to look at each active plugin - plugins can
         # obviously only be in Data, no need to process the path here
         file_regex = re.compile(path_or_regex)
-        return any(file_regex.match(x.s) for x in cached_active_tuple())
+        return any(file_regex.match(x) for x in cached_active_tuple())
     else:
         return cached_is_active(GPath(path_or_regex))
 

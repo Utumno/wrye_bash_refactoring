@@ -335,11 +335,11 @@ class Save_DiffMasters(EnabledLink):
             message = u''
             if missing:
                 message += u'=== '+_(u'Removed Masters')+u' (%s):\n* ' % oldName
-                message += u'\n* '.join(x.s for x in load_order.get_ordered(missing))
+                message += u'\n* '.join(load_order.get_ordered(missing))
                 if added: message += u'\n\n'
             if added:
                 message += u'=== '+_(u'Added Masters')+u' (%s):\n* ' % newName
-                message += u'\n* '.join(x.s for x in load_order.get_ordered(added))
+                message += u'\n* '.join(load_order.get_ordered(added))
             self._showWryeLog(message, title=_(u'Diff Masters'))
 
 #------------------------------------------------------------------------------
@@ -358,7 +358,7 @@ class Save_Renumber(EnabledLink):
     def _enable(self):
         self._matches = []
         for save_path in self.selected:
-            save_match = self._re_numbered_save.match(save_path.s)
+            save_match = self._re_numbered_save.match(save_path)
             if save_match: self._matches.append((save_path, save_match))
         return bool(self._matches)
 
@@ -374,7 +374,7 @@ class Save_Renumber(EnabledLink):
             s_groups = maPattern.groups()
             if not s_groups[1]: continue
             newFileName = u'%s%d%s' % (s_groups[0], newNumber, s_groups[2])
-            if newFileName != old_file_path.s:
+            if newFileName != old_file_path: # CIstr TODO!
                 new_file_path = GPath(newFileName)
                 try:
                     bosh.saveInfos.rename_info(old_file_path, new_file_path)

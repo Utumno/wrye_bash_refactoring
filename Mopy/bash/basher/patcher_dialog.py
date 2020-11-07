@@ -159,7 +159,7 @@ class PatchDialog(DialogWindow):
         try:
             patch_name = self.patchInfo.name
             patch_size = self.patchInfo.size
-            progress = balt.Progress(patch_name.s,(u' '*60+u'\n'), abort=True)
+            progress = balt.Progress(patch_name,(u' '*60+u'\n'), abort=True)
             timer1 = time.clock()
             #--Save configs
             config = self.__config()
@@ -229,7 +229,7 @@ class PatchDialog(DialogWindow):
             count, message = 0, _(u'Activate %s?') % patch_name
             if load_order.cached_is_active(patch_name) or (
                         bass.inisettings[u'PromptActivateBashedPatch'] and
-                        balt.askYes(self.parent, message, patch_name.s)):
+                        balt.askYes(self.parent, message, patch_name)):
                 try:
                     changedFiles = bosh.modInfos.lo_activate(patch_name,
                                                              doSave=True)
@@ -321,7 +321,7 @@ class PatchDialog(DialogWindow):
         if not textPath: return
         table = bolt.DataTable(bolt.PickleDict(textPath))
         # try the current Bashed Patch mode.
-        patchConfigs = table.getItem(GPath(self.__new_key % u'Python'),
+        patchConfigs = table.getItem(self.__new_key % u'Python',
             u'bash.patch.configs', {})
         convert = False
         if not patchConfigs: # try the non-current Bashed Patch mode

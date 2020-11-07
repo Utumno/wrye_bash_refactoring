@@ -77,7 +77,7 @@ class LOOTParser(object):
             must always exist.
         :type taglist_path: Path
         """
-        self._cached_masterlist = {}
+        self._cached_masterlist = {} # type: LowerDict
         self._cached_regexes = {}
         self._cached_merges = {}
         self._masterlist  = AFile(masterlist_path)
@@ -138,10 +138,9 @@ class LOOTParser(object):
                 deprint(u'Error while evaluating LOOT condition',
                     traceback=True)
                 return set(), set()
-        plugin_s = plugin_name.s
-        if plugin_s in self._cached_merges:
-            return get_resolved_tags(self._cached_merges[plugin_s])
-        return get_resolved_tags(self._perform_merge(plugin_s))
+        if plugin_name in self._cached_merges:
+            return get_resolved_tags(self._cached_merges[plugin_name])
+        return get_resolved_tags(self._perform_merge(plugin_name))
 
     def load_lists(self, masterlist_path, userlist_path=None,
                    catch_errors=True):
@@ -177,15 +176,14 @@ class LOOTParser(object):
 
         :param plugin_name: The name of the plugin whose dirty info should be
             checked.
-        :type plugin_name: Path
+        :type plugin_name: CIstr
         :param mod_infos: bosh.modInfos. Must be up to date."""
         def check_dirty(res_entry):
             return (res_entry and mod_infos[plugin_name].cached_mod_crc()
                     in res_entry.dirty_crcs)
-        plugin_s = plugin_name.s
-        if plugin_s in self._cached_merges:
-            return check_dirty(self._cached_merges[plugin_s])
-        return check_dirty(self._perform_merge(plugin_s))
+        if plugin_name in self._cached_merges:
+            return check_dirty(self._cached_merges[plugin_name])
+        return check_dirty(self._perform_merge(plugin_name))
 
     def _perform_merge(self, plugin_s):
         """Checks the masterlist and all regexes for a match with the spcified

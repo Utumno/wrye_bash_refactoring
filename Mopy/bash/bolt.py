@@ -379,6 +379,36 @@ class OrderedLowerDict(LowerDict, collections.OrderedDict):
     """LowerDict that inherits from OrdererdDict."""
     __slots__ = () # no __dict__ - that would be redundant
 
+class LowerSet(collections.MutableSet):
+    """Set that transforms its elements to CIstr instances.
+    See: https://stackoverflow.com/a/6698723/281545
+    https://code.activestate.com/recipes/576694/
+    """
+
+    def __init__(self, iterable=None):
+        self.__set = set() if iterable is None else {_ci_str(x) for x in
+                                                     iterable}
+
+    def __len__(self):
+        return len(self.__set)
+
+    def __contains__(self, key):
+        return _ci_str(key) in self.__set
+
+    def __iter__(self):
+        return iter(self.__set)
+
+    def add(self, key):
+        self.__set.add(_ci_str(key))
+
+    def discard(self, key):
+        self.__set.discard(_ci_str(key))
+
+    def __repr__(self):
+        if not self:
+            return u'%s()' % (self.__class__.__name__,)
+        return u'%s(%r)' % (self.__class__.__name__, list(self))
+
 #------------------------------------------------------------------------------
 # cache attrgetter objects
 class _AttrGettersCache(dict):
@@ -1161,7 +1191,10 @@ class Flags(object):
 #------------------------------------------------------------------------------
 class DataDict(object):
     """Mixin class that handles dictionary emulation, assuming that
-    dictionary is its 'data' attribute."""
+    dictionary is its '_data' attribute."""
+
+    def __init__(self, data_dict):
+        self._data= data_dict # not final - see for instance InstallersData
 
     def __contains__(self,key):
         return key in self._data
@@ -1360,6 +1393,7 @@ class PickleDict(object):
                 cor.moveTo(cor_name)
                 cor = None
             try:
+                print (u'Loading %s' % path)
                 with path.open(u'rb') as ins:
                     try:
                         firstPickle = pickle.load(ins)
@@ -1420,10 +1454,10 @@ class Settings(DataDict):
             res = dictFile.load()
             self.cleanSave = res == 0 # no data read - do not attempt to read on save
             self.vdata = dictFile.vdata.copy()
-            self._data = dictFile.pickled_data.copy()
+            super(Settings, self).__init__(dictFile.pickled_data.copy())
         else:
             self.vdata = {}
-            self._data = {}
+            super(Settings, self).__init__({})
         self.defaults = {}
         self.changed = set()
         self.deleted = set()
@@ -1580,9 +1614,8 @@ class DataTableColumn(object):
                 column in col_dict)
     def items(self):
         """Dictionary emulation."""
-        tableData = self._table._data
         column = self.column
-        return [(key,tableData[key][column]) for key in self]
+        return [(key, self._table._data[key][column]) for key in self]
     def clear(self):
         """Dictionary emulation."""
         self._table.delColumn(self.column)
@@ -1616,18 +1649,48 @@ class DataTable(DataDict):
     Rows are the first index ('fileName') and columns are the second index
     ('propName')."""
 
+    def __drop_paths(self #, nested_dict=None
+                     ):
+        # if nested_dict is None:
+        #     nested_dict = self.dictFile.pickled_data
+        print(u'pruning paths from %s' % dict(
+            (x, self.dictFile.pickled_data[x]) for x in self.dictFile.pickled_data.keys()[:10]))
+        copy_data = list(self.dictFile.pickled_data.iteritems())
+        self.dictFile.pickled_data.clear()
+        lo_dict = LowerDict()
+        for k, v in copy_data:
+            # if isinstance(v, dict):
+            #     v = self.__drop_paths(v)
+            if isinstance(k, Path):
+                k = k.s
+            lo_dict[k] = v
+        return lo_dict
+
+    def __backwards_comp(self, nested_dict=None):
+        if nested_dict is None:
+            nested_dict = self._data
+        print(u'restoring paths in %s' % nested_dict)
+        builtin_dict = dict()
+        for k, v in nested_dict.iteritems():
+            k = GPath(k)
+            # if isinstance(v, dict):
+            #     v = self.__backwards_comp(v)
+            builtin_dict[k] = v
+        return builtin_dict
+
     def __init__(self,dictFile):
         """Initialize and read data from dictFile, if available."""
-        self.dictFile = dictFile
+        self.dictFile = dictFile # type: PickleDict
         dictFile.load()
         self.vdata = dictFile.vdata
-        self._data = dictFile.pickled_data
+        super(DataTable, self).__init__(self.__drop_paths())
         self.hasChanged = False ##: move to PickleDict
 
     def save(self):
         """Saves to pickle file."""
         dictFile = self.dictFile
         if self.hasChanged and not dictFile.readOnly:
+            dictFile.pickled_data = self.__backwards_comp()
             self.hasChanged = not dictFile.save()
 
     def getItem(self,row,column,default=None):

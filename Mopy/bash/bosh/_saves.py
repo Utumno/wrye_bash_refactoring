@@ -471,9 +471,9 @@ class SaveFile(object):
         doUnknownTypes = False
         def getMaster(modIndex):
             if modIndex < len(self._masters):
-                return self._masters[modIndex].s
+                return self._masters[modIndex]
             elif modIndex == 0xFF:
-                return self.fileInfo.name.s
+                return self.fileInfo.name
             else:
                 return _(u'Missing Master ')+hex(modIndex)
         #--ABomb

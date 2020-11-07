@@ -28,7 +28,7 @@ from collections import defaultdict
 
 from ._mergeability import is_esl_capable
 from .. import balt, bolt, bush, bass, load_order
-from ..bolt import GPath, deprint, structs_cache
+from ..bolt import GPath, deprint, structs_cache, body_
 from ..brec import ModReader, MreRecord, RecordHeader, SubrecordBlob, null1
 from ..exception import CancelError, ModError
 
@@ -42,7 +42,7 @@ def get_tags_from_dir(plugin_name):
     :return: A tuple containing two sets of added and deleted tags."""
     # Check if the file even exists first
     tag_files_dir = bass.dirs[u'tag_files']
-    tag_file = tag_files_dir.join(plugin_name.body + u'.txt')
+    tag_file = tag_files_dir.join(body_(plugin_name) + u'.txt')
     if not tag_file.isfile(): return set(), set()
     removed, added = set(), set()
     # BashTags files must be in UTF-8 (or ASCII, obviously)
@@ -74,7 +74,7 @@ def save_tags_to_dir(plugin_name, plugin_tag_diff):
         by its description and the LOOT masterlist / userlist.."""
     tag_files_dir = bass.dirs[u'tag_files']
     tag_files_dir.makedirs()
-    tag_file = tag_files_dir.join(plugin_name.body + u'.txt')
+    tag_file = tag_files_dir.join(body_(plugin_name) + u'.txt')
     # Calculate the diff and ignore the minus when sorting the result
     tag_diff_add, tag_diff_del = plugin_tag_diff
     processed_diff = sorted(tag_diff_add | {u'-' + t for t in tag_diff_del},

@@ -28,7 +28,7 @@ from itertools import chain
 # Internal
 from .. import bass, bosh, bush, balt, load_order, bolt, exception
 from ..balt import Links, SeparatorLink, CheckLink
-from ..bolt import GPath, text_wrap
+from ..bolt import text_wrap, LowerDict, CIstr, GPath
 from ..gui import Button, CheckBox, HBoxedLayout, Label, LayoutOptions, \
     Spacer, TextArea, TOP, VLayout, EventResult, PanelWin, ListBox, \
     CheckListBox, DeselectAllButton, SelectAllButton
@@ -202,7 +202,7 @@ class _AliasesPatcherPanel(_PatcherPanel):
         for line in aliases_text.split(u'\n'):
             fields = [s.strip() for s in line.split(u'>>')]
             if len(fields) != 2 or not fields[0] or not fields[1]: continue
-            self._ci_aliases[GPath(fields[0])] = GPath(fields[1])
+            self._ci_aliases[fields[0]] = CIstr(fields[1])
         self.SetAliasText()
 
     #--Config Phase -----------------------------------------------------------
@@ -210,16 +210,17 @@ class _AliasesPatcherPanel(_PatcherPanel):
         """Get config from configs dictionary and/or set to default."""
         config = super(_AliasesPatcherPanel, self).getConfig(configs)
         #--Update old configs to use Paths instead of strings.
-        self._ci_aliases = dict(
-            [GPath(i) for i in item] for item in
-            (config.get(u'aliases', {}) or config.get(b'aliases', {})).iteritems())
+        self._ci_aliases = LowerDict((CIstr(u'%s' % k), CIstr(u'%s' % v)) for
+            k, v in (config.get(u'aliases', {}) or config.get(b'aliases',{})
+            ).iteritems())
         return config
 
     def saveConfig(self, configs):
         """Save config to configs dictionary."""
         #--Toss outdated configCheck data.
         config = super(_AliasesPatcherPanel, self).saveConfig(configs)
-        config[u'aliases'] = self._ci_aliases
+        config[u'aliases'] = {GPath(k): GPath(v) for k, v in # FIXME: backwards compat
+                              self._ci_aliases.iteritems()}
         return config
 
     def _log_config(self, conf, config, clip, log):
@@ -419,7 +420,7 @@ class _ListPatcherPanel(_PatcherPanel):
         #--Verify file existence
         newConfigItems = []
         for srcPath in self.configItems:
-            if (srcPath in bosh.modInfos or (reCsvExt.search(
+            if (srcPath.s in bosh.modInfos or (reCsvExt.search(
                 srcPath.s) and srcPath in patches_set())):
                 newConfigItems.append(srcPath)
         self.configItems = newConfigItems

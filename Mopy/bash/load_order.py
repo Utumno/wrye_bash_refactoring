@@ -104,7 +104,7 @@ class LoadOrder(object):
         if set(active) - set(loadOrder):
             raise exception.BoltError(
                 u'Active mods with no load order: ' + u', '.join(
-                    [x.s for x in (set(active) - set(loadOrder))]))
+                    set(active) - set(loadOrder)))
         self._loadOrder = tuple(loadOrder)
         self._active = frozenset(active)
         self.__mod_loIndex = {a: i for i, a in enumerate(loadOrder)}

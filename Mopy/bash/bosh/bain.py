@@ -299,7 +299,7 @@ class Installer(ListInfo):
 
     def __init__(self,archive):
         self.initDefault()
-        self.archive = archive.stail
+        self.archive = archive # type: CIstr
 
     def __reduce__(self):
         """Used by pickler to save object state."""
@@ -1237,7 +1237,7 @@ class InstallerMarker(Installer):
     @staticmethod
     def _new_name(new_name, count, add_copy=False):
         cnt_str = (u' (%d)' % count) if count else u''
-        return u'==' + new_name.s.strip(u'=') + cnt_str + u'=='
+        return u'==' + new_name.strip(u'=') + cnt_str + u'=='
 
     @classmethod
     def is_marker(cls): return True
@@ -1687,11 +1687,11 @@ class InstallersData(DataStore):
     installers_dir_skips = set()
 
     def __init__(self):
+        super(InstallersData, self).__init__()
         self.store_dir = bass.dirs[u'installers']
         self.bash_dir.makedirs()
         #--Persistent data
         self.dictFile = bolt.PickleDict(self.bash_dir.join(u'Installers.dat'))
-        self._data = {}
         self.data_sizeCrcDate = bolt.LowerDict()
         from . import converters
         self.converters_data = converters.ConvertersData(bass.dirs[u'bainData'],
@@ -1702,7 +1702,7 @@ class InstallersData(DataStore):
         self.bcfPath_sizeCrcDate = {}
         self.hasChanged = False
         self.loaded = False
-        self.lastKey = GPath(u'==Last==')
+        self.lastKey = CIstr(u'==Last==')
         # Need to delay the main bosh import until here
         from . import InstallerArchive, InstallerProject
         self._inst_types = [InstallerArchive, InstallerProject]
@@ -1760,6 +1760,10 @@ class InstallersData(DataStore):
         self.converters_data.load()
         pickl_data = self.dictFile.pickled_data
         self._data = pickl_data.get(u'installers', {}) or pickl_data.get(b'installers', {})
+        if not isinstance(self._data, bolt.LowerDict):
+            self._data = LowerDict(
+                {u'%s' % x: y for x, y in self._data.iteritems()})
+            # pickl_data[u'installers'] = self._data
         pickle = pickl_data.get(u'sizeCrcDate', {}) or pickl_data.get(b'sizeCrcDate', {})
         self.data_sizeCrcDate = bolt.LowerDict(pickle) if not isinstance(
             pickle, bolt.LowerDict) else pickle
@@ -1773,7 +1777,8 @@ class InstallersData(DataStore):
     def save(self):
         """Saves to pickle file."""
         if self.hasChanged:
-            self.dictFile.pickled_data[u'installers'] = self._data
+            self.dictFile.pickled_data[u'installers'] = { # FIXME: backwards compat
+                (GPath(x), y) for x, y in self._data.iteritems()}
             self.dictFile.pickled_data[u'sizeCrcDate'] = self.data_sizeCrcDate
             self.dictFile.vdata[u'version'] = 2
             self.dictFile.save()
@@ -1805,17 +1810,15 @@ class InstallersData(DataStore):
         elif markers:
             self.refreshOrder()
 
-    def copy_installer(self,item,destName,destDir=None):
+    def copy_installer(self, item, destName):
         """Copies archive to new location."""
         if item == self.lastKey: return
-        destDir = destDir or self.store_dir
         apath = self.store_dir.join(item)
-        apath.copyTo(destDir.join(destName))
-        if destDir == self.store_dir:
-            self[destName] = installer = copy.copy(self[item])
-            installer.archive = destName.s
-            installer.is_active = False
-            self.moveArchives([destName], self[item].order + 1)
+        apath.copyTo(self.store_dir.join(destName))
+        self[destName] = installer = copy.copy(self[item])
+        installer.archive = CIstr(destName)
+        installer.is_active = False
+        self.moveArchives([destName], self[item].order + 1)
 
     def move_info(self, filename, destDir):
         # hasty method to use in UIList.hide(), see FileInfos.move_info()
@@ -2638,11 +2641,11 @@ class InstallersData(DataStore):
                 for ci_dest in owned_files:
                     if modInfos.rightFileType(ci_dest):
                         refresh_ui[0] = True
-                        modInfos.table.setItem(GPath(ci_dest), u'installer',
+                        modInfos.table.setItem(ci_dest, u'installer',
                                                installer)
                     elif InstallersData._is_ini_tweak(ci_dest):
                         refresh_ui[1] = True
-                        iniInfos.table.setItem(GPath(ci_dest).tail,
+                        iniInfos.table.setItem(os.path.split(ci_dest)[1],
                                                u'installer', installer)
         finally:
             self.irefresh(what=u'NS')

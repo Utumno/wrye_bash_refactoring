@@ -20,12 +20,11 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
-
+import os
 import re
 import time
 from .. import balt, bosh, bush, bolt, exception
 from ..balt import ItemLink, ChoiceLink, OneItemLink
-from ..bolt import GPath
 from ..gui import BusyCursor
 from ..localize import format_date, unformat_date
 
@@ -111,7 +110,7 @@ class File_Duplicate(ItemLink):
                                            blocking=self._blocking)
         if not msg: return True  # resources ok
         return balt.askWarning(self.window, msg,
-                               _(u'Duplicate ') + fileInfo.name.s)
+                               _(u'Duplicate ') + fileInfo.name)
 
     @balt.conversation
     def Execute(self):
@@ -121,15 +120,16 @@ class File_Duplicate(ItemLink):
             #--Mod with resources? Warn on rename if file has bsa and/or dialog
             if not self._askResourcesOk(fileInfo): continue
             #--Continue copy
-            if bosh.bak_file_pattern.match(to_duplicate.s):
+            if bosh.bak_file_pattern.match(to_duplicate):
                 continue #YAK!
-            (destDir, wildcard) = (fileInfo.dir, u'*' + to_duplicate.ext)
+            root, ext = os.path.splitext(to_duplicate)
+            destDir, wildcard = fileInfo.dir, u'*' + ext
             destName = self.window.new_path(to_duplicate, destDir)
             destDir.makedirs()
             if len(self.selected) == 1:
                 destPath = self._askSave(
                     title=_(u'Duplicate as:'), defaultDir=destDir,
-                    defaultFile=destName.s, wildcard=wildcard)
+                    defaultFile=destName, wildcard=wildcard)
                 if not destPath: return
                 destDir, destName = destPath.headTail
                 if destDir == fileInfo.dir:
@@ -165,7 +165,7 @@ class File_ListMasters(OneItemLink):
     def Execute(self):
         list_of_mods = bosh.modInfos.getModList(fileInfo=self._selected_info)
         balt.copyToClipboard(list_of_mods)
-        self._showLog(list_of_mods, title=self._selected_item.s,
+        self._showLog(list_of_mods, title=self._selected_item,
                       fixedFont=False)
 
 class File_Snapshot(ItemLink):
@@ -188,10 +188,10 @@ class File_Snapshot(ItemLink):
                 if not destPath: return
                 (destDir,destName) = destPath.headTail
             #--Extract version number
-            fileRoot = fileName.root
+            fileRoot = os.path.splitext(fileName)[0]
             destRoot = destName.root
             fileVersion = bolt.getMatch(
-                re.search(u'' r'[ _]+v?([.\d]+)$', fileRoot.s, re.U), 1)
+                re.search(u'' r'[ _]+v?([.\d]+)$', fileRoot, re.U), 1)
             snapVersion = bolt.getMatch(
                 re.search(u'' r'-[\d.]+$', destRoot.s, re.U))
             fileHedr = fileInfo.header

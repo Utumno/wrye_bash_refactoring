@@ -95,7 +95,7 @@ class Screen_ConvertTo(EnabledLink):
 
     def _enable(self):
         self.convertable = [s for s in self.selected if
-                            s.cext != u'.' + self.ext]
+                            not s.endswith(self.ext)]
         return bool(self.convertable)
 
     def Execute(self):
@@ -103,9 +103,9 @@ class Screen_ConvertTo(EnabledLink):
             with balt.Progress(_(u'Converting to %s') % self.ext) as progress:
                 progress.setFull(len(self.convertable))
                 for index, fileName in enumerate(self.convertable):
-                    progress(index,fileName.s)
+                    progress(index, fileName)
                     srcPath = bosh.screen_infos[fileName].abs_path
-                    destPath = srcPath.root+u'.'+self.ext
+                    destPath = srcPath.root+u'.'+self.ext ##: pathlib
                     if srcPath == destPath or destPath.exists(): continue
                     bitmap = ImageWrapper.Load(srcPath, quality=bass.settings[
                         u'bash.screens.jpgQuality'])
@@ -221,7 +221,7 @@ class Master_Disable(AppendableLink, _Master_EditList):
 
     def Execute(self):
         masterInfo = self._selected_info
-        newName = GPath(re.sub(u'[mM]$', 'p', u'XX' + masterInfo.curr_name.s))
+        newName = re.sub(u'[mM]$', 'p', u'XX%s' % masterInfo.curr_name)
         #--Save Name
         masterInfo.set_name(newName)
         self.window.SetMasterlistEdited(repopulate=True)

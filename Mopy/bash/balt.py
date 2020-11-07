@@ -27,7 +27,6 @@ now. See #190, its code should be refactored and land in basher and/or gui."""
 from __future__ import division
 
 import io
-import re
 
 from . import bass # for dirs - try to avoid
 #--Localization

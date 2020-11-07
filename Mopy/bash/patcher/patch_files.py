@@ -121,7 +121,7 @@ class PatchFile(ModFile):
             if version:
                 message += _(u'%s  [Version %s]') % (mname,version)
             else:
-                message += mname.s
+                message += mname
             log(message)
         #--Load Mods and error mods
         if self.pfile_aliases:

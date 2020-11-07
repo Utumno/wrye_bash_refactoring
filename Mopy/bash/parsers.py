@@ -30,8 +30,9 @@ However, not all parsers fit this pattern - some have to read mods twice,
 others barely even fit into the pattern at all (e.g. FidReplacer)."""
 
 from __future__ import division, print_function
-
+import codecs
 import ctypes
+import os
 import re
 from collections import defaultdict, Counter
 from itertools import izip
@@ -42,7 +43,7 @@ from . import bush, load_order
 from .balt import Progress
 from .bass import dirs, inisettings
 from .bolt import GPath, decoder, deprint, CsvReader, csvFormat, floats_equal, \
-    setattr_deep, attrgetter_cache
+    setattr_deep, attrgetter_cache, walkdir, cext_, CIstr, DefaultLowerDict
 from .brec import MreRecord, MelObject, _coerce, genFid, RecHeader
 from .exception import AbstractError
 from .mod_files import ModFile, LoadFactory
@@ -52,8 +53,8 @@ def _key_sort(di, id_eid_=None, keys_dex=(), values_dex=(), by_value=False):
         key_f=lambda k: id_eid_.get(k, u'Unknown').lower()
         for k in sorted(di, key=key_f):
             yield k, di[k], id_eid_[k]
-    elif keys_dex or values_dex: # TODO(ut): drop below when keys are CIStr
-        key_f = lambda k: tuple((u'%s' % k[x]).lower() for x in keys_dex) + tuple(
+    elif keys_dex or values_dex: # TODO(ut) lower needed??
+        key_f = lambda k: tuple(k[x].lower() for x in keys_dex) + tuple(
             di[k][x].lower() for x in values_dex)
         for k in sorted(di, key=key_f):
             yield k, di[k]
@@ -76,8 +77,8 @@ class _HandleAliases(object):
     def _get_alias(self, modname):
         """Encapsulate getting alias for modname returned from CsvReader."""
         ##: inline once parsers are refactored (and document also the csv format)
-        modname = GPath(modname)
-        return GPath(self.aliases.get(modname, modname)) ##: drop GPath?
+        modname = CIstr(modname)
+        return self.aliases.get(modname, modname)  # type: CIstr
 
     def _coerce_fid(self, modname, hex_fid):
         """Create a long formid from a unicode modname and a unicode
@@ -155,7 +156,7 @@ class _AParser(_HandleAliases):
         self._fp_types = ()
         # Internal variable, keeps track of mods we've already processed during
         # the first pass to avoid repeating work
-        self._fp_mods = set()
+        self._fp_mods = set() # TODO (paths): need compare in lowercase?
         # The name of the mod that is currently being loaded. Some parsers need
         # this to change their behavior when loading a mod file. This is a
         # unicode string matching the name of the mod being loaded, or None if
@@ -453,7 +454,7 @@ class ActorLevels(_HandleAliases):
 
     def __init__(self, aliases_=None):
         super(ActorLevels, self).__init__(aliases_)
-        self.mod_id_levels = defaultdict(dict) #--levels = mod_id_levels[mod][longid]
+        self.mod_id_levels = DefaultLowerDict(dict) #--levels = mod_id_levels[mod][longid]
         self.gotLevels = set()
 
     def readFromMod(self,modInfo):
@@ -479,8 +480,7 @@ class ActorLevels(_HandleAliases):
         modFile.load(True)
         changed = 0
         id_levels = mod_id_levels.get(modInfo.name,
-                                      mod_id_levels.get(GPath(u'Unknown'),
-                                                        None))
+                                      mod_id_levels.get(u'Unknown', None))
         if id_levels:
             for record in modFile.tops[b'NPC_'].records:
                 fid = record.fid
@@ -496,11 +496,11 @@ class ActorLevels(_HandleAliases):
         if changed: modFile.safeSave()
         return changed
 
-    def _parse_line(self, csv_fields):
+    def _parse_line(self, csv_fields, __lower_skips=frozenset(
+            {u'none', bush.game.master_file.lower()})):
         source, eid, fidMod, fidObject, offset, calcMin, calcMax = csv_fields[:7]
-        if source.lower() in (u'none', bush.game.master_file.lower()): # yak!!
-            raise TypeError
-        if fidMod.lower() == u'none': raise TypeError
+        if source.lower() in __lower_skips or fidMod.lower() == u'none':
+            raise TypeError # will be caught and skip the line
         fid = self._coerce_fid(fidMod, fidObject)
         offset = _coerce(offset, int)
         calcMin = _coerce(calcMin, int)
@@ -525,9 +525,9 @@ class ActorLevels(_HandleAliases):
                 _(u'Old IsPCLevelOffset'),_(u'Old Offset'),_(u'Old CalcMin'),
                 _(u'Old CalcMax')))
             #Sorted based on mod, then editor ID
-            obId_levels = self.mod_id_levels[GPath(bush.game.master_file)]
+            obId_levels = self.mod_id_levels[bush.game.master_file]
             for mod, id_levels in _key_sort(self.mod_id_levels):
-                if mod.s.lower() == bush.game.master_file.lower(): continue
+                if mod.lower() == bush.game.master_file.lower(): continue
                 sor = _key_sort(id_levels, keys_dex=[0], values_dex=[0])
                 for (fidMod, fidObject), (
                         eid, isOffset, offset, calcMin, calcMax) in sor:
@@ -1193,18 +1193,16 @@ class ScriptText(object):
         """Reads scripts from files in specified mods' directory in bashed
         patches folder."""
         eid_data = self.eid_data
-        textPath = GPath(textPath)
         with Progress(_(u'Import Scripts')) as progress:
-            for root_dir, dirs, files in textPath.walk():
+            for root_dir, dirs, files in walkdir(textPath):
                 y = len(files)
                 for z, f in enumerate(files, 1):
-                    if f.cext != inisettings[u'ScriptFileExt']:
+                    if cext_(f) != inisettings[u'ScriptFileExt']:
                         progress(((1 / y) * z), _(u'Skipping file %s.') % f)
                         continue
                     progress(((1 / y) * z), _(u'Reading file %s.') % f)
-                    with root_dir.join(f).open(
-                            u'r', encoding=u'utf-8-sig') as ins:
-                        lines = ins.readlines()
+                    with open(os.path.join(root_dir, f)) as ins: ##: utf-8-sig ??
+                        lines = codecs.getreader('utf-8-sig')(ins).readlines() # PY3: io.open
                     try:
                         modName,FormID,eid = lines[0][1:-2],lines[1][1:-2], \
                                              lines[2][1:-2]

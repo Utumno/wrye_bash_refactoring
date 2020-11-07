@@ -29,7 +29,7 @@ from itertools import chain
 from .. import getPatchesPath
 from ..base import AMultiTweakItem, AMultiTweaker, Patcher, AListPatcher
 from ... import load_order, bush
-from ...bolt import GPath, deprint
+from ...bolt import deprint
 from ...brec import MreRecord
 from ...exception import AbstractError
 from ...parsers import _HandleAliases
@@ -216,10 +216,9 @@ class ReplaceFormIDsPatcher(_HandleAliases, ListPatcher):
         if not self.isActive: return
         progress.setFull(len(self.srcs))
         for srcFile in self.srcs:
-            srcPath = GPath(srcFile)
             try: self.readFromText(getPatchesPath(srcFile))
             except OSError: deprint(
-                u'%s is no longer in patches set' % srcPath, traceback=True)
+                u'%s is no longer in patches set' % srcFile, traceback=True)
             progress.plus()
 
     @property

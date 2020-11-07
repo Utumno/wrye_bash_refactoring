@@ -32,7 +32,7 @@ def exportConfig(patch_name, config, win, outDir):
         wildcard=u'*_Configuration.dat')
     if outPath:
         table = bolt.DataTable(bolt.PickleDict(outPath))
-        table.setItem(bolt.GPath(u'Saved Bashed Patch Configuration (Python)'),
+        table.setItem(u'Saved Bashed Patch Configuration (Python)',
             u'bash.patch.configs', config)
         table.save()
 

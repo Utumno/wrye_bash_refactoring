@@ -44,6 +44,7 @@ class ConvertersData(DataDict):
 
     def __init__(self, bain_data_dir, converters_dir_, dup_bcfs_dir,
                  corrupt_bcfs_dir, installers_dir_):
+        super(ConvertersData, self).__init__({})
         global converters_dir, installers_dir
         converters_dir = converters_dir_
         installers_dir = installers_dir_

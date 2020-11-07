@@ -43,7 +43,7 @@ from .. import bass, bolt, bosh, bush, balt, archives
 from ..balt import EnabledLink, CheckLink, AppendableLink, OneItemLink, \
     UIList_Rename, UIList_Hide
 from ..belt import InstallerWizard, generateTweakLines
-from ..bolt import GPath, SubProgress, LogFile, round_size, text_wrap
+from ..bolt import GPath, SubProgress, LogFile, round_size, text_wrap, cext_
 from ..exception import CancelError, SkipError, StateError
 from ..gui import BusyCursor
 
@@ -414,9 +414,9 @@ class Installer_Duplicate(OneItemLink, _InstallerLink):
         newName = self._selected_info.new_name(self._selected_item,
                                                add_copy=True)
         allowed_exts = {} if not self._selected_info.is_archive() else {
-            self._selected_item.ext}
+            self._selected_info.abs_path.ext}
         result = self._askFilename(
-            _(u'Duplicate %s to:') % self._selected_item, newName.s,
+            _(u'Duplicate %s to:') % self._selected_item, newName,
             disallow_overwrite=True, no_dir=False, # fixme no_dir=False?
             allowed_ext=allowed_exts, use_default_ext=False)
         if not result: return
@@ -664,7 +664,7 @@ class _Installer_OpenAt(_InstallerLink):
     _open_at_continue = u'OVERRIDE'
 
     def _enable(self):
-        x = self.__class__.regexp.search(self.selected[0].s)
+        x = self.__class__.regexp.search(self.selected[0])
         if not bool(self.isSingleArchive() and x): return False
         self.mod_url_id = x.group(self.__class__.group)
         return bool(self.mod_url_id)
@@ -796,7 +796,7 @@ class Installer_CopyConflicts(_SingleInstallable):
                            u'\n' + u' ' * 60) as progress:
             progress.setFull(len(self.idata))
             numFiles = 0
-            destDir = GPath(u'Conflicts - %03d' % src_order)
+            destDir = u'Conflicts - %03d' % src_order
             for i,(package, installer) in enumerate(self.idata.sorted_pairs()):
                 curConflicts = set()
                 progress(i, _(u'Scanning Packages...') + u'\n%s' % package)
@@ -841,8 +841,8 @@ class Installer_CopyConflicts(_SingleInstallable):
             curConflicts = srcConflicts
             curFile = _copy_conflicts(curFile)
             for order,package,curConflicts in packConflicts:
-                g_path = GPath(u'%03d - %s' % (
-                    order if order < src_order else order + 1, package.s))
+                g_path = u'%03d - %s' % (
+                    order if order < src_order else order + 1, package)
                 curFile = _copy_conflicts(curFile)
         self.idata.refresh_installer(destDir, is_project=True, progress=None,
                                      install_order=src_order + 1,
@@ -1169,10 +1169,10 @@ class InstallerProject_Pack(_SingleProject):
     @balt.conversation
     def Execute(self):
         #--Generate default filename from the project name and the default extension
-        archive_name = GPath(self._selected_item.s + archives.defaultExt)
+        archive_name = self._selected_item + archives.defaultExt
         #--Confirm operation
         archive_name = self._askFilename(
-            _(u'Pack %s to Archive:') % self._selected_item, archive_name.s)
+            _(u'Pack %s to Archive:') % self._selected_item, archive_name)
         if not archive_name: return
         self._pack(archive_name, self._selected_info, self._selected_item,
                    release=self.__class__.release)
