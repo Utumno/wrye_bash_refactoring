@@ -695,6 +695,7 @@ class MelStruct(MelBase):
         self._unpacker = _struct.unpack
         self._packer = _struct.pack
         self._static_size = _struct.size
+        self._static_fmt = struct_format
 
     def getSlotsUsed(self):
         return self.attrs
