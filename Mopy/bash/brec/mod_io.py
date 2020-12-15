@@ -296,3 +296,6 @@ class ModReader(object):
 
     def unpackRecHeader(self, __head_unpack=unpack_header):
         return __head_unpack(self)
+
+    def __repr__(self):
+        return u'%s(%s)' % (type(self), self.inName,)
