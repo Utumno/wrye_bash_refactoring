@@ -43,8 +43,7 @@ from itertools import imap
 from ._mergeability import isPBashMergeable, is_esl_capable
 from .loot_parser import LOOTParser, libloot_version
 from .mods_metadata import get_tags_from_dir
-from .. import bass, bolt, balt, bush, env, load_order, archives, \
-    initialization
+from .. import bass, bolt, balt, bush, env, load_order, initialization
 from ..archives import readExts
 from ..bass import dirs, inisettings
 from ..bolt import GPath, DataDict, deprint, sio, Path, decoder, AFile, \
