@@ -110,7 +110,7 @@ class File_Duplicate(ItemLink):
                                            blocking=self._blocking)
         if not msg: return True  # resources ok
         return balt.askWarning(self.window, msg,
-                               _(u'Duplicate ') + fileInfo.name)
+                               _(u'Duplicate ') + fileInfo.ci_name)
 
     @balt.conversation
     def Execute(self):

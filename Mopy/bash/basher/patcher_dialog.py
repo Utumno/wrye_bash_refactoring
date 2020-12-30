@@ -158,7 +158,7 @@ class PatchDialog(DialogWindow):
         self.accept_modal()
         progress = None
         try:
-            patch_name = self.patchInfo.name
+            patch_name = self.patchInfo.ci_name
             patch_size = self.patchInfo.size
             progress = balt.Progress(patch_name,(u' '*60+u'\n'), abort=True)
             timer1 = time.clock()
@@ -200,7 +200,7 @@ class PatchDialog(DialogWindow):
             readme = bosh.modInfos.store_dir.join(u'Docs', _sroot + u'.txt')
             docsDir = bass.settings.get(u'balt.WryeLog.cssDir', u'')
             tempReadmeDir = Path.tempDir().join(u'Docs')
-            tempReadme = tempReadmeDir.join(patch_name.sroot+u'.txt')
+            tempReadme = tempReadmeDir.join(_sroot + u'.txt')
             #--Write log/readme to temp dir first
             with tempReadme.open(u'w', encoding=u'utf-8-sig') as file:
                 file.write(logValue)
@@ -306,14 +306,14 @@ class PatchDialog(DialogWindow):
     def ExportConfig(self):
         """Export the configuration to a user selected dat file."""
         config = self.__config()
-        exportConfig(patch_name=self.patchInfo.name, config=config,
-            win=self.parent, outDir=bass.dirs[u'patches'])
+        exportConfig(patch_name=self.patchInfo.ci_name, config=config,
+                     win=self.parent, outDir=bass.dirs[u'patches'])
 
     __old_key = u'Saved Bashed Patch Configuration'
     __new_key = u'Saved Bashed Patch Configuration (%s)'
     def ImportConfig(self):
         """Import the configuration from a user selected dat file."""
-        config_dat = self.patchInfo.name + u'_Configuration.dat'
+        config_dat = self.patchInfo.ci_name + u'_Configuration.dat'
         textDir = bass.dirs[u'patches']
         textDir.makedirs()
         #--File dialog

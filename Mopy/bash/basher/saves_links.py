@@ -483,7 +483,7 @@ class Save_EditCreatedData(balt.ListEditorData):
                 count += 1
             self.saveFile.safeSave()
             balt.showOk(self.parent, _(u'Names modified: %d.') % count,
-                        self.saveFile.fileInfo.name)
+                        self.saveFile.fileInfo.ci_name)
 
 #------------------------------------------------------------------------------
 class Save_EditCreated(OneItemLink):

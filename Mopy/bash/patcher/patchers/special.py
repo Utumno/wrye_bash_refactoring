@@ -124,7 +124,7 @@ class _AListsMerger(ListPatcher):
 
     def scanModFile(self, modFile, progress):
         #--Begin regular scan
-        sc_name = modFile.fileInfo.name
+        sc_name = modFile.fileInfo.ci_name
         #--PreScan for later Relevs/Delevs?
         if sc_name in self.de_masters:
             for list_type in self._read_sigs:

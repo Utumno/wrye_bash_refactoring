@@ -38,7 +38,7 @@ from itertools import izip
 # Internal
 from .base import MultiTweakItem, ListPatcher
 from ... import bosh, bush
-from ...bolt import GPath, deprint
+from ...bolt import deprint, CIstr
 from ...brec import MelObject, strFid
 from ...exception import BoltError
 from ...mod_files import ModFile, LoadFactory
@@ -48,7 +48,7 @@ from ...patcher.base import AMultiTweaker
 def _find_vanilla_eyes():
     """Converts vanilla default_eyes to use long FormIDs and returns the
     result."""
-    def _conv_fid(rc_fid): return GPath(rc_fid[0]), rc_fid[1]
+    def _conv_fid(rc_fid): return CIstr(rc_fid[0]), rc_fid[1]
     ret = {}
     for race_fid, race_eyes in bush.game.default_eyes.iteritems():
         new_key = _conv_fid(race_fid)
@@ -61,7 +61,7 @@ _vanilla_races = [u'argonian', u'breton', u'dremora', u'dark elf',
                   u'khajiit', u'nord', u'orc', u'redguard', u'wood elf']
 
 # Patchers: 40 ----------------------------------------------------------------
-_main_master = GPath(bush.game.master_file)
+_main_master = CIstr(bush.game.master_file)
 
 class _ARaceTweak(MultiTweakItem):
     """ABC for race tweaks."""

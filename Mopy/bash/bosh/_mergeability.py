@@ -23,6 +23,7 @@
 """Tmp module to get mergeability stuff out of bosh.__init__.py."""
 import os
 from .. import bush
+from ..bolt import body_
 from ..exception import ModError
 from ..mod_files import LoadFactory, ModHeaderReader, ModFile
 
@@ -50,7 +51,7 @@ def _is_mergeable_no_load(modInfo, reasons):
                     dir_list += u'\n  - ' + blocking_dir
             reasons.append(_(u'Has plugin-specific directory - one of the '
                              u'following:' + dir_list) %
-                           ({u'plugin_name': modInfo.name}))
+                           ({u'plugin_name': modInfo.ci_name}))
     # Client must make sure NoMerge tag not in tags - if in tags
     # don't show up as mergeable.
     return False if reasons else True
@@ -71,7 +72,7 @@ def _pbash_mergeable_no_load(modInfo, reasons):
         if not verbose: return False
         from . import oblivionIni
         reasons.append(_(u'Missing String Translation Files (Strings\\%s_%s.STRINGS, etc).') % (
-            modInfo.name.sbody, oblivionIni.get_ini_language()))
+            body_( modInfo.ci_name), oblivionIni.get_ini_language()))
     return False if reasons else True
 
 def isPBashMergeable(modInfo, minfos, reasons):
@@ -97,7 +98,7 @@ def isPBashMergeable(modInfo, minfos, reasons):
         reasons.append(_(u'Empty mod.'))
     #--New record
     newblocks = []
-    self_name = modInfo.name
+    self_name = modInfo.ci_name
     for top_type,block in modFile.tops.iteritems():
         for record in block.iter_records():
             if not record.flags1.ignored and record.fid[0] == self_name:
@@ -117,7 +118,7 @@ def _dependent(modInfo, minfos):
     """Get mods for which modInfo is a master mod (excluding BPs and
     mergeable)."""
     dependent = [mname for mname, info in minfos.iteritems() if
-                 not info.isBP() and modInfo.name in info.masterNames and
+                 not info.isBP() and modInfo.ci_name in info.masterNames and
                  mname not in minfos.mergeable]
     return dependent
 

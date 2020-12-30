@@ -292,7 +292,7 @@ class SaveFile(object):
             insCopy(buff, 4)
             self.preCreated = buff.getvalue()
             #--Created (ALCH,SPEL,ENCH,WEAP,CLOTH,ARMO, etc.?)
-            modReader = ModReader(self.fileInfo.name,ins)
+            modReader = ModReader(self.fileInfo.ci_name, ins)
             createdNum = unpack_int(ins)
             for count in xrange(createdNum):
                 progress(ins.tell(),_(u'Reading created...'))
@@ -451,7 +451,7 @@ class SaveFile(object):
         """Returns fid corresponding to iref."""
         if not iref: return default
         if iref >> 24 == 0xFF: return iref
-        if iref >= len(self.fids): raise ModError(self.fileInfo.name,
+        if iref >= len(self.fids): raise ModError(self.fileInfo.ci_name,
                                                   u'IRef from Mars.')
         return self.fids[iref]
 
@@ -473,7 +473,7 @@ class SaveFile(object):
             if modIndex < len(self._masters):
                 return self._masters[modIndex]
             elif modIndex == 0xFF:
-                return self.fileInfo.name
+                return self.fileInfo.ci_name
             else:
                 return _(u'Missing Master ')+hex(modIndex)
         #--ABomb
@@ -692,7 +692,7 @@ class SaveSpells(object):
                 self.importMod(modInfos[master])
         #--Extract created spells
         allSpells = self.allSpells
-        saveName = self.saveInfo.name
+        saveName = self.saveInfo.ci_name
         progress(progress.full-1,saveName.s)
         for record in saveFile.created:
             if record.recType == b'SPEL':
@@ -735,7 +735,7 @@ class SaveSpells(object):
                 fid = saveFile.fids[iref]
             modIndex,objectIndex = getFormIndices(fid)
             if modIndex == 255:
-                master = self.saveInfo.name
+                master = self.saveInfo.ci_name
             elif modIndex <= maxMasters:
                 master = masters_copy[modIndex]
             else: #--Bad fid?
@@ -771,7 +771,7 @@ class SaveEnchantments(object):
         saveFile = self.saveFile = SaveFile(self.saveInfo)
         saveFile.load(SubProgress(progress,0,0.4))
         #--Extract created enchantments
-        saveName = self.saveInfo.name
+        saveName = self.saveInfo.ci_name
         progress(progress.full-1,saveName.s)
         for index,record in enumerate(saveFile.created):
             if record.recType == b'ENCH':

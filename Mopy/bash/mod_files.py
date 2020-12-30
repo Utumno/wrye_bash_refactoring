@@ -175,9 +175,9 @@ class _RecGroupDict(dict):
             raise KeyError(u'Invalid top group type: ' + top_grup_sig)
         topClass = self._mod_file.loadFactory.getTopClass(top_grup_sig)
         if topClass is None:
-                raise ModError(self._mod_file.fileInfo.name,
-               u'Failed to retrieve top class for %s; load factory is '
-               u'%r' % (top_grup_sig, self._mod_file.loadFactory))
+            raise ModError(self._mod_file.fileInfo.ci_name,
+                u'Failed to retrieve top class for %s; load factory is '
+                u'%r' % (top_grup_sig, self._mod_file.loadFactory))
         self[top_grup_sig] = topClass(TopGrupHeader(0, top_grup_sig, 0, 0),
                                       self._mod_file.loadFactory)
         self[top_grup_sig].setChanged()
@@ -203,7 +203,7 @@ class ModFile(object):
         from . import bosh
         progress = progress or bolt.Progress()
         progress.setFull(1.0)
-        with ModReader(self.fileInfo.name,self.fileInfo.getPath().open(
+        with ModReader(self.fileInfo.ci_name, self.fileInfo.getPath().open(
                 u'rb')) as ins:
             insRecHeader = ins.unpackRecHeader
             # Main header of the mod file - generally has 'TES4' signature
@@ -232,7 +232,7 @@ class ModFile(object):
                 #--Get record info and handle it
                 header = insRecHeader()
                 if not header.is_top_group_header:
-                    raise ModError(self.fileInfo.name,u'Improperly grouped file.')
+                    raise ModError(self.fileInfo.ci_name, u'Improperly grouped file.')
                 label = header.label
                 topClass = self.loadFactory.getTopClass(label)
                 try:
@@ -294,7 +294,7 @@ class ModFile(object):
         # Too many masters is fatal and results in cryptic struct errors, so
         # loudly complain about it here
         if self.tes4.num_masters > bush.game.Esp.master_limit:
-            raise ModError(self.fileInfo.name,
+            raise ModError(self.fileInfo.ci_name,
                 u'Attempting to write a file with too many masters (>%u).'
                 % bush.game.Esp.master_limit)
         with outPath.open(u'wb') as out:
@@ -311,7 +311,7 @@ class ModFile(object):
 
     def getLongMapper(self):
         """Returns a mapping function to map short fids to long fids."""
-        masters_list = self.tes4.masters+[self.fileInfo.name]
+        masters_list = self.tes4.masters+[self.fileInfo.ci_name]
         maxMaster = len(masters_list)-1
         def mapper(fid):
             if fid is None: return None
@@ -322,7 +322,7 @@ class ModFile(object):
 
     def getShortMapper(self):
         """Returns a mapping function to map long fids to short fids."""
-        masters_list = self.tes4.masters + [self.fileInfo.name]
+        masters_list = self.tes4.masters + [self.fileInfo.ci_name]
         indices = {mname: index for index, mname in enumerate(masters_list)}
         has_expanded_range = bush.game.Esp.expanded_plugin_range
         if (has_expanded_range and len(masters_list) > 1
@@ -357,7 +357,7 @@ class ModFile(object):
         for block in self.tops.values():
             block.updateMasters(masters_set.add)
         # The file itself is always implicitly available, so discard it here
-        masters_set.discard(self.fileInfo.name)
+        masters_set.discard(self.fileInfo.ci_name)
         return masters_set.getOrdered()
 
     def _index_mgefs(self):
@@ -432,7 +432,7 @@ class ModHeaderReader(object):
 
         :rtype: defaultdict[bytes, list[RecordHeader]]"""
         ret_headers = defaultdict(list)
-        with ModReader(mod_info.name, mod_info.abs_path.open(u'rb')) as ins:
+        with ModReader(mod_info.ci_name, mod_info.abs_path.open(u'rb')) as ins:
             ins_at_end = ins.atEnd
             ins_unpack_rec_header = ins.unpackRecHeader
             ins_seek = ins.seek
@@ -462,7 +462,7 @@ class ModHeaderReader(object):
         interested_sigs = {b'CELL', b'WRLD'}
         tops_to_skip = interested_sigs | {bush.game.Esp.plugin_header_sig}
         grup_header_size = RecordHeader.rec_header_size
-        with ModReader(mod_info.name, mod_info.abs_path.open(u'rb')) as ins:
+        with ModReader(mod_info.ci_name, mod_info.abs_path.open(u'rb')) as ins:
             ins_at_end = ins.atEnd
             ins_unpack_rec_header = ins.unpackRecHeader
             ins_seek = ins.seek

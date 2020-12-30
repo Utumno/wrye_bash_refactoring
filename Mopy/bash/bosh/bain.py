@@ -2760,7 +2760,7 @@ class InstallersData(DataStore):
     #--Utils
     @staticmethod
     def _filter_installer_bsas(inst, active_bsas):
-        return [k for k in active_bsas if k.name.s in inst.ci_dest_sizeCrc]
+        return [k for k in active_bsas if k.ci_name in inst.ci_dest_sizeCrc]
 
     @staticmethod
     def _parse_error(bsa_inf, reason):

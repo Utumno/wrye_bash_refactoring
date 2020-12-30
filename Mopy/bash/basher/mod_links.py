@@ -156,7 +156,7 @@ class Mod_CreateDummyMasters(OneItemLink):
             # Add the appropriate flags based on extension. This is obviously
             # just a guess - you can have a .esm file without an ESM flag in
             # Skyrim LE - but these are also just dummy masters.
-            ext_lower = cext_(newInfo.name)
+            ext_lower = cext_(newInfo.ci_name)
             if ext_lower in (u'.esm', u'.esl'):
                 newFile.tes4.flags1.esm = True
             if ext_lower == u'.esl':
@@ -1235,7 +1235,7 @@ class Mod_ScanDirty(ItemLink):
         error = []
         for i,modInfo in enumerate(modInfos):
             udrs,itms,fog = ret[i]
-            if modInfo.name.lower() == u'Unofficial Oblivion Patch.esp'.lower():
+            if modInfo.ci_name == u'Unofficial Oblivion Patch.esp':
                 # Record for non-SI users, shows up as ITM if SI is installed (OK)
                 itms.discard((CIstr(u'Oblivion.esm'), 0x00AA3C))
             if modInfo.isBP(): itms = set()

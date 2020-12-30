@@ -205,7 +205,7 @@ class _AParser(_HandleAliases):
                 for record in rec_block.getActiveRecords():
                     self.id_context[record.fid] = \
                         self._read_record_fp(record)
-            self._fp_mods.add(mod_to_read.fileInfo.name)
+            self._fp_mods.add(mod_to_read.fileInfo.ci_name)
         # Process the mod's masters first, but see if we need to sort them
         master_names = loaded_mod.tes4.masters
         if self._needs_fp_master_sort:
@@ -215,7 +215,7 @@ class _AParser(_HandleAliases):
             _fp_loop(self._load_plugin(bosh.modInfos[mod_name],
                                        self._fp_types, keepAll=False))
         # Finally, process the mod itself
-        if loaded_mod.fileInfo.name in self._fp_mods: return
+        if loaded_mod.fileInfo.ci_name in self._fp_mods: return
         _fp_loop(loaded_mod)
 
     # TODO(inf) Might need second_pass parameter?
@@ -278,7 +278,7 @@ class _AParser(_HandleAliases):
         automatically clear id_stored_info to allow combining multiple sources.
 
         :param mod_info: The ModInfo instance to read from."""
-        self._current_mod = mod_info.name
+        self._current_mod = mod_info.ci_name
         # Check if we need to read at all
         a_types = self.all_types
         if not a_types:
@@ -462,7 +462,7 @@ class ActorLevels(_HandleAliases):
         from . import bosh
         mod_id_levels, gotLevels = self.mod_id_levels, self.gotLevels
         loadFactory = LoadFactory(False, by_sig=[b'NPC_'])
-        for modName in (modInfo.masterNames + (modInfo.name,)):
+        for modName in (modInfo.masterNames + (modInfo.ci_name,)):
             if modName in gotLevels: continue
             modFile = ModFile(bosh.modInfos[modName],loadFactory)
             modFile.load(True)
@@ -479,7 +479,7 @@ class ActorLevels(_HandleAliases):
         modFile = ModFile(modInfo,loadFactory)
         modFile.load(True)
         changed = 0
-        id_levels = mod_id_levels.get(modInfo.name,
+        id_levels = mod_id_levels.get(modInfo.ci_name,
                                       mod_id_levels.get(u'Unknown', None))
         if id_levels:
             for record in modFile.tops[b'NPC_'].records:
@@ -778,7 +778,7 @@ class FidReplacer(_HandleAliases):
         """Updates specified mod file."""
         modFile = self._load_plugin(modInfo)
         # Create filtered versions of our mappings
-        masters_list = set(modFile.tes4.masters + [modFile.fileInfo.name])
+        masters_list = set(modFile.tes4.masters + [modFile.fileInfo.ci_name])
         filt_fids = {oldId for oldId in self.old_eid if
                      oldId[0] in masters_list}
         filt_fids.update(newId for newId in self.new_eid
