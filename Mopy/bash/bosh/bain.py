@@ -2699,8 +2699,8 @@ class InstallersData(DataStore):
                 keepFiles.update(installer.ci_dest_sizeCrc) # relative to Data/
         from . import modInfos
         keepFiles.update((bolt.CIstr(f) for f in bush.game.vanilla_files))
-        for bpatch in modInfos.bashed_patches: # type: bolt.Path
-            keepFiles.add(bolt.CIstr(bpatch.s))
+        for bpatch in modInfos.bashed_patches: # type: CIstr
+            keepFiles.add(bpatch)
             bp_doc = modInfos.table.getItem(bpatch, u'doc')
             if bp_doc: # path is absolute, convert to relative to the Data/ dir
                 try:
