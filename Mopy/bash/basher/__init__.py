@@ -69,7 +69,7 @@ import wx
 #--Local
 from .. import bush, bosh, bolt, bass, env, load_order, archives
 from ..bolt import GPath, SubProgress, deprint, round_size, \
-    OrderedDefaultDict, body_, cext_
+    OrderedDefaultDict, body_, cext_, CIstr
 from ..bosh import omods, SaveInfo
 from ..exception import AbstractError, BoltError, CancelError, FileError, \
     SkipError, UnknownListener
@@ -2323,7 +2323,7 @@ class InstallersList(balt.UIList):
         to_rename = self.GetSelected()
         #--Only rename multiple items of the same type
         renaming_type = type(self.data_store[to_rename[0]])
-        last_marker = GPath(u'==Last==')
+        last_marker = CIstr(u'==Last==')
         for item in to_rename:
             if not isinstance(self.data_store[item], renaming_type):
                 balt.showError(self, _(
@@ -3450,7 +3450,7 @@ class BSADetails(_EditableMixinOnFileInfos, SashPanel):
         #--Change Name?
         if changeName:
             (oldName, newName) = (
-                self._bsa_info.ci_name, GPath(self.fileStr.strip()))
+                self._bsa_info.ci_name, CIstr(self.fileStr.strip()))
             bosh.bsaInfos.rename_info(oldName, newName)
         self.panel_uilist.RefreshUI(detail_item=self.file_info.ci_name)
 

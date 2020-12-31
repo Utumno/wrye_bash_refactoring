@@ -1679,7 +1679,7 @@ class FileInfos(TableFileInfos):
         #--File system
         super(FileInfos, self)._rename_operation(oldName, newName)
         #--FileInfo
-        fileInfo.ci_name = newName
+        fileInfo.ci_name = newName # FIXME: ci_str
         fileInfo.abs_path = self.store_dir.join(newName)
         #--FileInfos
         self[newName] = self[oldName]
