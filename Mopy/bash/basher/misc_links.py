@@ -28,7 +28,7 @@ from .settings_dialog import SettingsDialog
 from .. import bass, balt, bosh, bush
 from ..balt import EnabledLink, AppendableLink, ItemLink, RadioLink, \
     ChoiceMenuLink, CheckLink, UIList_Rename, OneItemLink, SeparatorLink
-from ..bolt import GPath
+from ..bolt import GPath, CIstr
 from ..gui import ImageWrapper
 
 __all__ = [u'ColumnsMenu', u'Master_ChangeTo', u'Master_Disable',
@@ -203,12 +203,13 @@ class Master_ChangeTo(_Master_EditList):
             self._showError(_(u'File must be selected from %s '
                               u'directory.' % bush.game.mods_dir))
             return
-        elif newName == master_name:
+        elif newName.s == master_name:
             return
         #--Save Name
-        masterInfo.set_name(newName)
-        bass.settings.getChanged(u'bash.mods.renames')[master_name] = newName
-        self.window.SetMasterlistEdited(repopulate=True)
+        if masterInfo.rename_if_present(newName.s):
+            ##: should be True but needs extra validation -> cycles?
+            bass.settings.getChanged(u'bash.mods.renames')[master_name] = masterInfo.curr_name ## FIXME bash.mods.renames was Paths
+            self.window.SetMasterlistEdited(repopulate=True)
 
 #------------------------------------------------------------------------------
 class Master_Disable(AppendableLink, _Master_EditList):
@@ -220,10 +221,7 @@ class Master_Disable(AppendableLink, _Master_EditList):
         return isinstance(window.detailsPanel, SaveDetails)
 
     def Execute(self):
-        masterInfo = self._selected_info
-        newName = re.sub(u'[mM]$', 'p', u'XX%s' % masterInfo.curr_name)
-        #--Save Name
-        masterInfo.set_name(newName)
+        self._selected_info.disable_master()
         self.window.SetMasterlistEdited(repopulate=True)
 
 # Column menu -----------------------------------------------------------------

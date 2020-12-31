@@ -499,10 +499,8 @@ class MasterList(_ModsUIList):
         for mi, masterInfo in self.data_store.items():
             newName = settings[u'bash.mods.renames'].get(
                 masterInfo.curr_name, None)
-            #--Rename?
-            if newName and newName in bosh.modInfos:
-                masterInfo.set_name(newName)
-                edited = True
+            #--Rename only if corresponding modInfo is present
+            edited |= bool(masterInfo.rename_if_present(newName))
         #--Done
         if edited: self.SetMasterlistEdited(repopulate=True)
 
@@ -534,12 +532,11 @@ class MasterList(_ModsUIList):
 
     def OnLabelEdited(self, is_edit_cancelled, evt_label, evt_index, evt_item):
         #--No change?
-        if evt_label in bosh.modInfos: # evt_label is the new name
-            masterInfo = self.data_store[evt_item]
-            masterInfo.set_name(evt_label)
+        masterInfo = self.data_store[evt_item]
+        if masterInfo.rename_if_present(evt_label): # evt_label is the new name
             self.SetMasterlistEdited()
             settings.getChanged(u'bash.mods.renames')[
-                masterInfo.old_name] = evt_label
+                masterInfo.old_name] = masterInfo.curr_name
             # populate, refresh must be called last
             self.PopulateItem(itemDex=evt_index)
             return EventResult.FINISH ##: needed?

@@ -184,18 +184,31 @@ class MasterInfo(object):
                  u'stored_size')
 
     def __init__(self, master_name, master_size):
-        self.old_name = self.curr_name = master_name
         self.stored_size = master_size
-        self.mod_info = modInfos.get(self.curr_name, None)
-        self.is_ghost = self.mod_info and self.mod_info.isGhost
+        self.old_name = CIstr(master_name)
+        self.mod_info = self.rename_if_present(master_name)
+        if self.mod_info is None:
+            self.curr_name = CIstr(master_name)
+            self.is_ghost = False
 
     def get_extension(self):
         """Returns the file extension of this master."""
         return cext_(self.curr_name)
 
-    def set_name(self,name):
-        self.curr_name = name
-        self.mod_info = modInfos.get(name, None)
+    def rename_if_present(self, str_or_ci):
+        """Set the current info name if a corresponding mod info is present."""
+        minf = modInfos.get(str_or_ci, None)
+        if minf is not None:
+            self.curr_name = CIstr(str_or_ci)
+            self.is_ghost = minf.isGhost
+        return minf
+
+    def disable_master(self): ##: I added setting mod_info to None  TTT
+        newName = re.sub(u'[mM]$', u'p', u'XX%s' % self.curr_name)
+        #--Save Name
+        self.curr_name = CIstr(newName)
+        self.is_ghost = False
+        self.mod_info = None
 
     def has_esm_flag(self):
         if self.mod_info:
