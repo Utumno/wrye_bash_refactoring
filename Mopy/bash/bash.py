@@ -162,6 +162,7 @@ def exit_cleanup():
     import tempfile
     tmpDir = bolt.GPath(tempfile.tempdir)
     for file_ in tmpDir.list():
+        file_ = bolt.GPath(file_)
         if file_.cs.startswith(u'wryebash_'):
             file_ = tmpDir.join(file_)
             try:

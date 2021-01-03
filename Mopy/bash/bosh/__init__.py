@@ -423,7 +423,7 @@ class FileInfo(AFile, ListInfo):
         #--Look for old snapshots.
         reSnap = re.compile(u'^%s'%root+u'[ -]([0-9.]*[0-9]+)'+ext+u'$',re.U)
         for fileName in destDir.list():
-            maSnap = reSnap.match(fileName.s)
+            maSnap = reSnap.match(fileName)
             if not maSnap: continue
             snapNew = maSnap.group(1).split(u'.')
             #--Compare shared version numbers

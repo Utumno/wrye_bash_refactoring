@@ -56,13 +56,6 @@ def _writeNetString(open_file, string):
 
 failedOmods = set()
 
-def extractOmodsNeeded(installers_paths=()):
-    """Return true if .omod files are present, requiring extraction."""
-    for inst_path in installers_paths:
-        if inst_path.cext == u'.omod' and inst_path not in failedOmods:
-            return True
-    return False
-
 class OmodFile(object):
     """Class for extracting data from OMODs."""
     def __init__(self, omod_path):

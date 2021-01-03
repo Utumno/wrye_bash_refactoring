@@ -3121,8 +3121,11 @@ class InstallersPanel(BashTab):
             self._data_dir_scanned = False
         installers_paths = bass.dirs[
             u'installers'].list() if self.frameActivated else ()
-        if self.frameActivated and omods.extractOmodsNeeded(installers_paths):
-            self.__extractOmods()
+        if self.frameActivated:
+            omds = [inst_path for inst_path in installers_paths if
+                    cext_(inst_path) == u'.omod']
+            if any(inst_path not in omods.failedOmods for inst_path in omds):
+                self.__extractOmods(omds) ##: cahnge above to all?
         do_refresh = scan_data_dir = scan_data_dir or not self._data_dir_scanned
         if not do_refresh and self.frameActivated:
             refresh_info = self.listData.scan_installers_dir(installers_paths,
@@ -3156,13 +3159,11 @@ class InstallersPanel(BashTab):
         refreshui |= do_refresh and self.listData.refreshInstallersStatus()
         if refreshui: self.uiList.RefreshUI(focus_list=False)
 
-    def __extractOmods(self):
+    def __extractOmods(self, omds):
         with balt.Progress(_(u'Extracting OMODs...'),
                            u'\n' + u' ' * 60) as progress:
-            dirInstallers = bass.dirs[u'installers']
-            dirInstallersJoin = dirInstallers.join
-            omods = [dirInstallersJoin(x) for x in dirInstallers.list() if
-                     x.cext == u'.omod']
+            dirInstallersJoin = bass.dirs[u'installers'].join
+            omods = [dirInstallersJoin(x) for x in omds]
             progress.setFull(max(len(omods), 1))
             omodMoves, omodRemoves = set(), set()
             for i, omod in enumerate(omods):
@@ -4139,12 +4140,13 @@ class BashFrame(WindowFrame):
             settings.setChanged(u'bash.colors')
         #--Clean backup
         for fileInfos in (bosh.modInfos,bosh.saveInfos):
-            goodRoots = {p.root for p in fileInfos}
+            goodRoots = {os.path.splitext(p)[0] for p in fileInfos}
             backupDir = fileInfos.bash_dir.join(u'Backups')
             if not backupDir.isdir(): continue
             for back_fname in backupDir.list():
                 back_path = backupDir.join(back_fname)
-                if back_fname.root not in goodRoots and back_path.isfile():
+                if os.path.splitext(back_fname)[0] not in goodRoots and \
+                        back_path.isfile():
                     back_path.remove()
 
     @staticmethod

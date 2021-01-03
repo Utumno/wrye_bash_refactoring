@@ -130,8 +130,8 @@ class Installer(ListInfo):
     def getGhosted():
         """Returns map of real to ghosted files in mods directory."""
         dataDir = bass.dirs[u'mods']
-        ghosts = [x for x in dataDir.list() if x.cs[-6:] == u'.ghost']
-        return bolt.LowerDict((x.root.s, x.s) for x in ghosts if
+        ghosts = [x for x in dataDir.list() if x[-6:].lower() == u'.ghost']
+        return bolt.LowerDict((x.root, x.s) for x in ghosts if # fixme
                               not dataDir.join(x).root.exists())
 
     @staticmethod
@@ -1975,12 +1975,12 @@ class InstallersData(DataStore):
         installersJoin = bass.dirs[u'installers'].join
         pending, projects = set(), set()
         for item in installers_paths:
-            if item.s.lower().startswith((u'bash',u'--')): continue
+            if item.lower().startswith((u'bash',u'--')): continue
             apath = installersJoin(item)
-            if apath.isfile() and item.cext in readExts:
+            if apath.isfile() and apath.cext in readExts:
                 installer = self.get(item)
             elif apath.isdir(): # Project - autorefresh those only if specified
-                if item.s.lower() in self.installers_dir_skips:
+                if item.lower() in self.installers_dir_skips: ##: ci_installers_dir_skips
                     continue # skip Bash directories and user specified ones
                 installer = self.get(item)
                 projects.add(item)
