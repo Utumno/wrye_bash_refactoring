@@ -25,7 +25,7 @@ import re
 import subprocess
 
 from . import bass
-from .bolt import startupinfo, GPath, deprint, walkdir
+from .bolt import startupinfo, GPath, deprint, walkdir, cext_, body_
 from .exception import StateError
 
 exe7z = u'7z.exe' if os.name == u'nt' else u'7z'
@@ -117,10 +117,10 @@ def wrapPopenOut(command, wrapper, errorMsg):
 
 #  WIP: http://sevenzip.osdn.jp/chm/cmdline/switches/method.htm
 def compressionSettings(archive_path, blockSize, isSolid):
-    archiveType = writeExts.get(archive_path.cext)
+    archiveType = writeExts.get(cext_(archive_path))
     if not archiveType:
         #--Always fall back to using the defaultExt
-        archive_path = GPath(archive_path.sbody + defaultExt).tail
+        archive_path = GPath(body_(archive_path) + defaultExt).tail
         archiveType = writeExts.get(archive_path.cext)
     if archive_path.cext in noSolidExts: # zip
         solid = u''

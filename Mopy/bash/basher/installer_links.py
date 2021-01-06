@@ -90,7 +90,7 @@ class _InstallerLink(Installers_Link, EnabledLink):
     def _pack(self, archive_path, installer, project, release=False):
         #--Archive configuration options
         blockSize = None
-        if archive_path.cext in archives.noSolidExts:
+        if cext_(archive_path) in archives.noSolidExts:
             isSolid = False
         else:
             if not u'-ms=' in bass.inisettings[u'7zExtraCompressionArguments']:
@@ -201,7 +201,7 @@ class Installer_Fomod(_Installer_AWizardLink):
                 with BusyCursor():
                     # Select the package we want to install - posts events to
                     # set details and update GUI
-                    self.window.SelectItem(GPath(sel_package.archive))
+                    self.window.SelectItem(sel_package.archive)
                     try:
                         fm_wizard = InstallerFomod(self.window, sel_package)
                     except CancelError:
@@ -262,7 +262,7 @@ class Installer_Wizard(_Installer_AWizardLink):
                 with BusyCursor():
                     # Select the package we want to install - posts events to
                     # set details and update GUI
-                    self.window.SelectItem(GPath(sel_package.archive))
+                    self.window.SelectItem(sel_package.archive)
                     idetails.refreshCurrent(sel_package)
                     try:
                         wizard = InstallerWizard(self.window, sel_package,
@@ -1040,16 +1040,16 @@ class InstallerArchive_Unpack(AppendableLink, _InstallerLink):
         # any dialogs we pop up
         to_unpack = []
         for iname, installer in self.idata.sorted_pairs(self.selected):
-            project = iname.root
+            project = os.path.splitext(iname)[0]
             if self.isSingleArchive():
-                result = self._askText(_(u'Unpack %s to Project:') % iname,
-                                       default=project.s)
-                if not result: return
+                project = self._askText(_(u'Unpack %s to Project:') % iname,
+                                        default=project)
+                if not project: return
                 # Error checking
-                project = GPath(result).tail
-                if not project.s or project.cext in archives.readExts:
+                if GPath(project).stail != project or cext_(project) in \
+                        archives.readExts: # tail modified it contains a path sep
                     self._showWarning(_(u'%s is not a valid project name.') %
-                                      result)
+                                      project)
                     return
                 if self.idata.store_dir.join(project).isfile():
                     self._showWarning(_(u'%s is a file.') % project)
