@@ -77,7 +77,7 @@ def _parse_plugins_txt_(path, mod_infos, _star):
     :type path: bolt.Path
     :type mod_infos: bosh.ModInfos
     :type _star: bool
-    :rtype: (list[bolt.Path], list[bolt.Path])
+    :rtype: (list[CIstr], list[CIstr])
     """
     with path.open(u'rb') as ins:
         #--Load Files
@@ -225,9 +225,9 @@ class Game(object):
         pass a cached value for either parameter this value will be returned
         unchanged, possibly validating the other one based on stale data.
         NOTE: modInfos must exist and be up to date for validation.
-        :type cached_load_order: tuple[bolt.Path]
-        :type cached_active_ordered: tuple[bolt.Path]
-        :rtype: (tuple[bolt.Path], tuple[bolt.Path])
+        :type cached_load_order: tuple[CIstr]
+        :type cached_active_ordered: tuple[CIstr]
+        :rtype: (tuple[CIstr], tuple[CIstr])
         """
         if cached_load_order is not None and cached_active_ordered is not None:
             return cached_load_order, cached_active_ordered # NOOP
@@ -376,12 +376,12 @@ class Game(object):
         raise exception.AbstractError
 
     def _fetch_load_order(self, cached_load_order, cached_active):
-        """:type cached_load_order: tuple[bolt.Path] | None
-        :type cached_active: tuple[bolt.Path]"""
+        """:type cached_load_order: tuple[CIstr] | None
+        :type cached_active: tuple[CIstr]"""
         raise exception.AbstractError
 
     def _fetch_active_plugins(self): # no override for AsteriskGame
-        """:rtype: list[bolt.Path]"""
+        """:rtype: list[CIstr]"""
         raise exception.AbstractError
 
     def _persist_load_order(self, lord, active):
@@ -400,7 +400,7 @@ class Game(object):
 
     # MODFILES PARSING --------------------------------------------------------
     def _parse_modfile(self, path):
-        """:rtype: (list[bolt.Path], list[bolt.Path])"""
+        """:rtype: (list[CIstr], list[CIstr])"""
         if not path.exists(): return [], []
         #--Read file
         acti, _lo = _parse_plugins_txt_(path, self.mod_infos, _star=self._star)
@@ -411,7 +411,7 @@ class Game(object):
 
     # PLUGINS TXT -------------------------------------------------------------
     def _parse_plugins_txt(self):
-        """:rtype: (list[bolt.Path], list[bolt.Path])"""
+        """:rtype: (list[CIstr], list[CIstr])"""
         if not self.plugins_txt_path.exists(): return [], []
         #--Read file
         acti, _lo = self._parse_modfile(self.plugins_txt_path)
@@ -436,7 +436,7 @@ class Game(object):
         set_load_order() to check if a load order passed in is valid. Needs
         rethinking as save load and active should be an atomic operation -
         leads to hacks (like the _selected parameter).
-        :type lord: list[bolt.Path]
+        :type lord: list[CIstr]
         """
         if fix_lo is None: fix_lo = FixInfo() # discard fix info
         old_lord = lord[:]
@@ -569,7 +569,7 @@ class Game(object):
 
     @staticmethod
     def _check_for_duplicates(plugins_list):
-        """:type plugins_list: list[bolt.Path]"""
+        """:type plugins_list: list[CIstr]"""
         mods, duplicates, j = set(), set(), 0
         mods_add = mods.add
         duplicates_add = duplicates.add

@@ -50,6 +50,7 @@ from itertools import izip
 from . import bass, bolt, bush, exception
 # Game instance providing load order operations API
 from . import _games_lo
+from .bolt import GPath_no_norm, CIstr
 
 _game_handle = None # type: _games_lo.Game
 _plugins_txt_path = _loadorder_txt_path = _lord_pickle_path = None
@@ -101,16 +102,17 @@ class LoadOrder(object):
     def __init__(self, loadOrder=__empty, active=__none):
         """:type loadOrder: list | set | tuple
         :type active: list | set | tuple"""
-        if set(active) - set(loadOrder):
+        set_act = frozenset(active)
+        if set_act - set(loadOrder):
             raise exception.BoltError(
                 u'Active mods with no load order: ' + u', '.join(
-                    set(active) - set(loadOrder)))
+                    set_act - set(loadOrder)))
         self._loadOrder = tuple(loadOrder)
-        self._active = frozenset(active)
+        self._active = set_act
         self.__mod_loIndex = {a: i for i, a in enumerate(loadOrder)}
         # below would raise key error if active have no loadOrder
         self._activeOrdered = tuple(
-            sorted(active, key=self.__mod_loIndex.__getitem__))
+            sorted(set_act, key=self.__mod_loIndex.__getitem__))
         self.__mod_actIndex = {a: i for i, a in enumerate(self._activeOrdered)}
 
     @property
@@ -171,13 +173,18 @@ def persist_orders(__keep_max=256):
     length = len(_saved_load_orders)
     if length > __keep_max:
         x, y = _keep_max(__keep_max, length)
-        _lords_pickle.pickled_data[u'_saved_load_orders'] = \
+        orders = \
             _saved_load_orders[_current_list_index - x:_current_list_index + y]
         _lords_pickle.pickled_data[u'_current_list_index'] = x
     else:
-        _lords_pickle.pickled_data[u'_saved_load_orders'] = _saved_load_orders
+        orders = _saved_load_orders
         _lords_pickle.pickled_data[u'_current_list_index'] = _current_list_index
-    _lords_pickle.pickled_data[u'_active_mods_lists'] = _active_mods_lists
+    _lords_pickle.pickled_data[u'_saved_load_orders'] = [# FIXME: backwards compat
+        lo_entry(date, LoadOrder([GPath_no_norm(c) for c in lo.loadOrder],
+            {CIstr(c) for c in lo.active})) for (date, lo) in orders]
+    _lords_pickle.pickled_data[u'_active_mods_lists'] = {# FIXME: backwards compat
+        k: [GPath_no_norm(u'%s' % p) for p in v] for k, v in
+        _active_mods_lists.iteritems()}
     _lords_pickle.save()
 
 def _keep_max(max_to_keep, length):
@@ -304,8 +311,8 @@ def save_lo(lord, acti=None, __index_move=0, quiet=False):
 
 def _update_cache(lord=None, acti_sorted=None, __index_move=0):
     """
-    :type lord: tuple[bolt.Path] | list[bolt.Path]
-    :type acti_sorted: tuple[bolt.Path] | list[bolt.Path]
+    :type lord: tuple[CIstr] | list[CIstr]
+    :type acti_sorted: tuple[CIstr] | list[CIstr]
     """
     global cached_lord
     try:
@@ -387,6 +394,12 @@ def __load_pickled_load_orders():
     if b'Bethesda ESMs' in _active_mods_lists: ##: backwards compat
         _active_mods_lists[u'Vanilla'] = _active_mods_lists[b'Bethesda ESMs']
         del _active_mods_lists[b'Bethesda ESMs']
+    # transform load orders to CIstr
+    _saved_load_orders = [lo_entry(date, LoadOrder(
+        [CIstr(c.s) for c in lo.loadOrder],
+        {CIstr(c.s) for c in lo.active})) for (date, lo) in _saved_load_orders]
+    _active_mods_lists = {k: [CIstr(u'%s' % p) for p in v] for k, v in
+                          _active_mods_lists.iteritems()}
     locked = bass.settings.get(u'bosh.modInfos.resetMTimes', False)
 
 def get_active_mods_lists():
