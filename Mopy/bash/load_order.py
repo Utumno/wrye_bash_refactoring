@@ -141,7 +141,10 @@ class LoadOrder(object):
                 u'_loadOrder': self.loadOrder}
 
     def __setstate__(self, dct):
-        self.__dict__.update(dct)   # update attributes
+        if not isinstance(next(iter(dct)), unicode):# FIXME PY3: TTT accepts str keys?
+            dct = {(k if isinstance(k, unicode) else k.decode(u'ascii')): v for
+                   k, v in dct.iteritems()}
+        self.__dict__.update(dct)   # update attributes # __dict__ prints empty
         self._active = frozenset(self._activeOrdered)
         self.__mod_loIndex = {a: i for i, a in enumerate(self._loadOrder)}
         self.__mod_actIndex = {a: i for i, a in enumerate(self._activeOrdered)}
