@@ -113,7 +113,9 @@ class _InstallerLink(Installers_Link, EnabledLink):
             iArchive.blockSize = blockSize
         self.window.RefreshUI(detail_item=archive_path)
 
-    def _askFilename(self, message, filename):
+    def _askFilename(self, message, filename, disallow_overwrite=False,
+                     no_dir=True, allowed_ext=archives.writeExts,
+                     use_default_ext=True):
         """:rtype: bolt.Path"""
         result = self._askText(message, title=self.dialogTitle,
                                default=filename)
@@ -123,15 +125,22 @@ class _InstallerLink(Installers_Link, EnabledLink):
         if not archive_path.s:
             self._showWarning(_(u'%s is not a valid archive name.') % result)
             return
-        if self.idata.store_dir.join(archive_path).isdir():
+        if no_dir and self.idata.store_dir.join(archive_path).isdir():
             self._showWarning(_(u'%s is a directory.') % archive_path)
             return
-        if archive_path.cext not in archives.writeExts:
+        if allowed_ext and archive_path.cext not in allowed_ext:
+            if not use_default_ext:
+                self._showWarning(_(u'%s does not have correct extension (%s).')
+                                  % (archive_path, u', '.join(allowed_ext)))
+                return
             self._showWarning(
                 _(u'The %s extension is unsupported. Using %s instead.') % (
                     archive_path.cext, archives.defaultExt))
             archive_path = GPath(archive_path.sroot + archives.defaultExt).tail
         if archive_path in self.idata:
+            if disallow_overwrite:
+                self._showWarning(_(u'%s already exists.') % archive_path)
+                return
             if not self._askYes(_(u'%s already exists. Overwrite it?') %
                     archive_path, title=self.dialogTitle, default=False): return
         return archive_path
@@ -1177,8 +1186,7 @@ class InstallerProject_Pack(_SingleProject):
         archive_name = GPath(self._selected_item.s + archives.defaultExt)
         #--Confirm operation
         archive_name = self._askFilename(
-            message=_(u'Pack %s to Archive:') % self._selected_item,
-            filename=archive_name.s)
+            _(u'Pack %s to Archive:') % self._selected_item, archive_name.s)
         if not archive_name: return
         self._pack(archive_name, self._selected_info, self._selected_item,
                    release=self.__class__.release)
