@@ -122,8 +122,8 @@ class _InstallerLink(Installers_Link, EnabledLink):
         if not result: return
         archive_path = GPath(result).tail
         #--Error checking
-        if not archive_path.s:
-            self._showWarning(_(u'%s is not a valid archive name.') % result)
+        if archive_path != result: # tail() modified it, it contains a path sep
+            self._showWarning(_(u'%s is not a valid name.') % result)
             return
         if no_dir and self.idata.store_dir.join(archive_path).isdir():
             self._showWarning(_(u'%s is a directory.') % archive_path)
@@ -401,6 +401,7 @@ class Installer_Anneal(_NoMarkerLink):
 class Installer_Duplicate(OneItemLink, _InstallerLink):
     """Duplicate selected Installer."""
     _text = _(u'Duplicate...')
+    dialogTitle = _text
 
     @property
     def link_help(self):
@@ -419,26 +420,17 @@ class Installer_Duplicate(OneItemLink, _InstallerLink):
         if isdir: root,ext = curName,u''
         else: root,ext = curName.root, curName.ext
         newName = self.window.new_name(root + _(u' Copy') + ext)
-        result = self._askText(_(u'Duplicate %s to:') % curName,
-                               default=newName.s)
+        result = self._askFilename(
+            _(u'Duplicate %s to:') % self._selected_item, newName.s,
+            disallow_overwrite=True, no_dir=False, # fixme no_dir=False?
+            allowed_ext={ext.lower()} if ext else {},
+            use_default_ext=False)
         if not result: return
-        #--Error checking
-        newName = GPath(result).tail
-        if not newName.s:
-            self._showWarning(_(u'%s is not a valid name.') % result)
-            return
-        if newName in self.idata:
-            self._showWarning(_(u'%s already exists.') % newName)
-            return
-        if self.idata.store_dir.join(curName).isfile() and curName.cext != newName.cext:
-            self._showWarning(_(u'%s does not have correct extension (%s).')
-                              % (newName,curName.ext))
-            return
         #--Duplicate
         with BusyCursor():
-            self.idata.copy_installer(curName,newName)
+            self.idata.copy_installer(curName, result)
             self.idata.irefresh(what=u'N')
-        self.window.RefreshUI(detail_item=newName)
+        self.window.RefreshUI(detail_item=result)
 
 class Installer_Hide(_InstallerLink, UIList_Hide):
     """Hide selected Installers."""
