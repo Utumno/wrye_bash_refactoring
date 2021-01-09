@@ -38,7 +38,7 @@ from ..exception import BoltError, CancelError, FileEditError, \
 from ..gui import CancelButton, DeselectAllButton, HLayout, Label, \
     LayoutOptions, OkButton, OpenButton, RevertButton, RevertToSavedButton, \
     SaveAsButton, SelectAllButton, Stretch, VLayout, DialogWindow, \
-    CheckListBox, HorizontalLine, EventResult
+    CheckListBox, HorizontalLine, EventResult, FileOpen
 from ..patcher import exportConfig, list_patches_dir
 from ..patcher.patch_files import PatchFile
 
@@ -317,9 +317,9 @@ class PatchDialog(DialogWindow):
         textDir = bass.dirs[u'patches']
         textDir.makedirs()
         #--File dialog
-        textPath = balt.askOpen(self.parent,
-                                _(u'Import Bashed Patch configuration from:'),
-                                textDir, config_dat, u'*.dat', mustExist=True)
+        textPath = FileOpen.display_dialog(self.parent,
+            _(u'Import Bashed Patch configuration from:'),
+                textDir, config_dat, u'*.dat', mustExist=True)
         if not textPath: return
         # try the current Bashed Patch mode.
         table_get = bolt.DataTable(bolt.PickleDict(textPath)).getItem

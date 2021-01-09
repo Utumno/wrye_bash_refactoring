@@ -27,11 +27,65 @@ __author__ = u'Utumno, Infernio'
 import wx as _wx
 import wx.adv as _adv     # wxPython wizard class
 
+from exception import AbstractError
 from .base_components import _AComponent, Color, WithFirstShow, csf
+from ..bolt import GPath ##: remove this it's for file dialogs
 
 # Special constant defining a window as having whatever position the underlying
 # GUI implementation picks for it by default.
 DEFAULT_POSITION = (-1, -1)
+
+class _AskDialog(_AComponent):
+    """Ask user input."""
+    _wx_widget_type = _wx.FileDialog
+    _dialog_style = _wx.FD_OPEN
+
+    def __init__(self, parent, title=u'', defaultDir=u'', defaultFile=u'',
+                 wildcard=u'', mustExist=False): ##: mustExist vs _wx.FD_FILE_MUST_EXIST ??
+        defaultDir,defaultFile = [GPath(x).s for x in (defaultDir,defaultFile)]
+        super(_AskDialog, self).__init__(parent, title, defaultDir,
+            defaultFile, wildcard, style=self.__class__._dialog_style)
+        self.mustExist = mustExist
+
+    def __enter__(self): return self
+    def __exit__(self, exc_type, exc_val, exc_tb): self.destroy_component()
+
+    @classmethod
+    def display_dialog(cls, *args, **kwargs):
+        """Instantiate a dialog, display it and return the ShowModal result."""
+        with cls(*args, **kwargs) as dialog:
+            if dialog._native_widget.ShowModal() != _wx.ID_OK:
+                return False
+            return dialog._validate_input()
+
+    def _validate_input(self): raise AbstractError
+
+class FileOpen(_AskDialog):
+
+    def _validate_input(self):
+        result = GPath(self._native_widget.GetPath())
+        if self.mustExist and not result.exists():
+            return False
+        return result
+
+class FileOpenMultiple(_AskDialog):
+    """'Open files' dialog that returns a *list* of files to open."""
+    _dialog_style = _wx.FD_OPEN | _wx.FD_MULTIPLE | _wx.FD_FILE_MUST_EXIST
+
+    def __init__(self, parent, title=u'', defaultDir=u'', defaultFile=u'',
+                 wildcard=u'', mustExist=True): ##:mustExist seems True given the FD_FILE_MUST_EXIST?
+        super(FileOpenMultiple, self).__init__(parent, title, defaultDir,
+            defaultFile, wildcard, mustExist=mustExist)
+
+    def _validate_input(self):
+        result = [GPath(p) for p in self._native_widget.GetPaths()]
+        if self.mustExist and any(not p.exists() for p in result):
+            return False
+        return result
+
+class FileSave(_AskDialog):
+    """'Open files' dialog that returns a *list* of files to open."""
+    _dialog_style = _wx.FD_SAVE | _wx.FD_OVERWRITE_PROMPT
 
 class _TopLevelWin(_AComponent):
     """Methods mixin for top level windows

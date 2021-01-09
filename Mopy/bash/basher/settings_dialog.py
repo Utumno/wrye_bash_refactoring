@@ -37,7 +37,7 @@ from ..gui import ApplyButton, BusyCursor, Button, CancelButton, Color, \
     WrappingTextMixin, ListBox, Label, Spacer, HBoxedLayout, CheckBox, \
     TextField, OpenButton, ScrollableWindow, ClickableImage, RevertButton, \
     SaveButton, SaveAsButton, DoubleListBox, ATreeMixin, CheckListBox, \
-    VBoxedLayout
+    VBoxedLayout, FileOpen, FileSave
 from ..localize import dump_translator
 
 class SettingsDialog(DialogWindow):
@@ -350,8 +350,9 @@ class ColorsPage(_AFixedPage): ##: _AScrollablePage breaks the color picker??
         outDir = bass.dirs[u'patches']
         outDir.makedirs()
         #--File dialog
-        outPath = balt.askSave(self, _(u'Export color configuration to:'),
-                               outDir, _(u'Colors.txt'), u'*.txt')
+        outPath = FileSave.display_dialog(
+            self, _(u'Export color configuration to:'), outDir,
+            _(u'Colors.txt'), u'*.txt')
         if not outPath: return
         try:
             with outPath.open(u'w') as out:
@@ -369,9 +370,9 @@ class ColorsPage(_AFixedPage): ##: _AScrollablePage breaks the color picker??
         inDir = bass.dirs[u'patches']
         inDir.makedirs()
         #--File dialog
-        inPath = balt.askOpen(self, _(u'Import color configuration from:'),
-                              inDir, _(u'Colors.txt'), u'*.txt',
-                              mustExist=True)
+        inPath = FileOpen.display_dialog(self,
+            _(u'Import color configuration from:'), inDir, _(u'Colors.txt'),
+            u'*.txt', mustExist=True)
         if not inPath: return
         try:
             with inPath.open(u'r') as ins:
@@ -467,7 +468,8 @@ class ConfigureEditorDialog(DialogWindow):
     def _handle_browse(self):
         """Opens a file dialog to choose the editor."""
         # Don't use mustExist, we want to show an error message for that below
-        chosen_editor = balt.askOpen(self, title=_(u'Choose Editor'),
+        chosen_editor = FileOpen.display_dialog(
+            self, title=_(u'Choose Editor'),
             defaultDir=os.environ.get(u'ProgramFiles', u''), wildcard=u'*.exe',
             mustExist=True)
         if chosen_editor:
@@ -921,7 +923,7 @@ class BackupsPage(_AFixedPage):
     def _new_backup(self):
         """Saves the current settings and data to create a new backup."""
         with BusyCursor(): Link.Frame.SaveSettings()
-        settings_file = balt.askSave(self,
+        settings_file = FileSave.display_dialog(self,
             title=_(u'Backup Bash Settings'), defaultDir=self._backup_dir,
             wildcard=u'*.7z', defaultFile=barb.BackupSettings.backup_filename(
                 bush.game.fsName))
@@ -1416,8 +1418,8 @@ class TrustedBinariesPage(_AFixedPage):
         #--File dialog
         title = _(u'Export list of allowed/disallowed plugin DLLs to:')
         file_ = bush.game.Se.se_abbrev + u' ' + _(u'DLL permissions') + u'.txt'
-        textPath = balt.askSave(self, title=title, defaultDir=textDir,
-            defaultFile=file_, wildcard=u'*.txt')
+        textPath = FileSave.display_dialog(self, title=title,
+            defaultDir=textDir, defaultFile=file_, wildcard=u'*.txt')
         if not textPath: return
         with textPath.open(u'w', encoding=u'utf-8-sig') as out:
             out.write(u'goodDlls '+_(u'(those dlls that you have chosen to allow to be installed)')+u'\r\n')
@@ -1442,7 +1444,7 @@ class TrustedBinariesPage(_AFixedPage):
         defFile = bush.game.Se.se_abbrev + u' ' + _(
             u'dll permissions') + u'.txt'
         title = _(u'Import list of allowed/disallowed plugin DLLs from:')
-        textPath = balt.askOpen(self, title=title, defaultDir=textDir,
+        textPath = FileOpen.display_dialog(self,title=title,defaultDir=textDir,
             defaultFile=defFile, wildcard=u'*.txt', mustExist=True)
         if not textPath: return
         message = (_(u'Merge permissions from file with current dll permissions?')

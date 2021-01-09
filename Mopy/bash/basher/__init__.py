@@ -89,7 +89,7 @@ from ..gui import Button, CancelButton, CheckBox, HLayout, Label, \
     LayoutOptions, RIGHT, SaveButton, Spacer, Stretch, TextArea, TextField, \
     TOP, VLayout, EventResult, DropDown, DialogWindow, WindowFrame, Splitter, \
     TabbedPanel, PanelWin, CheckListBox, Color, Picture, ImageWrapper, \
-    CenteredSplash, BusyCursor, RadioButton, GlobalMenu
+    CenteredSplash, BusyCursor, RadioButton, GlobalMenu, FileOpen
 
 # Constants -------------------------------------------------------------------
 from .constants import colorInfo, settingDefaults, installercons
@@ -1862,8 +1862,8 @@ class INIDetailsPanel(_DetailsMixin, SashPanel):
                 [_(u'Supported files') + u' (*.ini,*.cfg)|*.ini;*.cfg',
                  _(u'INI files') + u' (*.ini)|*.ini',
                  _(u'Config files') + u' (*.cfg)|*.cfg', ])
-            full_path = balt.askOpen(self, defaultDir=self.lastDir,
-                                     wildcard=wildcard, mustExist=True)
+            full_path = FileOpen.display_dialog(self, defaultDir=self.lastDir,
+                                                wildcard=wildcard, mustExist=True)
             if full_path: self.lastDir = full_path.shead
             ini_choice_ = settings[u'bash.ini.choice']
             if not full_path or ( # reselected the current target ini
