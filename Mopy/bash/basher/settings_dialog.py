@@ -372,7 +372,7 @@ class ColorsPage(_AFixedPage): ##: _AScrollablePage breaks the color picker??
         #--File dialog
         inPath = FileOpen.display_dialog(self,
             _(u'Import color configuration from:'), inDir, _(u'Colors.txt'),
-            u'*.txt', mustExist=True)
+            u'*.txt')
         if not inPath: return
         try:
             with inPath.open(u'r') as ins:
@@ -470,8 +470,7 @@ class ConfigureEditorDialog(DialogWindow):
         # Don't use mustExist, we want to show an error message for that below
         chosen_editor = FileOpen.display_dialog(
             self, title=_(u'Choose Editor'),
-            defaultDir=os.environ.get(u'ProgramFiles', u''), wildcard=u'*.exe',
-            mustExist=True)
+            defaultDir=os.environ.get(u'ProgramFiles', u''), wildcard=u'*.exe')
         if chosen_editor:
             self._editor_location.text_content = chosen_editor.s
 
@@ -1444,8 +1443,8 @@ class TrustedBinariesPage(_AFixedPage):
         defFile = bush.game.Se.se_abbrev + u' ' + _(
             u'dll permissions') + u'.txt'
         title = _(u'Import list of allowed/disallowed plugin DLLs from:')
-        textPath = FileOpen.display_dialog(self,title=title,defaultDir=textDir,
-            defaultFile=defFile, wildcard=u'*.txt', mustExist=True)
+        textPath = FileOpen.display_dialog(self,title=title,
+            defaultDir=textDir, defaultFile=defFile, wildcard=u'*.txt')
         if not textPath: return
         message = (_(u'Merge permissions from file with current dll permissions?')
                    + u'\n' +

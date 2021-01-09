@@ -1863,7 +1863,7 @@ class INIDetailsPanel(_DetailsMixin, SashPanel):
                  _(u'INI files') + u' (*.ini)|*.ini',
                  _(u'Config files') + u' (*.cfg)|*.cfg', ])
             full_path = FileOpen.display_dialog(self, defaultDir=self.lastDir,
-                                                wildcard=wildcard, mustExist=True)
+                                                wildcard=wildcard)
             if full_path: self.lastDir = full_path.shead
             ini_choice_ = settings[u'bash.ini.choice']
             if not full_path or ( # reselected the current target ini

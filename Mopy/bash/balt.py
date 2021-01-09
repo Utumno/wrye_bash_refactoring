@@ -1658,8 +1658,7 @@ class Link(object):
     def _askOpen(self, title=u'', defaultDir=u'', defaultFile=u'',
                  wildcard=u''):
         return FileOpen.display_dialog(self.window, title=title,
-            defaultDir=defaultDir, defaultFile=defaultFile, wildcard=wildcard,
-            mustExist=True)
+            defaultDir=defaultDir, defaultFile=defaultFile, wildcard=wildcard)
 
     def _showOk(self, message, title=u''):
         if not title: title = self._text
