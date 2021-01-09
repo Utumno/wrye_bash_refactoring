@@ -1656,10 +1656,10 @@ class Link(object):
         return askContinue(self.window, message, continueKey, title=title)
 
     def _askOpen(self, title=u'', defaultDir=u'', defaultFile=u'',
-                 wildcard=u'', mustExist=False):
+                 wildcard=u''):
         return FileOpen.display_dialog(self.window, title=title,
             defaultDir=defaultDir, defaultFile=defaultFile, wildcard=wildcard,
-            mustExist=mustExist)
+            mustExist=True)
 
     def _showOk(self, message, title=u''):
         if not title: title = self._text

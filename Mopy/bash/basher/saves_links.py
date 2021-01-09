@@ -245,7 +245,7 @@ class Save_ImportFace(OneItemLink):
                    u' (*' + exts + u')|*' + exts
         #--File dialog
         srcPath = self._askOpen(title=_(u'Face Source:'), defaultDir=srcDir,
-                                wildcard=wildcard, mustExist=True)
+                                wildcard=wildcard)
         if not srcPath: return
         fname = srcPath.tail.s
         if bosh.SaveInfos.rightFileType(fname): # Import from a save

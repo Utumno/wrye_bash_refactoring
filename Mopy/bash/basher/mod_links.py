@@ -513,8 +513,8 @@ class _Mod_Groups_Import(ItemLink):
                                  _(u'Import Groups')): return
         textDir = bass.dirs[u'patches']
         #--File dialog
-        textPath = self._askOpen(_(u'Import names from:'),textDir,
-            u'', u'*_Groups.csv',mustExist=True)
+        textPath = self._askOpen(_(u'Import names from:'), textDir, u'',
+                                 u'*_Groups.csv')
         if not textPath: return
         (textDir,textName) = textPath.headTail
         #--Extension error check
@@ -1660,8 +1660,8 @@ class Mod_Fids_Replace(OneItemLink):
                                  _(u'Import Form IDs')): return
         textDir = bass.dirs[u'patches']
         #--File dialog
-        textPath = self._askOpen(_(u'Form ID mapper file:'),textDir,
-            u'', u'*_Formids.csv',mustExist=True)
+        textPath = self._askOpen(_(u'Form ID mapper file:'), textDir, u'',
+                                 u'*_Formids.csv')
         if not textPath: return
         (textDir,textName) = textPath.headTail
         #--Extension error check
@@ -1692,7 +1692,7 @@ class Mod_Face_Import(OneItemLink):
         wildcard = _(u'%s Files')%bush.game.displayName+u' (*.ess;*.esr)|*.ess;*.esr'
         #--File dialog
         srcPath = self._askOpen(_(u'Face Source:'), defaultDir=srcDir,
-                                wildcard=wildcard, mustExist=True)
+                                wildcard=wildcard)
         if not srcPath: return
         #--Get face
         srcInfo = bosh.SaveInfo(srcPath)
@@ -1797,7 +1797,7 @@ class _Mod_Import_Link(_Import_Export_Link, OneItemLink):
         textDir = bass.dirs[u'patches']
         #--File dialog
         textPath = self._askOpen(self.__class__.askTitle, textDir, textName,
-                                 self._wildcard, mustExist=True)
+                                 self._wildcard)
         if not textPath: return
         (textDir, textName) = textPath.headTail
         #--Extension error check
@@ -2283,8 +2283,8 @@ class Mod_EditorIds_Import(_Mod_Import_Link):
         textName = self._selected_item.root + self.__class__.csvFile
         textDir = bass.dirs[u'patches']
         #--File dialog
-        textPath = self._askOpen(self.__class__.askTitle,textDir,
-            textName, self._wildcard ,mustExist=True)
+        textPath = self._askOpen(self.__class__.askTitle, textDir,
+                                 textName, self._wildcard)
         if not textPath: return
         (textDir,textName) = textPath.headTail
         #--Extension error check
