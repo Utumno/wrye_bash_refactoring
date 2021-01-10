@@ -1654,7 +1654,8 @@ class DataTable(DataDict):
         # if nested_dict is None:
         #     nested_dict = self.dictFile.pickled_data
         print(u'pruning paths from %s' % dict(
-            (x, self.dictFile.pickled_data[x]) for x in self.dictFile.pickled_data.keys()[:10]))
+            (x, self.dictFile.pickled_data[x]) for x in
+            list(self.dictFile.pickled_data)[:10]))
         copy_data = list(self.dictFile.pickled_data.iteritems())
         self.dictFile.pickled_data.clear()
         lo_dict = LowerDict()
