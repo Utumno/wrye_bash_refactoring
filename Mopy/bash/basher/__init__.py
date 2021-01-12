@@ -525,6 +525,12 @@ class MasterList(_ModsUIList):
         # pass event on (for label editing)
         return super(MasterList, self).OnBeginEditLabel(evt_label, uilist_ctrl)
 
+    def _first_renamed(self):
+        """Check if the operation is allowed and return the item type of the
+        selected labels to be renamed."""
+        to_rename = self.GetSelected()
+        return type(self.data_store[to_rename[0]])
+
     def OnLabelEdited(self, is_edit_cancelled, evt_label, evt_index, evt_item):
         newName = GPath(evt_label)
         #--No change?
@@ -2309,10 +2315,15 @@ class InstallersList(balt.UIList):
 
     def OnBeginEditLabel(self, evt_label, uilist_ctrl):
         """Start renaming installers"""
-        to_rename = self.GetSelected()
-        if not to_rename:
+        if not self._first_renamed():
             # We somehow got here but have nothing selected, abort
             return EventResult.CANCEL
+        uilist_ctrl.ec_set_on_char_handler(self._OnEditLabelChar)
+        return super(InstallersList, self).OnBeginEditLabel(evt_label,
+                                                            uilist_ctrl)
+
+    def _first_renamed(self):
+        to_rename = self.GetSelected()
         #--Only rename multiple items of the same type
         renaming_type = type(self.data_store[to_rename[0]])
         last_marker = GPath(u'==Last==')
@@ -2320,20 +2331,11 @@ class InstallersList(balt.UIList):
             if not isinstance(self.data_store[item], renaming_type):
                 balt.showError(self, _(
                     u"Bash can't rename mixed installers types"))
-                return EventResult.CANCEL
+                return None
             #--Also, don't allow renaming the 'Last' marker
             elif item == last_marker:
-                return EventResult.CANCEL
-        uilist_ctrl.ec_set_on_char_handler(self._OnEditLabelChar)
-        #--Markers, change the selection to not include the '=='
-        if renaming_type.is_marker():
-            to = len(evt_label) - 2
-            uilist_ctrl.ec_set_selection(2, to)
-        #--Archives, change the selection to not include the extension
-        elif renaming_type.is_archive():
-            return super(InstallersList, self).OnBeginEditLabel(evt_label,
-                                                                uilist_ctrl)
-        return EventResult.FINISH  ##: needed?
+                return None
+        return renaming_type
 
     def _OnEditLabelChar(self, is_f2_down, ec_value, uilist_ctrl):
         """For pressing F2 on the edit box for renaming"""

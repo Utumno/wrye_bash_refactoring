@@ -145,6 +145,14 @@ class ListInfo(object):
             return None, _(u'File %s already exists.') % name_str, None
         return self.__class__.validate_filename_str(name_str)
 
+    # Gui renaming stuff ------------------------------------------------------
+    @classmethod
+    def rename_area_idxs(cls, text_str):
+        """Return the selection span of item being renamed - usually to
+        exclude the extension."""
+        if cls._valid_exts_re:
+            return 0, len(GPath(text_str).sbody)
+
 class MasterInfo(object):
     """Slight abstraction over ModInfo that allows us to represent masters that
     are missing an active mod counterpart."""
