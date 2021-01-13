@@ -107,6 +107,12 @@ class Installer(ListInfo):
     @classmethod
     def is_marker(cls): return False
 
+    @classmethod
+    def validate_filename_str(cls, name_str, has_digits=False,
+        allowed_exts=frozenset(), use_default_ext=False):
+        return super(Installer, cls).validate_filename_str(
+            name_str, has_digits, frozenset()) # block extension check
+
     @staticmethod
     def init_bain_dirs():
         """Initialize BAIN data directories on a per game basis."""
@@ -1281,6 +1287,25 @@ class InstallerArchive(Installer):
 
     @classmethod
     def is_archive(cls): return True
+
+    @classmethod
+    def validate_filename_str(cls, name_str, has_digits=False,
+                              allowed_exts=archives.writeExts,
+                              use_default_ext=False, __7z=archives.defaultExt):
+        r, e = os.path.splitext(name_str)
+        if allowed_exts and e.lower not in allowed_exts:
+            if not use_default_ext:
+                return _(u'%s does not have correct extension (%s).') % (
+                    e, u', '.join(allowed_exts)), None, None
+            msg = _(u'The %s extension is unsupported. Using %s instead.') % (
+                e, __7z)
+            name_str, e = r + __7z, __7z
+        else: msg = u''
+        name_path, root, _numStr = super(InstallerArchive, cls
+            ).validate_filename_str(name_str, has_digits, {e})
+        if name_path is not None and msg:
+            return name_path, msg, None # propagate the msg for extension change
+        return name_path, u'', None
 
     def __reduce__(self):
         from . import InstallerArchive as boshInstallerArchive

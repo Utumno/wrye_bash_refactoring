@@ -1343,9 +1343,9 @@ class _EditableMixinOnFileInfos(_EditableMixin):
         fileStr = self._fname_ctrl.text_content
         if fileStr == self.fileStr: return
         #--Validate the filename
-        root, newName, _numStr = self.file_info.validate_name(fileStr)
-        if not root:
-            balt.showError(self, newName)
+        name_path, root, _numStr = self.file_info.validate_name(fileStr)
+        if root is None:
+            balt.showError(self, name_path) # it's an error message in this case
             self._fname_ctrl.text_content = self.fileStr
         #--Okay?
         else:
@@ -1990,7 +1990,7 @@ class SaveList(balt.UIList):
     def OnLabelEdited(self, is_edit_cancelled, evt_label, evt_index, evt_item):
         """Savegame renamed."""
         if is_edit_cancelled: return EventResult.FINISH # todo CANCEL?
-        root, newName, _numStr = \
+        newName, root, _numStr = \
             self.panel.detailsPanel.file_info.validate_filename_str(evt_label)
         if not root:
             balt.showError(self, newName)
@@ -2364,10 +2364,10 @@ class InstallersList(balt.UIList):
         """Renamed some installers"""
         if is_edit_cancelled: return EventResult.FINISH ##: previous behavior todo TTT
         selected = self.GetSelected()
-        # common to all selected! enforced in OnBeginEditLabel
+        # all selected have common type! enforced in OnBeginEditLabel
         renaming_type = type(self.data_store[selected[0]])
-        root, newName, _numStr = renaming_type.validate_filename_str(evt_label)
-        if not root:
+        newName, root, _numStr = renaming_type.validate_filename_str(evt_label)
+        if root is None:
             balt.showError(self, newName)
             return EventResult.CANCEL
         #--Rename each installer, keeping the old extension (for archives)
@@ -3291,7 +3291,7 @@ class ScreensList(balt.UIList):
     def OnLabelEdited(self, is_edit_cancelled, evt_label, evt_index, evt_item):
         """Rename selected screenshots."""
         if is_edit_cancelled: return EventResult.CANCEL
-        root, newName, numStr = \
+        newName, root, numStr = \
             self.panel.detailsPanel.file_info.validate_filename_str(
                 evt_label, has_digits=True)
         if not (root or numStr):

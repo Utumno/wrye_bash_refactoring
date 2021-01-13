@@ -106,7 +106,8 @@ class ListInfo(object):
     _is_filename = True
 
     @classmethod
-    def validate_filename_str(cls, name_str, has_digits=False):
+    def validate_filename_str(cls, name_str, has_digits=False,
+                              allowed_exts=frozenset()):
         """Basic validation of list item name - those are usually filenames so
         they should contain valid chars. We also optionally check for match
         with an extension group (apart from projects and markers).
@@ -114,22 +115,24 @@ class ListInfo(object):
         :type name_str: unicode
         """
         if not name_str:
-            return None, _(u'Empty name !'), None
+            return _(u'Empty name !'), None, None
         char = cls._is_filename and bolt.Path.has_invalid_chars(name_str)
         if char:
-            return None, _(u'%(new_name)s contains invalid character '
-                u'(%(char)s)') % {u'new_name': name_str, u'char': char}, None
+            return _(u'%(new_name)s contains invalid character (%(char)s)') % {
+                u'new_name': name_str, u'char': char}, None, None
+        exts_re = cls._valid_exts_re if not allowed_exts else \
+            r'(\.(' + u'|'.join(ext[1:] for ext in allowed_exts) + u')+)'
         # require at least one char before extension
-        regex = u'^%s(.*?)' % (u'' r'(?=.+\.)' if cls._valid_exts_re else u'')
+        regex = u'^%s(.*?)' % (u'' r'(?=.+\.)' if exts_re else u'')
         if has_digits: regex += u'' r'(\d*)'
-        regex += cls._valid_exts_re + u'$'
-        rePattern = re.compile(regex, re.I | re.U)
+        regex += exts_re + u'$'
+        rePattern = re.compile(regex, re.I | re.U) ##: re.U?
         maPattern = rePattern.match(name_str)
         if maPattern:
             num_str = maPattern.groups()[1] if has_digits else None
         if not maPattern or not (maPattern.groups()[0] or num_str):
-            return None, (_(u'Bad extension or file root: ') + name_str), None
-        return maPattern.groups()[0], GPath(name_str), num_str
+            return (_(u'Bad extension or file root: ') + name_str), None, None
+        return GPath(name_str), maPattern.groups()[0], num_str
 
     def validate_name(self, name_str):
         # disallow extension change but not if no-extension info type
