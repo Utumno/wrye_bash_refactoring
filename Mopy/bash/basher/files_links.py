@@ -124,8 +124,7 @@ class File_Duplicate(ItemLink):
             if bosh.bak_file_pattern.match(to_duplicate.s):
                 continue #YAK!
             (destDir, wildcard) = (fileInfo.dir, u'*' + to_duplicate.ext)
-            destName = self.window.new_path(
-                GPath(to_duplicate.root + u' Copy' + to_duplicate.ext), destDir)
+            destName = self.window.new_path(to_duplicate, destDir)
             destDir.makedirs()
             if len(self.selected) == 1:
                 destPath = self._askSave(

@@ -134,6 +134,30 @@ class ListInfo(object):
             return (_(u'Bad extension or file root: ') + name_str), None, None
         return GPath(name_str), maPattern.groups()[0], num_str
 
+    # Generate unique filenames when duplicating files etc
+    @staticmethod
+    def _new_name(new_name, count, add_copy=False):
+        r, e = os.path.splitext(new_name)
+        if not count:
+            return GPath(r + (_(u' Copy') if add_copy else u'') + e)
+        return GPath(r + (u' (%d)' % count) + e)
+
+    @classmethod
+    def new_name(cls, new_name, dstore, add_copy=False):
+        base_name, count = cls._new_name(u'%s' % new_name, 0), 0
+        while GPath(new_name) in dstore:
+            count += 1
+            new_name= cls._new_name(base_name, count, add_copy)
+        return GPath(new_name) # gpath markers and projects
+
+    @classmethod
+    def new_path(cls, new_name, dest_dir):
+        base_name, count = cls._new_name(new_name, 0, True), 0
+        while dest_dir.join(new_name).exists() and count < 1000:
+            count += 1
+            new_name= cls._new_name(base_name, count)
+        return new_name
+
     def validate_name(self, name_str):
         # disallow extension change but not if no-extension info type
         check_ext = name_str and self.__class__._valid_exts_re
