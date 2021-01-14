@@ -134,6 +134,9 @@ class InstallerWizard(WizardDialog):
 
     def Run(self):
         page = self.parser.Begin(self.wizard_file)
+        if isinstance(page, unicode):
+            self.ret.canceled = page
+            return self.ret
         if page:
             self.ret.canceled = not self._native_widget.RunWizard(page)
         # Clean up temp files
@@ -749,17 +752,16 @@ class WryeParser(ScriptParser.Parser):
         self.cLine = 0
         self.reversing = 0
         self.ExecCount = 0
-        if file_path.exists() and file_path.isfile():
-            try:
-                with file_path.open(encoding=u'utf-8-sig') as script:
-                    # Ensure \n line endings for the script parser
-                    self.lines = [x.replace(u'\r\n',u'\n') for x in script.readlines()]
-                return self.Continue()
-            except UnicodeError:
-                balt.showWarning(self._wiz_parent, _(u'Could not read the wizard file.  Please ensure it is encoded in UTF-8 format.'))
-                return
-        balt.showWarning(self._wiz_parent, _(u'Could not open wizard file'))
-        return None
+        try:
+            with file_path.open(encoding=u'utf-8-sig') as script:
+                # Ensure \n line endings for the script parser
+                self.lines = [x.replace(u'\r\n', u'\n') for x in script.readlines()]
+            return self.Continue()
+        except UnicodeError:
+            return _(u'Could not read the wizard file.  Please ensure it is '
+                     u'encoded in UTF-8 format.')
+        except (OSError, IOError):
+            return _(u'Could not open wizard file')
 
     def _reset_vars(self):
         self.variables.clear()
