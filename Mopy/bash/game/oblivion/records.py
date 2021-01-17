@@ -1578,7 +1578,7 @@ class MreRace(MelRecord):
                   'femaleSpeed', 'femaleEndurance', 'femalePersonality',
                   'femaleLuck'),
         # Indexed Entries
-        MelBase(b'NAM0', 'face_data_marker', ''),
+        MelBase(b'NAM0', 'face_data_marker', b''),
         MelRaceParts({
             0: 'head',
             1: 'maleEars',
@@ -1600,8 +1600,8 @@ class MreRace(MelRecord):
             MelBase(b'MODT', 'modt_p'),
             MelIcon(),
         )),
-        MelBase(b'NAM1', 'body_data_marker', ''),
-        MelBase(b'MNAM', 'male_body_data_marker', ''),
+        MelBase(b'NAM1', 'body_data_marker', b''),
+        MelBase(b'MNAM', 'male_body_data_marker', b''),
         MelModel(u'maleTailModel'),
         MelRaceParts({
             0: 'maleUpperBodyPath',
@@ -1610,7 +1610,7 @@ class MreRace(MelRecord):
             3: 'maleFootPath',
             4: 'maleTailPath',
         }, group_loaders=lambda _indx: (MelIcon(),)),
-        MelBase(b'FNAM', 'female_body_data_marker', ''),
+        MelBase(b'FNAM', 'female_body_data_marker', b''),
         MelModel(u'femaleTailModel'),
         MelRaceParts({
             0: 'femaleUpperBodyPath',
