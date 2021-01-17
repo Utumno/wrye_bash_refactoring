@@ -21,6 +21,7 @@
 #
 # =============================================================================
 """This module contains the skyrim record classes."""
+from __future__ import unicode_literals
 from collections import OrderedDict
 
 from ... import brec, bolt
@@ -160,7 +161,7 @@ class MelCoed(MelOptStruct):
     NPC then it is followed by a FormID.  If owner is a faction then it is
     followed by an signed integer or '=Iif' instead of '=IIf' """ # see #282
     def __init__(self):
-        MelOptStruct.__init__(self,'COED','=IIf',(FID,'owner'),(FID,'glob'),
+        MelOptStruct.__init__(self,b'COED','=IIf',(FID,'owner'),(FID,'glob'),
                               'itemCondition')
 
 #------------------------------------------------------------------------------

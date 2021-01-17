@@ -21,6 +21,7 @@
 #
 # =============================================================================
 """This module contains the oblivion record classes."""
+from __future__ import unicode_literals
 import re
 from collections import OrderedDict
 from itertools import chain
