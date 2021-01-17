@@ -459,7 +459,7 @@ class MelRaceParts(MelNull):
     def dumpData(self, record, out):
         for part_indx, part_attr in self._indx_to_attr.iteritems():
             if hasattr(record, part_attr): # only dump present parts
-                MelUInt32('INDX', '').packSub(out, struct_pack(u'=I',  part_indx))
+                MelUInt32(b'INDX', '').packSub(out, struct_pack(u'=I',  part_indx))
                 self._indx_to_loader[part_indx].dumpData(record, out)
 
     @property

@@ -232,10 +232,10 @@ class MreLand(MelRecord):
     rec_sig = b'LAND'
 
     melSet = MelSet(
-        MelBase('DATA', 'unknown'),
-        MelBase('VNML', 'vertex_normals'),
-        MelBase('VHGT', 'vertex_height_map'),
-        MelBase('VCLR', 'vertex_colors'),
+        MelBase(b'DATA', 'unknown'),
+        MelBase(b'VNML', 'vertex_normals'),
+        MelBase(b'VHGT', 'vertex_height_map'),
+        MelBase(b'VCLR', 'vertex_colors'),
         MelGroups('layers',
             # Start a new layer each time we hit one of these
             MelUnion({
@@ -251,7 +251,7 @@ class MreLand(MelRecord):
             }, decider=FidNotNullDecider(u'atxt_texture')),
         ),
         MelArray('vertex_textures',
-            MelFid('VTEX', 'vertex_texture'),
+            MelFid(b'VTEX', 'vertex_texture'),
         ),
     )
     __slots__ = melSet.getSlotsUsed()
