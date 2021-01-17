@@ -122,7 +122,7 @@ class ModFidMismatchError(ModError):
         super(ModFidMismatchError, self).__init__(in_name.s, message_form)
 
 class ModSigMismatchError(ModError):
-    """Mod Error: A record is getting overriden by a record with a different
+    """Mod Error: A record is getting overridden by a record with a different
     signature. This is undefined behavior."""
     def __init__(self, in_name, record):
         message_form = (u'%r is likely overriding or being overwritten by a '

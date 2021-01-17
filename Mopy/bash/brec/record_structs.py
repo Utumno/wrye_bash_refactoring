@@ -100,12 +100,12 @@ class MelSet(object):
         # Load each subrecord
         ins_at_end = ins.atEnd
         load_sub_header = partial(unpackSubHeader, ins)
-        read_id_prefix = rec_type + '.'
+        read_id_prefix = rec_type + b'.'
         while not ins_at_end(endPos, rec_type):
             sub_type, sub_size = load_sub_header(rec_type)
             try:
                 loaders[sub_type].load_mel(record, ins, sub_type, sub_size,
-                                           read_id_prefix + sub_type)
+                    read_id_prefix + sub_type)##: we don't want to concatenate here
             except KeyError:
                 # Wrap this error to make it more understandable
                 self._handle_load_error(
@@ -359,7 +359,7 @@ class MreRecord(object):
         elif ins and not self.flags1.compressed:
             inPos = ins.tell()
             self.data = ins.read(self.size,type)
-            ins.seek(inPos,0,type+'_REWIND') # type+'_REWIND' is just for debug
+            ins.seek(inPos,0,type,b'_REWIND') # type,'_REWIND' is just for debug
             self.loadData(ins,inPos+self.size)
         #--Buffered analysis (subclasses only)
         else:

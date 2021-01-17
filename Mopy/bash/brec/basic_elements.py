@@ -386,7 +386,7 @@ class MelSequential(MelBase):
 
     def getDefaulters(self, defaulters, base):
         for element in self.elements:
-            element.getDefaulters(defaulters, base + '.')
+            element.getDefaulters(defaulters, u'%s.' % base)
 
     def getLoaders(self, loaders):
         # We need a copy of the loaders in case we're used in a distributor

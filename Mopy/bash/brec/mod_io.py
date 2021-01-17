@@ -169,7 +169,7 @@ class TopGrupHeader(GrupHeader):
 def unpack_header(ins, __rh=RecordHeader):
     """Header factory."""
     # args = header_sig, size, uint0, uint1, uint2[, uint3]
-    args = ins.unpack(__rh.header_unpack, __rh.rec_header_size, 'REC_HEADER') # PY3: header_sig, *args = ...
+    args = ins.unpack(__rh.header_unpack, __rh.rec_header_size, u'REC_HEADER') # PY3: header_sig, *args = ...
     #--Bad type?
     header_sig = args[0]
     if header_sig not in __rh.valid_header_sigs:
@@ -217,7 +217,7 @@ class ModReader(object):
         self.strings = string_table or {} # table may be None
 
     #--I/O Stream -----------------------------------------
-    def seek(self, offset, whence=os.SEEK_SET, debug_str=u'----'):
+    def seek(self, offset, whence=os.SEEK_SET, *debug_str):
         """File seek."""
         if whence == os.SEEK_CUR:
             newPos = self.ins.tell() + offset
@@ -286,12 +286,12 @@ class ModReader(object):
         return [decoder(x,bolt.pluginEncoding,avoidEncodings=(u'utf8',u'utf-8')) for x in
                 self.read(size,debug_str).rstrip(null1).split(null1)]
 
-    def unpack(self, struct_unpacker, size, recType=b'----'):
+    def unpack(self, struct_unpacker, size, debug_str=u'----'):
         """Read size bytes from the file and unpack according to format of
         struct_unpacker."""
         endPos = self.ins.tell() + size
         if endPos > self.size:
-            raise exception.ModReadError(self.inName, recType, endPos, self.size)
+            raise exception.ModReadError(self.inName, debug_str, endPos, self.size)
         return struct_unpacker(self.ins.read(size))
 
     def unpackRef(self, __unpacker=_int_unpacker):
