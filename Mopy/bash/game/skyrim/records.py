@@ -1410,7 +1410,7 @@ class MreAmmo(MelRecord):
             le_version=MelStruct(b'DATA', 'IIfI', (FID, 'projectile'),
                                  (AmmoTypeFlags, 'flags'), 'damage', 'value'),
             se_version=MelTruncatedStruct(
-                'DATA', '2IfIf', (FID, 'projectile'), (AmmoTypeFlags, 'flags'),
+                b'DATA', '2IfIf', (FID, 'projectile'), (AmmoTypeFlags, 'flags'),
                 'damage', 'value', 'weight', old_versions={'2IfI'}),
         ),
         MelString(b'ONAM', 'short_name'),
@@ -1753,7 +1753,7 @@ class MreCell(MelRecord):
         MelOptStruct(b'XCLC', u'2iI', (u'posX', None), (u'posY', None),
             (_land_flags, u'land_flags')),
         MelTruncatedStruct(
-            'XCLL', '3Bs3Bs3Bs2f2i3f3Bs3Bs3Bs3Bs3Bs3Bs3Bsf3Bs3fI',
+            b'XCLL', '3Bs3Bs3Bs2f2i3f3Bs3Bs3Bs3Bs3Bs3Bs3Bsf3Bs3fI',
             'ambientRed', 'ambientGreen', 'ambientBlue', ('unused1', null1),
             'directionalRed', 'directionalGreen', 'directionalBlue',
             ('unused2', null1), 'fogRed', 'fogGreen', 'fogBlue',
@@ -2178,7 +2178,7 @@ class MreEfsh(MelRecord):
         MelString(b'NAM8','membranePaletteTexture'),
         MelString(b'NAM9','particlePaletteTexture'),
         MelTruncatedStruct(
-            'DATA', '4s3I3Bs9f3Bs8f5I19f3Bs3Bs3Bs11fI5f3Bsf2I6fI3Bs3Bs9f8I2fI',
+            b'DATA', '4s3I3Bs9f3Bs8f5I19f3Bs3Bs3Bs11fI5f3Bsf2I6fI3Bs3Bs9f8I2fI',
             'unused1', 'memSBlend', 'memBlendOp', 'memZFunc','fillRed',
             'fillGreen', 'fillBlue', 'unused2', 'fillAlphaIn', 'fillFullAlpha',
             'fillAlphaOut', 'fillAlphaRatio', 'fillAlphaAmp', 'fillAlphaPulse',
@@ -2346,7 +2346,7 @@ class MreFact(MelRecord):
         MelFid(b'JOUT', u'jail_outfit'),
         # 'cv_arrest' and 'cv_attack_on_sight' are actually bools, cv means
         # 'crime value' (which is what this struct is about)
-        MelTruncatedStruct(B'CRVA', u'2B5Hf2H', u'cv_arrest',
+        MelTruncatedStruct(b'CRVA', u'2B5Hf2H', u'cv_arrest',
                            u'cv_attack_on_sight', u'cv_murder', u'cv_assault',
                            u'cv_trespass', u'cv_pickpocket',
                            u'cv_unknown', u'cv_steal_multiplier', u'cv_escape',
@@ -3030,7 +3030,7 @@ class MreLgtm(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelLgtmData(
-            'DATA', '3Bs3Bs3Bs2f2i3f32s3Bs3f4s', 'redLigh', 'greenLigh',
+            b'DATA', '3Bs3Bs3Bs2f2i3f32s3Bs3f4s', 'redLigh', 'greenLigh',
             'blueLigh','unknownLigh', 'redDirect', 'greenDirect', 'blueDirect',
             'unknownDirect', 'redFog', 'greenFog', 'blueFog', 'unknownFog',
             'fogNear', 'fogFar', 'dirRotXY', 'dirRotZ', 'directionalFade',
@@ -3039,7 +3039,7 @@ class MreLgtm(MelRecord):
             'fogMax', 'lightFaceStart', 'lightFadeEnd',
             ('unknownData2', null4)),
         MelTruncatedStruct(
-            'DALC', '4B4B4B4B4B4B4Bf', 'redXplus', 'greenXplus', 'blueXplus',
+            b'DALC', '4B4B4B4B4B4B4Bf', 'redXplus', 'greenXplus', 'blueXplus',
             'unknownXplus', 'redXminus', 'greenXminus', 'blueXminus',
             'unknownXminus', 'redYplus', 'greenYplus', 'blueYplus',
             'unknownYplus', 'redYminus', 'greenYminus', 'blueYminus',
@@ -3223,13 +3223,13 @@ class MreMato(MelRecord):
         ),
         MelIsSSE(
             le_version=MelTruncatedStruct(
-                'DATA', '11fI', 'falloffScale', 'falloffBias', 'noiseUVScale',
+                b'DATA', '11fI', 'falloffScale', 'falloffBias', 'noiseUVScale',
                 'materialUVScale', 'projectionVectorX', 'projectionVectorY',
                 'projectionVectorZ', 'normalDampener', 'singlePassColorRed',
                 'singlePassColorGreen', 'singlePassColorBlue',
                 (_MatoTypeFlags, 'single_pass_flags'), old_versions={'7f'}),
             se_version=MelTruncatedStruct(
-                'DATA', '11fIB3s', 'falloffScale', 'falloffBias',
+                b'DATA', '11fIB3s', 'falloffScale', 'falloffBias',
                 'noiseUVScale', 'materialUVScale', 'projectionVectorX',
                 'projectionVectorY', 'projectionVectorZ', 'normalDampener',
                 'singlePassColorRed', 'singlePassColorGreen',
@@ -3462,7 +3462,7 @@ class MreNavi(MelRecord):
         MelUInt32(b'NVER', 'version'),
         # NVMI and NVPP would need special routines to handle them
         # If no mitigation is needed, then leave it as MelBase
-        MelBase('NVMI','navigationMapInfos',),
+        MelBase(b'NVMI','navigationMapInfos',),
         MelBase(b'NVPP','preferredPathing',),
         MelFidList(b'NVSI','navigationMesh'),
     )
@@ -3516,7 +3516,7 @@ class MreNavm(MelRecord):
         MelEdid(),
         # NVNM, ONAM, PNAM, NNAM would need special routines to handle them
         # If no mitigation is needed, then leave it as MelBase
-        MelBase('NVNM','navMeshGeometry'),
+        MelBase(b'NVNM','navMeshGeometry'),
         MelBase(b'ONAM','onam_p'),
         MelBase(b'PNAM','pnam_p'),
         MelBase(b'NNAM','nnam_p'),
@@ -3962,7 +3962,7 @@ class MreProj(MelRecord):
         MelModel(),
         MelDestructible(),
         MelTruncatedStruct(
-            'DATA', '2H3f2I3f2I3f3I4f2I', (ProjTypeFlags, 'flags', 0),
+            b'DATA', '2H3f2I3f2I3f3I4f2I', (ProjTypeFlags, 'flags', 0),
             'projectileTypes', ('gravity', 0.0), ('speed', 10000.0),
             ('range', 10000.0), (FID, 'light', 0), (FID, 'muzzleFlash', 0),
             ('tracerChance', 0.0), ('explosionAltTrigerProximity', 0.0),
@@ -4606,7 +4606,7 @@ class MreRegn(MelRecord):
             MelRegnEntrySubrecord(4, MelString(b'RDMP', 'mapName')),
             MelRegnEntrySubrecord(2, MelArray('objects',
                 MelStruct(
-                    'RDOT', 'IH2sf4B2H5f3H2s4s', (FID, 'objectId'),
+                    b'RDOT', 'IH2sf4B2H5f3H2s4s', (FID, 'objectId'),
                     'parentIndex', ('unk1', null2), 'density', 'clustering',
                     'minSlope', 'maxSlope', (obflags, 'flags'),
                     'radiusWRTParent', 'radius', 'minHeight', 'maxHeight',
@@ -5050,7 +5050,7 @@ class MreSpgd(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelTruncatedStruct(
-            'DATA', '7f4If', 'gravityVelocity', 'rotationVelocity',
+            b'DATA', '7f4If', 'gravityVelocity', 'rotationVelocity',
             'particleSizeX', 'particleSizeY', 'centerOffsetMin',
             'centerOffsetMax', 'initialRotationRange', 'numSubtexturesX',
             'numSubtexturesY', (_SpgdDataFlags, 'typeFlags', 0),
@@ -5076,7 +5076,7 @@ class MreStat(MelRecord):
             le_version=MelStruct(b'DNAM', 'fI', 'maxAngle30to120',
                                  (FID, 'material')),
             se_version=MelTruncatedStruct(
-                'DNAM', 'fIB3s', 'maxAngle30to120', (FID, 'material'),
+                b'DNAM', 'fIB3s', 'maxAngle30to120', (FID, 'material'),
                 (_SnowFlags, 'snow_flags'), ('unused1', null3),
                 old_versions={'fI'}),
         ),
@@ -5245,7 +5245,7 @@ class MreWatr(MelRecord):
             le_version=MelStruct(b'DNAM', '7f4s2f3Bs3Bs3Bs4s43f',
                                  *_dnam_common),
             se_version=MelTruncatedStruct(
-                'DNAM', '7f4s2f3Bs3Bs3Bs4s44f',
+                b'DNAM', '7f4s2f3Bs3Bs3Bs4s44f',
                 *(_dnam_common + ['noisePropertiesFlowmapScale']),
                 old_versions={'7f4s2f3Bs3Bs3Bs4s43f'}),
         ),
@@ -5580,12 +5580,12 @@ class MreWthr(MelRecord):
                   (FID, 'image_space_day'), (FID, 'image_space_sunset'),
                   (FID, 'image_space_night'),),
         MelSSEOnly(MelOptStruct(
-            'HNAM', '4I', (FID, 'volumetricLightingSunrise'),
+            b'HNAM', '4I', (FID, 'volumetricLightingSunrise'),
             (FID, 'volumetricLightingDay'), (FID, 'volumetricLightingSunset'),
             (FID, 'volumetricLightingNight'))),
         MelGroups('wthrAmbientColors',
             MelTruncatedStruct(
-                'DALC', '4B4B4B4B4B4B4Bf', 'redXplus', 'greenXplus',
+                b'DALC', '4B4B4B4B4B4B4Bf', 'redXplus', 'greenXplus',
                 'blueXplus', 'unknownXplus', 'redXminus', 'greenXminus',
                 'blueXminus', 'unknownXminus', 'redYplus', 'greenYplus',
                 'blueYplus', 'unknownYplus', 'redYminus', 'greenYminus',

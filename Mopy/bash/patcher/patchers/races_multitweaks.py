@@ -427,7 +427,7 @@ class RaceRecordsPatcher(AMultiTweaker, ListPatcher):
                     masterInfo = bosh.modInfos[master]
                     masterFile = ModFile(masterInfo,loadFactory)
                     masterFile.load(True)
-                    if 'RACE' not in masterFile.tops: continue
+                    if b'RACE' not in masterFile.tops: continue
                     cachedMasters[master] = masterFile
                 for race in masterFile.tops[b'RACE'].getActiveRecords():
                     if race.fid not in tmp_race_data: continue

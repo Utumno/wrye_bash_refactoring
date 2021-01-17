@@ -1160,7 +1160,7 @@ class MreProj(MelRecord):
         MelModel(),
         MelDestructible(),
         MelTruncatedStruct(
-            'DATA', '2H3f2I3f2I3f3I4f', (_flags,'flags'), 'type',
+            b'DATA', '2H3f2I3f2I3f3I4f', (_flags,'flags'), 'type',
             ('gravity', 0.0), ('speed', 10000.0), ('range', 10000.0),
             (FID, 'light', 0), (FID, 'muzzleFlash', 0), ('tracerChance', 0.0),
             ('explosionAltTrigerProximity', 0.0),
@@ -1268,7 +1268,7 @@ class MreRefr(MelRecord):
         ##: I dropped special handling here, looks like a regular truncated
         # record to me - but no way to test since we don't load this yet
         MelTruncatedStruct(
-            'XLOC', 'B3sI4sB3s4s', 'lockLevel', ('unused1',null3),
+            b'XLOC', 'B3sI4sB3s4s', 'lockLevel', ('unused1',null3),
             (FID, 'lockKey'), ('unused2', null4), (_lockFlags, 'lockFlags'),
             ('unused3', null3), ('unused4', null4), is_optional=True,
             old_versions={'B3sI4s'}),
@@ -1358,7 +1358,7 @@ class MreRegn(MelRecord):
                       'priority', ('unused1', null2)),
             MelRegnEntrySubrecord(2, MelArray('objects',
                 MelStruct(
-                    'RDOT', 'IH2sf4B2H5f3H2s4s', (FID, 'objectId'),
+                    b'RDOT', 'IH2sf4B2H5f3H2s4s', (FID, 'objectId'),
                     'parentIndex', ('unk1', null2), 'density', 'clustering',
                     'minSlope', 'maxSlope', (obflags, 'flags'),
                     'radiusWRTParent', 'radius', 'minHeight', 'maxHeight',

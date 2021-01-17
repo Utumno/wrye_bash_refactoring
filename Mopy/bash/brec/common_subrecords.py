@@ -418,7 +418,7 @@ class MelRaceParts(MelNull):
         :param indx_to_attr: A mapping from the INDX values to the final
             record attributes that will be used for the subsequent
             subrecords.
-        :type indx_to_attr: dict[int, str]
+        :type indx_to_attr: dict[int, str] ##: str
         :param group_loaders: A callable that takes the INDX value and
             returns an iterable with one or more MelBase-derived subrecord
             loaders. These will be loaded and dumped directly after each
@@ -450,7 +450,7 @@ class MelRaceParts(MelNull):
 
     def load_mel(self, record, ins, sub_type, size_, readId,
                  __unpacker=_int_unpacker):
-        if sub_type == 'INDX':
+        if sub_type == b'INDX':
             self._last_indx = ins.unpack(__unpacker, size_, readId)[0]
         else:
             self._indx_to_loader[self._last_indx].load_mel(

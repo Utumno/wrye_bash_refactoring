@@ -872,7 +872,7 @@ class MreCsty(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelTruncatedStruct(
-            'CSTD', '2B2s8f2B2s3fB3s2f5B3s2f2B2s7fB3sfI', 'dodgeChance',
+            b'CSTD', '2B2s8f2B2s3fB3s2f5B3s2f2B2s7fB3sfI', 'dodgeChance',
             'lrChance', ('unused1', null2), 'lrTimerMin', 'lrTimerMax',
             'forTimerMin', 'forTimerMax', 'backTimerMin', 'backTimerMax',
             'idleTimerMin', 'idleTimerMax', 'blkChance', 'atkChance',
@@ -1594,7 +1594,7 @@ class MreRace(MelRecord):
             #  directly accesses these - MelModel would put them in a group,
             #  which breaks that. Change this to a MelModel, then hunt down
             #  that code and change it
-            MelString('MODL', 'modPath'),
+            MelString(b'MODL', 'modPath'),
             # None here is on purpose - 0 is a legitimate value
             MelOptFloat(b'MODB', u'modb', None),
             MelBase(b'MODT', 'modt_p'),
@@ -1729,10 +1729,10 @@ class MreRegn(MelRecord):
         ),
         MelGroups('entries',
             MelStruct(b'RDAT', 'I2B2s', 'entryType', (rdatFlags, 'flags'),
-                    'priority', ('unused1', null2)),
+                      'priority', ('unused1', null2)),
             MelRegnEntrySubrecord(2, MelArray('objects',
                 MelStruct(
-                    'RDOT', 'IH2sf4B2H5f3H2s4s', (FID, 'objectId'),
+                    b'RDOT', 'IH2sf4B2H5f3H2s4s', (FID, 'objectId'),
                     'parentIndex', ('unk1', null2), 'density', 'clustering',
                     'minSlope', 'maxSlope', (obflags, 'flags'),
                     'radiusWRTParent', 'radius', 'minHeight', 'maxHeight',
@@ -1938,7 +1938,7 @@ class MreWatr(MelRecord):
         MelString(b'MNAM','material'),
         MelFid(b'SNAM','sound'),
         MelWatrData(
-            'DATA', '11f3Bs3Bs3BsB3s10fH', ('windVelocity', 0.100),
+            b'DATA', '11f3Bs3Bs3BsB3s10fH', ('windVelocity', 0.100),
             ('windDirection', 90.0), ('waveAmp', 0.5), ('waveFreq', 1.0),
             ('sunPower', 50.0), ('reflectAmt', 0.5), ('fresnelAmt', 0.0250),
             ('xSpeed', 0.0), ('ySpeed', 0.0), ('fogNear', 27852.8),

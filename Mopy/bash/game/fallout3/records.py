@@ -1349,7 +1349,7 @@ class MreIdlm(MelRecord):
         MelBounds(),
         MelUInt8Flags(b'IDLF', u'flags', _flags),
         MelPartialCounter(MelTruncatedStruct(
-            'IDLC', 'B3s', 'animation_count', ('unused', null3),
+            b'IDLC', 'B3s', 'animation_count', ('unused', null3),
             old_versions={'B'}),
             counter='animation_count', counts='animations'),
         MelFloat(b'IDLT', 'idleTimerSetting'),
@@ -1596,7 +1596,7 @@ class MreIpds(MelRecord):
     melSet = MelSet(
         MelEdid(),
         MelTruncatedStruct(
-            'DATA', '12I', (FID, 'stone', 0), (FID, 'dirt', 0),
+            b'DATA', '12I', (FID, 'stone', 0), (FID, 'dirt', 0),
             (FID, 'grass', 0), (FID, 'glass', 0), (FID, 'metal', 0),
             (FID, 'wood', 0), (FID, 'organic', 0), (FID, 'cloth', 0),
             (FID, 'water', 0), (FID, 'hollowMetal', 0), (FID, 'organicBug', 0),
@@ -1867,7 +1867,7 @@ class MreNavi(MelRecord):
         MelGroups('nav_map_infos',
             # Contains fids, but we probably won't ever be able to merge NAVI,
             # so leaving this as MelBase for now
-            MelBase('NVMI', 'nav_map_info'),
+            MelBase(b'NVMI', 'nav_map_info'),
         ),
         MelFidList(b'NVCI','unknownDoors',),
     )
@@ -2619,7 +2619,7 @@ class MreRefr(MelRecord):
         ##: I dropped special handling here, looks like a regular truncated
         # record to me - but no way to test since we don't load this yet
         MelTruncatedStruct(
-            'XLOC', 'B3sI4sB3s4s', 'lockLevel', ('unused1',null3),
+            b'XLOC', 'B3sI4sB3s4s', 'lockLevel', ('unused1',null3),
             (FID, 'lockKey'), ('unused2', null4), (_lockFlags, 'lockFlags'),
             ('unused3', null3), ('unused4', null4), is_optional=True,
             old_versions={'B3sI4s'}),
@@ -2708,7 +2708,7 @@ class MreRegn(MelRecord):
                       'priority', ('unused1', null2)),
             MelRegnEntrySubrecord(2, MelArray('objects',
                 MelStruct(
-                    'RDOT', 'IH2sf4B2H5f3H2s4s', (FID, 'objectId'),
+                    b'RDOT', 'IH2sf4B2H5f3H2s4s', (FID, 'objectId'),
                     'parentIndex', ('unk1', null2), 'density', 'clustering',
                     'minSlope', 'maxSlope', (obflags, 'flags'),
                     'radiusWRTParent', 'radius', 'minHeight', 'maxHeight',

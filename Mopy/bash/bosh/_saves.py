@@ -588,7 +588,7 @@ class SaveFile(object):
                 createdCounts[(citem.recType, full)] += 1
             progress.plus()
         for key in list(createdCounts):
-            minCount = (50,100)[key[0] == 'ALCH']
+            minCount = (50,100)[key[0] == b'ALCH']
             if createdCounts[key] < minCount:
                 del createdCounts[key]
         #--Change records
