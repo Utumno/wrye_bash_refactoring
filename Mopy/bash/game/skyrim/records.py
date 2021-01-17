@@ -3833,7 +3833,7 @@ class MrePack(MelRecord):
                 b'BNAM|CNAM|PDTO': u'data_input_values',
             }),
             b'UNAM': (u'data_inputs1', {
-                'BNAM|PNAM': u'data_inputs1',
+                b'BNAM|PNAM': u'data_inputs1',
             }),
         },
         b'XNAM': {
