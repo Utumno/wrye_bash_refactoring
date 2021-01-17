@@ -84,7 +84,7 @@ class _InstallerLink(Installers_Link, EnabledLink):
     def _promptSolidBlockSize(self, title, value=0):
         return self._askNumber(
             _(u'Use what maximum size for each solid block?') + u'\n' + _(
-                u"Enter '0' to use 7z's default size."), prompt=u'MB',
+                u"Enter b'0' to use 7z's default size."), prompt=u'MB',
             title=title, value=value, min=0, max=102400)
 
     def _pack(self, archive_path, installer, project, release=False):
