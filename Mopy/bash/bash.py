@@ -28,7 +28,6 @@ loop."""
 # Imports ---------------------------------------------------------------------
 
 import atexit
-import codecs
 import ctypes
 import os
 import platform
@@ -66,9 +65,8 @@ def _early_setup(debug):
         # Also, setup stdout/stderr to the debug log if debug mode /
         # standalone before wxPython is up
         global _bugdump_handle
-        # _bugdump_handle = io.open(os.path.join(os.getcwdu(),u'BashBugDump.log'),'w',encoding=u'utf-8')
-        _bugdump_handle = codecs.getwriter(u'utf-8')(
-            open(os.path.join(os.getcwd(), u'BashBugDump.log'), u'w'))
+        _bugdump_handle = open(os.path.join(os.getcwd(), u'BashBugDump.log'),
+                               u'w', encoding=u'utf-8')
         sys.stdout = _bugdump_handle
         sys.stderr = _bugdump_handle
     # Mark us as High DPI-aware on Windows
@@ -238,9 +236,7 @@ def _bash_ini_parser(bash_ini_path):
         bash_ini_parser = ConfigParser()
         # bash.ini is always compatible with UTF-8 (Russian INI is UTF-8,
         # English INI is ASCII)
-        # PY3: use read(bash_ini_path, encoding='utf-8') instead
-        with codecs.open(bash_ini_path, encoding=u'utf-8') as bash_ini:
-            bash_ini_parser.readfp(bash_ini)
+        bash_ini_parser.read(bash_ini_path, encoding=u'utf-8')
     return bash_ini_parser
 
 # Main ------------------------------------------------------------------------

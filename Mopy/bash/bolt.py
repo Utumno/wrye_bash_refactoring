@@ -26,7 +26,6 @@
 
 
 import pickle as pickle  # PY3
-import codecs
 import collections
 import copy
 import csv
@@ -797,13 +796,10 @@ class Path(object):
                         try: chmod(rootJoin(filename),stat_flags)
                         except: pass
 
-    def open(self,*args,**kwdargs): # PY3: drop - open() accepts encoding now
+    def open(self,*args,**kwdargs):
         if self.shead and not os.path.exists(self.shead):
             os.makedirs(self.shead)
-        if u'encoding' in kwdargs:
-            return codecs.open(self._s,*args,**kwdargs)
-        else:
-            return open(self._s,*args,**kwdargs)
+        return open(self._s, *args, **kwdargs)
     def makedirs(self):
         try:
             os.makedirs(self._s)
