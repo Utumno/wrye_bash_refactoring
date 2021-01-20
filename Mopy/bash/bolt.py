@@ -304,14 +304,14 @@ class LowerDict(dict):
 
     @staticmethod # because this doesn't make sense as a global function.
     def _process_args(mapping=(), **kwargs):
-        if hasattr(mapping, u'iteritems'): # PY3: items
-            mapping = getattr(mapping, u'iteritems')()
+        if hasattr(mapping, u'items'): # PY3: items
+            mapping = getattr(mapping, u'items')()
         # PY3: fix mess below - kwargs keys are bytes im py2
         return ((CIstr(k) if type(k) is str else k, v) for k, v in chain(
             ((k.decode(u'ascii') if type(k) is bytes else k, v) for k, v in
              mapping),
             ((k.decode(u'ascii') if type(k) is bytes else k, v) for k, v in
-             getattr(kwargs, u'iteritems')())))
+             getattr(kwargs, u'items')())))
 
     def __init__(self, mapping=(), **kwargs):
         # dicts take a mapping or iterable as their optional first argument
@@ -1187,10 +1187,6 @@ class DataDict(object):
         return self._data.get(key, default)
     def pop(self,key,default=None):
         return self._data.pop(key, default)
-    def iteritems(self):
-        return iter(self._data.items())
-    def itervalues(self):
-        return iter(self._data.values())
 
 #------------------------------------------------------------------------------
 class AFile(object):
