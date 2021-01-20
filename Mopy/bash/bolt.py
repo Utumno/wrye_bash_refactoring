@@ -261,14 +261,6 @@ def sortFiles(files, __split=os.path.split):
     """Utility function. Sorts files by directory, then file name."""
     return sorted(files, key=lambda x: __split(x.lower()))
 
-# PY3: Dicts are ordered by default on py3.7, so drop this in favor of just
-# collections.defaultdict
-class OrderedDefaultDict(collections.OrderedDict, collections.defaultdict):
-    """A defaultdict that preserves order."""
-    def __init__(self, default_factory=None, *args, **kwargs):
-        super(OrderedDefaultDict, self).__init__(*args, **kwargs)
-        self.default_factory = default_factory
-
 # LowStrings ------------------------------------------------------------------
 class CIstr(str):
     """See: http://stackoverflow.com/q/43122096/281545"""
