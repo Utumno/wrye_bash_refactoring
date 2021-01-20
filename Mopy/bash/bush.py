@@ -61,7 +61,7 @@ def _supportedGames():
         if not ispkg: continue # game support modules are packages
         # Equivalent of "from game import <modname>"
         try:
-            module = __import__(u'game',globals(),locals(),[modname],-1)
+            module = __import__(u'game', globals(), locals(), [modname], 1)
             submod = getattr(module,modname)
             game_type = submod.GAME_TYPE
             _allModules[game_type.displayName] = submod
