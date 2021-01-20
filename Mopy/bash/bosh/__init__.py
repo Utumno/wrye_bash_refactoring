@@ -38,9 +38,9 @@ import re
 import sys
 import time
 import traceback
-from collections import OrderedDict, Iterable
+from collections import OrderedDict
 from functools import wraps, partial
-
+from typing import Iterable
 
 #--Local
 from ._mergeability import isPBashMergeable, is_esl_capable
