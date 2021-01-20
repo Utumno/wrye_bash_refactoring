@@ -612,37 +612,17 @@ class Path(object):
     @property
     def temp(self):
         """Temp file path."""
-        baseDir = GPath(str(tempfile.gettempdir(), Path.sys_fs_enc)).join(
-            u'WryeBash_temp')
+        baseDir = GPath(tempfile.gettempdir()).join(u'WryeBash_temp')
         baseDir.makedirs()
         return baseDir.join(self.tail + u'.tmp')
 
     @staticmethod
     def tempDir(prefix=u'WryeBash_'):
-        # workaround for http://bugs.python.org/issue1681974 see there - PY3: ?
-        try:
-            return GPath(tempfile.mkdtemp(prefix=prefix))
-        except UnicodeDecodeError:
-            try:
-                traceback.print_exc()
-                print(u'Trying to pass temp dir in...')
-                tempdir = str(tempfile.gettempdir(), Path.sys_fs_enc)
-                return GPath(tempfile.mkdtemp(prefix=prefix, dir=tempdir))
-            except UnicodeDecodeError:
-                try:
-                    traceback.print_exc()
-                    print(u'Trying to encode temp dir prefix...')
-                    return GPath(tempfile.mkdtemp(
-                        prefix=prefix.encode(Path.sys_fs_enc)).decode(
-                        Path.sys_fs_enc))
-                except:
-                    traceback.print_exc()
-                    print(u'Failed to create tmp dir, Bash will not function '
-                          u'correctly.')
+        return GPath(tempfile.mkdtemp(prefix=prefix))
 
     @staticmethod
     def baseTempDir():
-        return GPath(str(tempfile.gettempdir(), Path.sys_fs_enc))
+        return GPath(tempfile.gettempdir())
 
     @property
     def backup(self):
