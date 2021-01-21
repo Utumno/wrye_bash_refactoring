@@ -1371,13 +1371,16 @@ class PickleDict(object):
         Three objects are writen - a version string and the vdata and
         pickled_data dictionaries, in this order. Current version string is
         VDATA2."""
-        if self.readOnly: return False
-        #--Pickle it
-        with self._pkl_path.temp.open(u'wb') as out:
-            for pkl in (b'VDATA2', self.vdata, self.pickled_data):
-                pickle.dump(pkl, out, -1)
-        self._pkl_path.untemp(doBackup=True)
-        return True
+        # FIXME(inf) Stubbed out so no one goes corrupting their settings with
+        #  this half-baked py3 port
+        return False
+        # if self.readOnly: return False
+        # #--Pickle it
+        # with self._pkl_path.temp.open(u'wb') as out:
+        #     for pkl in (b'VDATA2', self.vdata, self.pickled_data):
+        #         pickle.dump(pkl, out, -1)
+        # self._pkl_path.untemp(doBackup=True)
+        # return True
 
 #------------------------------------------------------------------------------
 class Settings(DataDict):
