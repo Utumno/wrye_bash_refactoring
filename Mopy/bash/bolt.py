@@ -2361,12 +2361,7 @@ class WryeText(object):
         anchorlist = [] #to make sure that each anchor is unique.
         def subAnchor(match):
             text = match.group(1)
-            # This one's weird.  Encode the url to utf-8, then allow urllib to do it's magic.
-            # urllib will automatically take any unicode characters and escape them, so to
-            # convert back to unicode for purposes of storing the string, everything will
-            # be in cp1252, due to the escapings.
-            anchor = str(quote(reWd.sub(u'', text).encode(u'utf8')),
-                             u'cp1252')
+            anchor = quote(reWd.sub(u'', text))
             count = 0
             if re.match(u'' r'\d', anchor):
                 anchor = u'_' + anchor
@@ -2410,8 +2405,7 @@ class WryeText(object):
             address = text = match.group(1).strip()
             if u'|' in text:
                 (address,text) = [chunk.strip() for chunk in text.split(u'|',1)]
-                if address == u'#': address += str(quote(reWd.sub(
-                    u'', text).encode(u'utf8')), u'cp1252')
+                if address == u'#': address += quote(reWd.sub(u'', text))
             if address.startswith(u'!'):
                 newWindow = u' target="_blank"'
                 if address == text:
@@ -2532,8 +2526,7 @@ class WryeText(object):
             elif maHead:
                 lead,text = maHead.group(1,2)
                 text = re.sub(u' *=*#?$', u'', text.strip())
-                anchor = str(quote(reWd.sub(u'', text).encode(u'utf8')),
-                                 u'cp1252')
+                anchor = quote(reWd.sub(u'', text))
                 level = len(lead)
                 if anchorHeaders:
                     if re.match(u'' r'\d', anchor):
