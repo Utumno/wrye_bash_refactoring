@@ -612,10 +612,10 @@ def _rightPythonVersion():
     """Shows an error if the wrong Python version is installed. Must only be
     called after _import_wx, setup_locale and balt is imported."""
     sysVersion = sys.version_info[:3]
-    if sysVersion < (2, 7) or sysVersion >= (3,):
+    if sysVersion < (3, 9) or sysVersion >= (4,):
         from . import balt
         balt.showError(
-            None, _(u'Only Python 2.7 and newer is supported (%s.%s.%s '
+            None, _(u'Only Python 3.9 and newer is supported (%s.%s.%s '
                     u"detected). If you know what you're doing, install the "
                     u'Python version of Wrye Bash and edit this warning out. '
                     u'Wrye Bash will now exit.') % sysVersion,
