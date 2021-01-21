@@ -24,7 +24,7 @@
 
 
 
-import pickle as pickle  # PY3
+import pickle
 import io
 import re
 import sys

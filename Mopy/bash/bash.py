@@ -517,7 +517,7 @@ def _show_boot_popup(msg, is_critical=True):
         _tkinter_error_dial(msg, but_kwargs)
 
 def _tkinter_error_dial(msg, but_kwargs):
-    import tkinter as tkinter  # PY3
+    import tkinter
     root_widget = tkinter.Tk()
     frame = tkinter.Frame(root_widget)
     frame.pack()

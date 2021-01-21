@@ -25,7 +25,7 @@
 #--Standard
 
 
-import pickle as pickle  # PY3
+import pickle
 import collections
 import copy
 import csv

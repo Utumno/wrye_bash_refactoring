@@ -45,7 +45,7 @@ import shutil
 import sys
 import tempfile
 import zipfile
-import winreg as winreg  # PY3
+import winreg
 from contextlib import contextmanager
 from distutils.version import LooseVersion
 

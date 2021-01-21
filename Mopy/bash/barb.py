@@ -36,7 +36,7 @@ the settings were created with
 the backup
 """
 
-import pickle as pickle  # PY3
+import pickle
 import os
 from os.path import join as jo
 

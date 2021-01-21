@@ -40,7 +40,7 @@ from .exception import BoltError, CancelError, SkipError, AccessDeniedError, \
     DirectoryFileCollisionError, FileOperationError, NonExistentDriveError
 
 try:
-    import winreg as winreg  # PY3
+    import winreg
 except ImportError: # we're on linux
     winreg = None
 try:

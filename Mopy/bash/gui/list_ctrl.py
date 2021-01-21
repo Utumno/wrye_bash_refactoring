@@ -25,7 +25,7 @@ mods, saves, inis, installers etc"""
 
 __author__ = u'Lojack, Utumno'
 
-import pickle as pickle  # PY3
+import pickle
 
 import wx as _wx
 from wx.lib.mixins.listctrl import ListCtrlAutoWidthMixin
