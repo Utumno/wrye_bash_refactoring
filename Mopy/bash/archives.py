@@ -25,7 +25,7 @@ import re
 import subprocess
 
 from . import bass
-from .bolt import startupinfo, GPath, deprint, walkdir
+from .bolt import startupinfo, GPath, deprint
 from .exception import StateError
 
 exe7z = u'7z.exe' if os.name == u'nt' else u'7z'
@@ -46,7 +46,7 @@ reListArchive = re.compile(
 
 def compress7z(command, full_dest, rel_dest, srcDir, progress=None):
     if progress is not None: #--Used solely for the progress bar
-        length = sum([len(files) for x, y, files in walkdir(srcDir.s)])
+        length = sum([len(files) for x, y, files in os.walk(srcDir.s)])
         progress(0, u'%s\n' % rel_dest + _(u'Compressing files...'))
         progress.setFull(1 + length)
     #--Pack the files
