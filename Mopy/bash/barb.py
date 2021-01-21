@@ -340,9 +340,11 @@ class RestoreSettings(object):
             try:
                 with backup_dat.open(u'rb') as ins:
                     # version of Bash that created the backed up settings
-                    self._saved_settings_version = pickle.load(ins)
+                    self._saved_settings_version = pickle.load(
+                        ins, encoding='bytes')
                     # version of Bash that created the backup
-                    self._settings_saved_with = pickle.load(ins)
+                    self._settings_saved_with = pickle.load(
+                        ins, encoding='bytes')
             except (OSError, IOError, pickle.UnpicklingError, EOFError):
                 raise_bolt_error(u'Failed to read %s' % backup_dat)
         return self._saved_settings_version, self._settings_saved_with

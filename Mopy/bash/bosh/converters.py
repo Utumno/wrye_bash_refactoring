@@ -308,12 +308,13 @@ class InstallerConverter(object):
                     return re.sub(u'^(bolt|bosh)$', u'' r'bash.\1',
                                   s.decode(u'utf-8'), flags=re.U)
             translator = _Translator(stream)
-            for a, v in zip(self.persistBCF, pickle.load(translator)):
+            for a, v in zip(self.persistBCF, pickle.load(
+                    translator, encoding='bytes')):
                 setattr(self, a, v)
             if fullLoad:
                 for a, v in zip(self._converter_settings + self.volatile +
                                  self.addedSettings,
-                                 pickle.load(translator)):
+                                 pickle.load(translator, encoding='bytes')):
                     setattr(self, a, v)
         with self.fullPath.unicodeSafe() as converter_path:
             # Temp rename if its name wont encode correctly

@@ -1341,7 +1341,7 @@ class PickleDict(object):
             try:
                 with path.open(u'rb') as ins:
                     try:
-                        firstPickle = pickle.load(ins)
+                        firstPickle = pickle.load(ins, encoding='bytes')
                     except ValueError:
                         cor = path
                         cor_name = GPath(
@@ -1350,8 +1350,9 @@ class PickleDict(object):
                                 path, cor_name.tail), traceback=True)
                         continue  # file corrupt - try next file
                     if firstPickle == b'VDATA2':
-                        self.vdata.update(pickle.load(ins))
-                        self.pickled_data.update(pickle.load(ins))
+                        self.vdata.update(pickle.load(ins, encoding='bytes'))
+                        self.pickled_data.update(pickle.load(
+                            ins, encoding='bytes'))
                     else:
                         raise PickleDict.Mold(path)
                 return 1 + (path == self.backup)

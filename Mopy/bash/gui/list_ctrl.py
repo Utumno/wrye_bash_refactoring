@@ -68,7 +68,8 @@ class _DragListCtrl(_wx.ListCtrl, ListCtrlAutoWidthMixin):
                     return _wx.DragResult.DragCopy
                 elif dtype == self.dataList.GetFormat().GetType():
                     # ListCtrl indexes
-                    _data = pickle.loads(self.dataList.GetData().tobytes())
+                    _data = pickle.loads(self.dataList.GetData().tobytes(),
+                                         encoding='bytes')
                     self.window._OnDropList(x, y, _data)
                     return _wx.DragResult.DragCopy
             return _wx.DragResult.DragNone
