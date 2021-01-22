@@ -442,7 +442,7 @@ class ImportWeaponModificationsPatcher(_APreserver):
 # _APreserver
 class ImportCellsPatcher(ImportPatcher):
     logMsg = u'\n=== ' + _(u'Cells/Worlds Patched')
-    _read_write_records = (b'CELL', b'WRLD')
+    _read_sigs = (b'CELL', b'WRLD')
 
     def __init__(self, p_name, p_file, p_sources):
         super(ImportCellsPatcher, self).__init__(p_name, p_file, p_sources)

@@ -302,7 +302,7 @@ class RaceRecordsPatcher(AMultiTweaker, ListPatcher):
     """Race patcher - we inherit from AMultiTweaker to use tweak_instances."""
     patcher_group = u'Special'
     patcher_order = 40
-    _read_write_records = (b'RACE', b'EYES', b'HAIR', b'NPC_')
+    _read_sigs = (b'RACE', b'EYES', b'HAIR', b'NPC_')
     _tweak_classes = {
         RaceTweaker_BiggerOrcsAndNords, RaceTweaker_MergeSimilarRaceHairs,
         RaceTweaker_MergeSimilarRaceEyes, RaceTweaker_PlayableEyes,
