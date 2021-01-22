@@ -119,7 +119,7 @@ class _HandleAliases(object):
         :param csv_fields: A line in a CSV file, already split into fields."""
         raise AbstractError
 
-    def _load_plugin(self, mod_info, target_types= None, keepAll=True):
+    def _load_plugin(self, mod_info, keepAll=True, target_types=None):
         """Loads the specified record types in the specified ModInfo and
         returns the result.
 
@@ -216,8 +216,8 @@ class _AParser(_HandleAliases):
             master_names = load_order.get_ordered(master_names)
         for mod_name in master_names:
             if mod_name in self._fp_mods: continue
-            _fp_loop(self._load_plugin(bosh.modInfos[mod_name],
-                                       self._fp_types, keepAll=False))
+            _fp_loop(self._load_plugin(bosh.modInfos[mod_name], keepAll=False,
+                                       target_types=self._fp_types))
         # Finally, process the mod itself
         if loaded_mod.fileInfo.name in self._fp_mods: return
         _fp_loop(loaded_mod)
@@ -290,7 +290,8 @@ class _AParser(_HandleAliases):
             self._current_mod = None
             return
         # Load mod_info once and for all, then execute every needed pass
-        loaded_mod = self._load_plugin(mod_info, a_types, keepAll=False)
+        loaded_mod = self._load_plugin(mod_info, keepAll=False,
+                                       target_types=a_types)
         if self._fp_types:
             self._read_plugin_fp(loaded_mod)
         if self._sp_types:
@@ -375,8 +376,8 @@ class _AParser(_HandleAliases):
         :param mod_info: The ModInfo instance to write to.
         :return: A dict mapping record types to the number of changed records
             in them."""
-        return self._do_write_plugin(self._load_plugin(
-            mod_info, self.id_stored_info, keepAll=False))
+        return self._do_write_plugin(
+            self._load_plugin(mod_info, target_types=self.id_stored_info))
 
     # Other API
     @property
@@ -424,7 +425,7 @@ class ActorFactions(_AParser):
             target_entry.unused1 = b'ODB'
 
     def _parse_line(self, csv_fields):
-        top_grup, _aed, amod, aobj, _fed, fmod, fobj, rank = csv_fields[:9] # FIXME: 8?
+        top_grup, _aed, amod, aobj, _fed, fmod, fobj, rank = csv_fields[:8]
         aid = self._coerce_fid(amod, aobj)
         fid = self._coerce_fid(fmod, fobj)
         rank = int(rank)
@@ -477,9 +478,7 @@ class ActorLevels(_HandleAliases):
     def writeToMod(self,modInfo):
         """Exports actor levels to specified mod."""
         mod_id_levels = self.mod_id_levels
-        loadFactory = self._load_factory()
-        modFile = ModFile(modInfo,loadFactory)
-        modFile.load(True)
+        modFile = self._load_plugin(modInfo)
         changed = 0
         id_levels = mod_id_levels.get(modInfo.name,
                                       mod_id_levels.get(GPath(u'Unknown'),
@@ -1306,11 +1305,12 @@ class SigilStoneDetails(_UsesEffectsMixin):
     def __init__(self, types=None, aliases_=None):
         super(SigilStoneDetails, self).__init__(aliases_)
         self.fid_stats = {}
+        self.types = [b'SGST']
 
     def readFromMod(self,modInfo):
         """Reads stats from specified mod."""
         fid_stats = self.fid_stats
-        modFile = self._load_plugin(modInfo, [b'SGST'], keepAll=False)
+        modFile = self._load_plugin(modInfo, keepAll=False)
         for record in modFile.tops[b'SGST'].getActiveRecords():
             effects = []
             for effect in record.effects:
@@ -1335,7 +1335,7 @@ class SigilStoneDetails(_UsesEffectsMixin):
     def writeToMod(self,modInfo):
         """Writes stats to specified mod."""
         fid_stats = self.fid_stats
-        modFile = self._load_plugin(modInfo, [b'SGST'])
+        modFile = self._load_plugin(modInfo)
         changed = [] #eids
         for record in modFile.tops[b'SGST'].getActiveRecords():
             newStats = fid_stats.get(record.fid, None)
@@ -1530,12 +1530,13 @@ class SpellRecords(_UsesEffectsMixin):
         self.levelTypeName_Number = {y.lower(): x for x, y
                                      in self.levelTypeNumber_Name.iteritems()
                                      if x is not None}
+        self.types = [b'SPEL']
 
     def readFromMod(self, modInfo, __attrgetters=attrgetter_cache):
         """Reads stats from specified mod."""
         fid_stats, attrs = self.fid_stats, self.attrs
         detailed = self.detailed
-        modFile = self._load_plugin(modInfo, [b'SPEL'], keepAll=False)
+        modFile = self._load_plugin(modInfo, keepAll=False)
         for record in modFile.tops[b'SPEL'].getActiveRecords():
             fid_stats[record.fid] = [__attrgetters[attr](record) for attr in
                                      attrs]
@@ -1559,7 +1560,7 @@ class SpellRecords(_UsesEffectsMixin):
         """Writes stats to specified mod."""
         fid_stats, attrs = self.fid_stats, self.attrs
         detailed = self.detailed
-        modFile = self._load_plugin(modInfo, [b'SPEL'])
+        modFile = self._load_plugin(modInfo)
         changed = [] #eids
         for record in modFile.tops[b'SPEL'].getActiveRecords():
             newStats = fid_stats.get(record.fid, None)
@@ -1712,11 +1713,12 @@ class IngredientDetails(_UsesEffectsMixin):
     def __init__(self, types=None, aliases_=None):
         super(IngredientDetails, self).__init__(aliases_)
         self.fid_stats = {}
+        self.types = [b'INGR']
 
     def readFromMod(self,modInfo):
         """Reads stats from specified mod."""
         fid_stats = self.fid_stats
-        modFile = self._load_plugin(modInfo, [b'INGR'], keepAll=False)
+        modFile = self._load_plugin(modInfo, keepAll=False)
         for record in modFile.tops[b'INGR'].getActiveRecords():
             effects = []
             for effect in record.effects:
@@ -1741,7 +1743,7 @@ class IngredientDetails(_UsesEffectsMixin):
     def writeToMod(self,modInfo):
         """Writes stats to specified mod."""
         fid_stats = self.fid_stats
-        modFile = self._load_plugin(modInfo, [b'INGR'])
+        modFile = self._load_plugin(modInfo)
         changed = [] #eids
         for record in modFile.tops[b'INGR'].getActiveRecords():
             newStats = fid_stats.get(record.fid, None)
