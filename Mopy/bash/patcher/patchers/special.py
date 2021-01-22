@@ -328,6 +328,7 @@ class ContentsCheckerPatcher(Patcher):
         """Returns load factory classes needed for reading."""
         return tuple(self.contTypes | self.entryTypes)
 
+    @property
     def getWriteClasses(self):
         """Returns load factory classes needed for writing."""
         return tuple(self.contTypes) if self.isActive else ()

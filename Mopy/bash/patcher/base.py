@@ -67,9 +67,10 @@ class Patcher(Abstract_Patcher):
     def _read_sigs(self):
         return self.__class__._read_write_records
 
+    @property
     def getWriteClasses(self):
         """Returns load factory classes needed for writing."""
-        return self.__class__._read_write_records if self.isActive else ()
+        return self.getReadClasses
 
     def initData(self,progress):
         """Compiles material, i.e. reads source text, esp's, etc. as

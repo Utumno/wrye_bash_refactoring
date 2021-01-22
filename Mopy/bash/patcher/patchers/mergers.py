@@ -87,9 +87,6 @@ class _AMerger(ImportPatcher):
     def _read_sigs(self):
         return tuple(self._present_sigs)
 
-    def getWriteClasses(self):
-        return self.getReadClasses
-
     def initData(self,progress):
         if not self.isActive or not self.srcs: return
         loadFactory = LoadFactory(False, by_sig=self._wanted_subrecord)
@@ -394,10 +391,6 @@ class ImportActorsAIPackagesPatcher(ImportPatcher):
     @property
     def _read_sigs(self):
         return bush.game.actor_types
-
-    def getWriteClasses(self):
-        """Returns load factory classes needed for writing."""
-        return bush.game.actor_types if self.isActive else ()
 
     def scanModFile(self, modFile, progress): # scanModFile2: loop, LongTypes..
         """Add record from modFile."""

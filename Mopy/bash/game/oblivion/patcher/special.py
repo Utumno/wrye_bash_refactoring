@@ -70,6 +70,7 @@ class CoblCatalogsPatcher(Patcher, _ExSpecial):
         self.isActive = (_cobl_main in p_file.loadSet)
         self.id_ingred = {}
 
+    @property
     def getWriteClasses(self):
         """Returns load factory classes needed for writing."""
         return (b'BOOK',) if self.isActive else ()

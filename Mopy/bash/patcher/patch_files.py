@@ -191,7 +191,7 @@ class PatchFile(ModFile):
             (p.getReadClasses for p in self._patcher_instances),
             (r.rec_sig for r in bush.game.readClasses)))
         self.loadFactory = LoadFactory(True, by_sig=chain(
-            (p.getWriteClasses() for p in self._patcher_instances),
+            (p.getWriteClasses for p in self._patcher_instances),
             (w.rec_sig for w in bush.game.writeClasses)))
         #--Merge Factory
         self.mergeFactory = LoadFactory(False, by_sig=(r.rec_sig for r in
