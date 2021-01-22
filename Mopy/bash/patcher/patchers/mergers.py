@@ -84,7 +84,7 @@ class _AMerger(ImportPatcher):
 
     @property
     def _read_sigs(self):
-        return tuple(self._present_sigs)
+        return self._present_sigs
 
     def initData(self,progress):
         if not self.isActive or not self.srcs: return
@@ -272,6 +272,7 @@ class ImportActorsAIPackagesPatcher(ImportPatcher):
         super(ImportActorsAIPackagesPatcher, self).__init__(p_name, p_file, p_sources)
         # long_fid -> {'merged':list[long_fid], 'deleted':list[long_fid]}
         self.id_merged_deleted = {}
+        self._read_sigs = bush.game.actor_types
 
     def _insertPackage(self, id_merged_deleted, fi, index, pkg, recordData):
         fi_merged = id_merged_deleted[fi]['merged']
@@ -383,14 +384,10 @@ class ImportActorsAIPackagesPatcher(ImportPatcher):
                                                         pkg, recordData)
             progress.plus()
 
-    @property
-    def _read_sigs(self):
-        return bush.game.actor_types
-
     def scanModFile(self, modFile, progress): # scanModFile2: loop, LongTypes..
         """Add record from modFile."""
         merged_deleted = self.id_merged_deleted
-        for top_grup_sig in self._read_sigs:
+        for top_grup_sig in self._read_sigs: ##: does order of grups matter?
             patchBlock = self.patchFile.tops[top_grup_sig]
             for record in modFile.tops[top_grup_sig].getActiveRecords():
                 fid = record.fid

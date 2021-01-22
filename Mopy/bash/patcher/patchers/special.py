@@ -190,7 +190,7 @@ class _AListsMerger(ListPatcher):
             patch_block = self.patchFile.tops[list_type]
             stored_lists = self.type_list[list_type]
             for stored_list in sorted(stored_lists.itervalues(),
-                                      key=attrgetter('eid')):
+                                      key=attrgetter(u'eid')):
                 if not stored_list.mergeOverLast: continue
                 list_fid = stored_list.fid
                 keep(list_fid)
