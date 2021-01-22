@@ -23,6 +23,7 @@
 from __future__ import print_function
 import time
 from collections import defaultdict, Counter
+from itertools import chain
 from operator import attrgetter
 from .. import bush # for game etc
 from .. import bolt # for type hints
@@ -186,17 +187,15 @@ class PatchFile(ModFile):
     def initFactories(self,progress):
         """Gets load factories."""
         progress(0, _(u'Processing.'))
-        readClasses = {x for x in bush.game.readClasses}
-        writeClasses = {x for x in bush.game.writeClasses}
-        for patcher in self._patcher_instances:
-            readClasses.update(
-                MreRecord.type_class[x] for x in patcher.getReadClasses())
-            writeClasses.update(
-                MreRecord.type_class[x] for x in patcher.getWriteClasses())
-        self.readFactory = LoadFactory(False, *readClasses)
-        self.loadFactory = LoadFactory(True, *writeClasses)
+        self.readFactory = LoadFactory(False, by_sig=chain(
+            (p.getReadClasses() for p in self._patcher_instances),
+            (r.rec_sig for r in bush.game.readClasses)))
+        self.loadFactory = LoadFactory(True, by_sig=chain(
+            (p.getWriteClasses() for p in self._patcher_instances),
+            (w.rec_sig for w in bush.game.writeClasses)))
         #--Merge Factory
-        self.mergeFactory = LoadFactory(False, *bush.game.mergeClasses)
+        self.mergeFactory = LoadFactory(False, by_sig=(r.rec_sig for r in
+                                                       bush.game.mergeClasses))
 
     def scanLoadMods(self,progress):
         """Scans load+merge mods."""
