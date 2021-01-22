@@ -83,11 +83,12 @@ class _AMerger(ImportPatcher):
         subrecord is e.g. just a list of FormIDs)."""
         return subrecord_entry
 
-    def getReadClasses(self):
-        return tuple(self._present_sigs) if self.isActive else ()
+    @property
+    def _read_sigs(self):
+        return tuple(self._present_sigs)
 
     def getWriteClasses(self):
-        return self.getReadClasses()
+        return self.getReadClasses
 
     def initData(self,progress):
         if not self.isActive or not self.srcs: return
@@ -390,9 +391,9 @@ class ImportActorsAIPackagesPatcher(ImportPatcher):
                                                         pkg, recordData)
             progress.plus()
 
-    def getReadClasses(self):
-        """Returns load factory classes needed for reading."""
-        return bush.game.actor_types if self.isActive else ()
+    @property
+    def _read_sigs(self):
+        return bush.game.actor_types
 
     def getWriteClasses(self):
         """Returns load factory classes needed for writing."""

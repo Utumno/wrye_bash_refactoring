@@ -124,12 +124,12 @@ class _APreserver(ImportPatcher):
         for src_data in filtered_dict.itervalues():
             self.id_data.update(src_data)
 
-    def getReadClasses(self):
-        return tuple(
-            x.rec_sig for x in self.srcClasses) if self.isActive else ()
+    @property
+    def _read_sigs(self):
+        return tuple(x.rec_sig for x in self.srcClasses)
 
     def getWriteClasses(self):
-        return self.getReadClasses()
+        return self.getReadClasses
 
     # noinspection PyDefaultArgument
     def _init_data_loop(self, recClass, srcFile, srcMod, temp_id_data,

@@ -104,10 +104,10 @@ class MultiTweaker(AMultiTweaker,Patcher):
             for read_sig in tweak.getReadClasses():
                 t_dict[read_sig][tweak.supports_pooling].append(tweak)
 
-    def getReadClasses(self):
-        """Returns load factory classes needed for reading."""
-        return chain.from_iterable(tweak.getReadClasses()
-            for tweak in self.enabled_tweaks) if self.isActive else ()
+    @property
+    def _read_sigs(self):
+        return chain.from_iterable(
+            tweak.read_sigs for tweak in self.enabled_tweaks)
 
     def getWriteClasses(self):
         """Returns load factory classes needed for writing."""
@@ -233,6 +233,7 @@ class ReplaceFormIDsPatcher(ListPatcher):
                 u'%s is no longer in patches set' % srcPath, traceback=True)
             progress.plus()
 
+    @property
     def getReadClasses(self):
         return tuple(MreRecord.simpleTypes | (
             {b'CELL', b'WRLD', b'REFR', b'ACHR', b'ACRE'}))

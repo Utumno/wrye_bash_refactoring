@@ -58,9 +58,14 @@ class Patcher(Abstract_Patcher):
     """Abstract base class for patcher elements performing a PBash patch - must
     be just before Abstract_Patcher in MRO.""" ##: "performing" ? how ?
 
+    @property
     def getReadClasses(self):
         """Returns load factory classes needed for reading."""
-        return self.__class__._read_write_records if self.isActive else ()
+        return self._read_sigs if self.isActive else ()
+
+    @property
+    def _read_sigs(self):
+        return self.__class__._read_write_records
 
     def getWriteClasses(self):
         """Returns load factory classes needed for writing."""

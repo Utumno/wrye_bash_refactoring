@@ -323,9 +323,10 @@ class ContentsCheckerPatcher(Patcher):
         self.fid_to_type = {}
         self.id_eid = {}
 
-    def getReadClasses(self):
+    @property
+    def _read_sigs(self):
         """Returns load factory classes needed for reading."""
-        return tuple(self.contTypes | self.entryTypes) if self.isActive else ()
+        return tuple(self.contTypes | self.entryTypes)
 
     def getWriteClasses(self):
         """Returns load factory classes needed for writing."""
