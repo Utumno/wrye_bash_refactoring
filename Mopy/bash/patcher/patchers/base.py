@@ -45,8 +45,8 @@ class MultiTweakItem(AMultiTweakItem):
     # Pooling' for a detailed overview of its implementation.
     supports_pooling = True
 
-    def getReadClasses(self):
-        """Returns load factory classes needed for reading."""
+    @property
+    def read_sigs(self):
         return self.__class__.tweak_read_classes
 
     def getWriteClasses(self):
@@ -101,7 +101,7 @@ class MultiTweaker(AMultiTweaker,Patcher):
         # interested in and whether or not they can be pooled
         self._tweak_dict = t_dict = defaultdict(lambda: ([], []))
         for tweak in self.enabled_tweaks: # type: MultiTweakItem
-            for read_sig in tweak.getReadClasses():
+            for read_sig in tweak.read_sigs:
                 t_dict[read_sig][tweak.supports_pooling].append(tweak)
 
     @property
