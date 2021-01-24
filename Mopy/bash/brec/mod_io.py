@@ -147,9 +147,8 @@ class GrupHeader(RecordHeader):
         block of group records, ie call this immediately after unpacking self.
         """
         ins.seek(self.size - self.__class__.rec_header_size, 1,
-            ##: HACK -> label is an int for MobDials groupType == 7
-            b'GRUP.' + self.label if isinstance(self.label, bytes) else bytes(
-                self.label))
+            # label is an int for MobDials groupType == 7
+            u'GRUP.%s' % self.label)
 
     def __repr__(self):
         return u'<GRUP Header: %s, %s>' % (
@@ -218,7 +217,7 @@ class ModReader(object):
         self.strings = string_table or {} # table may be None
 
     #--I/O Stream -----------------------------------------
-    def seek(self,offset,whence=os.SEEK_SET,recType='----'):
+    def seek(self, offset, whence=os.SEEK_SET, debug_str=u'----'):
         """File seek."""
         if whence == os.SEEK_CUR:
             newPos = self.ins.tell() + offset
@@ -227,7 +226,7 @@ class ModReader(object):
         else:
             newPos = offset
         if newPos < 0 or newPos > self.size:
-            raise exception.ModReadError(self.inName, recType, newPos, self.size)
+            raise exception.ModReadError(self.inName, debug_str, newPos, self.size)
         self.ins.seek(offset,whence)
 
     def tell(self):
@@ -238,53 +237,54 @@ class ModReader(object):
         """Close file."""
         self.ins.close()
 
-    def atEnd(self,endPos=-1,recType='----'):
+    def atEnd(self, endPos=-1, debug_str=u'----'):
         """Return True if current read position is at EOF."""
         filePos = self.ins.tell()
         if endPos == -1:
             return filePos == self.size
         elif filePos > endPos:
-            raise exception.ModError(self.inName, u'Exceeded limit of: ' + recType)
+            raise exception.ModError(self.inName, u'Exceeded limit of: %s' %
+                                     debug_str)
         else:
             return filePos == endPos
 
     #--Read/Unpack ----------------------------------------
-    def read(self,size,recType='----'):
+    def read(self, size, debug_str=u'----'):
         """Read from file."""
         endPos = self.ins.tell() + size
         if endPos > self.size:
-            raise exception.ModSizeError(self.inName, recType, (endPos,),
+            raise exception.ModSizeError(self.inName, debug_str, (endPos,),
                                          self.size)
         return self.ins.read(size)
 
-    def readLString(self, size, recType='----', __unpacker=_int_unpacker):
+    def readLString(self, size, debug_str=u'----', __unpacker=_int_unpacker):
         """Read translatable string. If the mod has STRINGS files, this is a
         uint32 to lookup the string in the string table. Otherwise, this is a
         zero-terminated string."""
         if self.hasStrings:
             if size != 4:
                 endPos = self.ins.tell() + size
-                raise exception.ModReadError(self.inName, recType, endPos, self.size)
-            id_, = self.unpack(__unpacker, 4, recType)
+                raise exception.ModReadError(self.inName, debug_str, endPos, self.size)
+            id_, = self.unpack(__unpacker, 4, debug_str)
             if id_ == 0: return u''
             else: return self.strings.get(id_,u'LOOKUP FAILED!') #--Same as Skyrim
         else:
-            return self.readString(size,recType)
+            return self.readString(size, debug_str)
 
-    def readString32(self, recType='----', __unpacker=_int_unpacker):
+    def readString32(self, debug_str=u'----', __unpacker=_int_unpacker):
         """Read wide pascal string: uint32 is used to indicate length."""
-        strLen, = self.unpack(__unpacker, 4, recType)
-        return self.readString(strLen,recType)
+        strLen, = self.unpack(__unpacker, 4, debug_str)
+        return self.readString(strLen, debug_str)
 
-    def readString(self,size,recType='----'):
+    def readString(self, size, debug_str=u'----'):
         """Read string from file, stripping zero terminator."""
-        return u'\n'.join(decoder(x,bolt.pluginEncoding,avoidEncodings=('utf8','utf-8')) for x in
-                          bolt.cstrip(self.read(size,recType)).split('\n'))
+        return u'\n'.join(decoder(x,bolt.pluginEncoding,avoidEncodings=(u'utf8',u'utf-8')) for x in
+                          bolt.cstrip(self.read(size, debug_str)).split(b'\n'))
 
-    def readStrings(self,size,recType='----'):
+    def readStrings(self,size,debug_str=u'----'):
         """Read strings from file, stripping zero terminator."""
-        return [decoder(x,bolt.pluginEncoding,avoidEncodings=('utf8','utf-8')) for x in
-                self.read(size,recType).rstrip(null1).split(null1)]
+        return [decoder(x,bolt.pluginEncoding,avoidEncodings=(u'utf8',u'utf-8')) for x in
+                self.read(size,debug_str).rstrip(null1).split(null1)]
 
     def unpack(self, struct_unpacker, size, recType=b'----'):
         """Read size bytes from the file and unpack according to format of
