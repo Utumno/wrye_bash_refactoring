@@ -661,7 +661,7 @@ class PartialLoadDecider(ADecider):
         # make it to the actual record
         target = copy.deepcopy(record)
         self._loader.load_mel(target, ins, sub_type, self._load_size,
-                              u'DECIDER.%s' % sub_type)
+                              u'DECIDER', sub_type)
         ins.seek(starting_pos)
         # Use the modified record here to make the temporary changes visible to
         # the delegate decider
