@@ -92,6 +92,8 @@ class ModReadError(ModError):
     """Mod Error: Attempt to read outside of buffer."""
     def __init__(self, in_name, debug_str, try_pos, max_pos):
         ## type: (Path, unicode|bytes, int, int) -> None
+        if isinstance(debug_str, (tuple, list)):
+            debug_str = u'.'.join(u'%s' % s for s in debug_str)
         if try_pos < 0:
             message = (u'%s: Attempted to read before (%s) beginning of '
                        u'file/buffer.' % (debug_str, try_pos))
@@ -106,9 +108,11 @@ class ModSizeError(ModError):
         """Indicates that a record or subrecord has the wrong size.
 
         :type in_name: bolt.Path
-        :type debug_str: unicode|bytes
+        :type debug_str: unicode|bytes|tuple[unicode|bytes]
         :type expected_sizes: tuple[int]
         :type actual_size: int"""
+        if isinstance(debug_str, (tuple, list)):
+            debug_str = u'.'.join(u'%s' % s for s in debug_str)
         message_form = (u'%s: Expected one of sizes [%s], but got %u' % (
             debug_str, u', '.join([u'%s' % x for x in expected_sizes]),
             actual_size))
@@ -117,6 +121,8 @@ class ModSizeError(ModError):
 class ModFidMismatchError(ModError):
     """Mod Error: Two FormIDs that should be equal are not."""
     def __init__(self, in_name, debug_str, fid_expected, fid_actual):
+        if isinstance(debug_str, (tuple, list)):
+            debug_str = u'.'.join(u'%s' % s for s in debug_str)
         message_form = (u'%s: FormIDs do not match - expected %r but got %r'
                         % (debug_str, fid_expected, fid_actual))
         super(ModFidMismatchError, self).__init__(in_name.s, message_form)

@@ -112,22 +112,22 @@ class MelBipedObjectData(MelStruct):
         loaders[b'BOD2'] = self
         loaders[b'BODT'] = self
 
-    def load_mel(self, record, ins, sub_type, size_, readId,
-                 __unpacker2=structs_cache[u'IB3s'].unpack,
-                 __unpacker3=structs_cache[u'IB3sI'].unpack):
+    def load_mel(self, record, ins, sub_type, size_, *debug_strs):
+        __unpacker2=structs_cache[u'IB3s'].unpack
+        __unpacker3=structs_cache[u'IB3sI'].unpack
         if sub_type == b'BODT':
             # Old record type, use alternate loading routine
             if size_ == 8:
                 # Version 20 of this subrecord is only 8 bytes (armorType
                 # omitted)
                 bp_flags, legacyFlags, _bp_unused = ins.unpack(
-                    __unpacker2, size_, readId)
+                    __unpacker2, size_, *debug_strs)
                 armorFlags = 0
             elif size_ != 12:
-                raise ModSizeError(ins.inName, readId, (12, 8), size_)
+                raise ModSizeError(ins.inName, debug_strs, (12, 8), size_)
             else:
                 bp_flags, legacyFlags, _bp_unused, armorFlags = ins.unpack(
-                    __unpacker3, size_, readId)
+                    __unpacker3, size_, *debug_strs)
             # legacyData is discarded except for non-playable status
             record.biped_flags = MelBipedObjectData._bp_flags(bp_flags)
             record.flags1.isNotPlayable = MelBipedObjectData.LegacyFlags(
@@ -136,7 +136,7 @@ class MelBipedObjectData(MelStruct):
         else:
             # BOD2 - new style, MelStruct can handle it
             super(MelBipedObjectData, self).load_mel(record, ins, sub_type,
-                                                     size_, readId)
+                                                     size_, *debug_strs)
 
 #------------------------------------------------------------------------------
 class MelAttacks(MelGroups):
@@ -1149,8 +1149,8 @@ class MelVmad(MelBase):
             self._handler_map[record_sig] = special_handler = special_handler()
         return special_handler
 
-    def load_mel(self, record, ins, sub_type, size_, readId,
-                 __unpacker=structs_cache[u'=hhH'].unpack):
+    def load_mel(self, record, ins, sub_type, size_, *debug_strs):
+        __unpacker=structs_cache[u'=hhH'].unpack
         # Remember where this VMAD subrecord ends
         end_of_vmad = ins.tell() + size_
         if self._vmad_class is None:
@@ -1160,7 +1160,7 @@ class MelVmad(MelBase):
         record.vmdata = vmad = self._vmad_class()
         # Begin by unpacking the VMAD header and doing some error checking
         vmad_version, obj_format, script_count = ins.unpack(__unpacker, 6,
-                                                            readId)
+                                                            *debug_strs)
         if vmad_version < 1 or vmad_version > 5:
             raise ModError(ins.inName, u'Unrecognized VMAD version: %u' %
                            vmad_version)
@@ -1174,7 +1174,7 @@ class MelVmad(MelBase):
         append_script = vmad.scripts.append
         for i in xrange(script_count):
             script = new_script()
-            load_script(script, ins, vmad_version, obj_format, readId)
+            load_script(script, ins, vmad_version, obj_format, *debug_strs)
             append_script(script)
         # If the record type is one of the ones that need special handling and
         # we still have something to read, call the appropriate handler
@@ -1182,7 +1182,7 @@ class MelVmad(MelBase):
             special_handler = self._get_special_handler(record.recType)
             vmad.special_data = special_handler.make_new()
             special_handler.load_frag(vmad.special_data, ins, vmad_version,
-                                      obj_format, readId)
+                                      obj_format, *debug_strs)
         else:
             vmad.special_data = None
 
@@ -2050,11 +2050,11 @@ class MreDobj(MelRecord):
                 MelStruct('DNAM', '2I', 'objectUse', (FID, 'objectID')),
             )
 
-        def load_mel(self, record, ins, sub_type, size_, readId):
+        def load_mel(self, record, ins, sub_type, size_, *debug_strs):
             # Load everything but the noise
             start_pos = ins.tell()
             super(MreDobj.MelDobjDnam, self).load_mel(record, ins, sub_type,
-                                                      size_, readId)
+                                                      size_, *debug_strs)
             # Now, read the remainder of the subrecord and store it
             read_size = ins.tell() - start_pos
             record.unknownDNAM = ins.read(size_ - read_size)
@@ -3009,14 +3009,14 @@ class MreLgtm(MelRecord):
     class MelLgtmData(MelStruct):
         """Older format skips 8 bytes in the middle and has the same unpacked
         length, so we can't use MelTruncatedStruct."""
-        def load_mel(self, record, ins, sub_type, size_, readId,
-            __unpacker=structs_cache[u'3Bs3Bs3Bs2f2i3f24s3Bs3f4s'].unpack):
+        def load_mel(self, record, ins, sub_type, size_, *debug_strs):
+            __unpacker=structs_cache[u'3Bs3Bs3Bs2f2i3f24s3Bs3f4s'].unpack
             if size_ == 92:
                 super(MreLgtm.MelLgtmData, self).load_mel(
-                    record, ins, sub_type, size_, readId)
+                    record, ins, sub_type, size_, *debug_strs)
                 return
             elif size_ == 84:
-                unpacked_val = ins.unpack(__unpacker, size_, readId)
+                unpacked_val = ins.unpack(__unpacker, size_, *debug_strs)
                 # Pad it with 8 null bytes in the middle
                 unpacked_val = (unpacked_val[:19]
                                 + (unpacked_val[19] + null4 * 2,)
@@ -3026,7 +3026,7 @@ class MreLgtm(MelRecord):
                     if action: value = action(value)
                     setattr(record, attr, value)
             else:
-                raise ModSizeError(ins.inName, readId, (92, 84), size_)
+                raise ModSizeError(ins.inName, debug_strs, (92, 84), size_)
 
     melSet = MelSet(
         MelEdid(),
