@@ -116,8 +116,8 @@ class _APreserver(ImportPatcher):
         from the CSV sources to this patcher's internal data structures."""
         # Filter out any entries that don't actually have data or don't
         # actually exist (for this game at least)
-        filtered_dict = {k: v for k, v in parsed_sources.iteritems()
-                         if k and k in MreRecord.type_class}
+        filtered_dict = {k.encode(u'ascii'): v for k, v in
+            parsed_sources.iteritems() if k and k in MreRecord.type_class} # FIXME k must be bytes
         self.srcClasses.update(filtered_dict)
         for src_data in filtered_dict.itervalues():
             self.id_data.update(src_data)
