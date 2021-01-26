@@ -879,7 +879,7 @@ class ModList(_ModsUIList):
             pinned = load_order.filter_pinned(self.GetSelected())
             if pinned:
                 msg = _(u"You can't reorder the following mods:\n" +
-                        u', '.join(unicode(s) for s in pinned))
+                        u', '.join(str(s) for s in pinned))
                 continue_key = u'bash.mods.dnd.pinned.continue'
         if msg:
             balt.askContinue(self, msg, continue_key)
@@ -2294,7 +2294,7 @@ class InstallersList(balt.UIList):
     #--Labels
     labels = OrderedDict([
         (u'Package',  lambda self, p: p.s),
-        (u'Order',    lambda self, p: unicode(self.data_store[p].order)),
+        (u'Order',    lambda self, p: str(self.data_store[p].order)),
         (u'Modified', lambda self, p: format_date(self.data_store[p].modified)),
         (u'Size',     lambda self, p: self.data_store[p].size_string()),
         (u'Files',    lambda self, p: self.data_store[p].number_string(
@@ -3346,7 +3346,7 @@ class ScreensList(balt.UIList):
                                         item_edited): break
                 to_del.add(screen)
                 num += 1
-                numStr = unicode(num).zfill(digits)
+                numStr = str(num).zfill(digits)
             if to_select:
                 self.RefreshUI(redraw=to_select, to_del=to_del,
                                detail_item=item_edited[0])

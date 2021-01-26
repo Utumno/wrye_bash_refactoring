@@ -244,7 +244,7 @@ class ColorsPage(_AFixedPage): ##: _AScrollablePage breaks the color picker??
         def _display_text(k):
             return _(self._keys_to_tabs[k.split(u'.')[0]]) + colorInfo[k][0]
         self._txt_key = {_display_text(x): x for x in colors}
-        colored = sorted(self._txt_key, key=unicode.lower)
+        colored = sorted(self._txt_key, key=str.lower)
         combo_text = colored[0]
         choiceKey = self._txt_key[combo_text]
         self.comboBox = DropDown(self, value=combo_text, choices=colored)
@@ -693,7 +693,7 @@ class StatusBarPage(_AScrollablePage):
             checked=bass.settings[u'bash.statusbar.showversion'])
         self._show_app_ver_chk.on_checked.subscribe(self._handle_app_ver)
         self._icon_size_dropdown = DropDown(self,
-            value=unicode(bass.settings[u'bash.statusbar.iconSize']),
+            value=str(bass.settings[u'bash.statusbar.iconSize']),
             choices=(u'16', u'24', u'32'), auto_tooltip=False)
         self._icon_size_dropdown.tooltip = _(u'Sets the status bar icons to '
                                              u'the selected size in pixels.')

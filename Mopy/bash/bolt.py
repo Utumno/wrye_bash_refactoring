@@ -125,24 +125,24 @@ def getbestencoding(bitstream):
 
 def decoder(byte_str, encoding=None, avoidEncodings=()):
     """Decode a byte string to unicode, using heuristics on encoding."""
-    if isinstance(byte_str, unicode) or byte_str is None: return byte_str
+    if isinstance(byte_str, str) or byte_str is None: return byte_str
     # Try the user specified encoding first
     if encoding:
         # TODO(ut) monkey patch
         if encoding == u'cp65001':
             encoding = u'utf-8'
-        try: return unicode(byte_str, encoding)
+        try: return str(byte_str, encoding)
         except UnicodeDecodeError: pass
     # Try to detect the encoding next
     encoding, confidence = getbestencoding(byte_str)
     if encoding and confidence >= 0.55 and (
             encoding not in avoidEncodings or confidence == 1.0) and (
             encoding not in _blocked_encodings):
-        try: return unicode(byte_str, encoding)
+        try: return str(byte_str, encoding)
         except UnicodeDecodeError: pass
     # If even that fails, fall back to the old method, trial and error
     for encoding in encodingOrder:
-        try: return unicode(byte_str, encoding)
+        try: return str(byte_str, encoding)
         except UnicodeDecodeError: pass
     raise UnicodeDecodeError(u'Text could not be decoded using any method')
 
@@ -270,7 +270,7 @@ class OrderedDefaultDict(collections.OrderedDict, collections.defaultdict):
         self.default_factory = default_factory
 
 # LowStrings ------------------------------------------------------------------
-class CIstr(unicode):
+class CIstr(str):
     """See: http://stackoverflow.com/q/43122096/281545"""
     __slots__ = ()
 
@@ -316,7 +316,7 @@ class LowerDict(dict):
         if hasattr(mapping, u'iteritems'): # PY3: items
             mapping = getattr(mapping, u'iteritems')()
         # PY3: fix mess below - kwargs keys are bytes im py2
-        return ((CIstr(k) if type(k) is unicode else k, v) for k, v in chain(
+        return ((CIstr(k) if type(k) is str else k, v) for k, v in chain(
             ((k.decode(u'ascii') if type(k) is bytes else k, v) for k, v in
              mapping),
             ((k.decode(u'ascii') if type(k) is bytes else k, v) for k, v in
@@ -328,47 +328,47 @@ class LowerDict(dict):
 
     def __getitem__(self, k):
         return super(LowerDict, self).__getitem__(
-            CIstr(k) if type(k) is unicode else k)
+            CIstr(k) if type(k) is str else k)
 
     def __setitem__(self, k, v):
         return super(LowerDict, self).__setitem__(
-            CIstr(k) if type(k) is unicode else k, v)
+            CIstr(k) if type(k) is str else k, v)
 
     def __delitem__(self, k):
         return super(LowerDict, self).__delitem__(
-            CIstr(k) if type(k) is unicode else k)
+            CIstr(k) if type(k) is str else k)
 
     def copy(self): # don't delegate w/ super - dict.copy() -> dict :(
         return type(self)(self)
 
     def get(self, k, default=None):
         return super(LowerDict, self).get(
-            CIstr(k) if type(k) is unicode else k, default)
+            CIstr(k) if type(k) is str else k, default)
 
     def setdefault(self, k, default=None):
         return super(LowerDict, self).setdefault(
-            CIstr(k) if type(k) is unicode else k, default)
+            CIstr(k) if type(k) is str else k, default)
 
     __no_default = object()
     def pop(self, k, v=__no_default):
         if v is LowerDict.__no_default:
             # super will raise KeyError if no default and key does not exist
             return super(LowerDict, self).pop(
-                CIstr(k) if type(k) is unicode else k)
+                CIstr(k) if type(k) is str else k)
         return super(LowerDict, self).pop(
-            CIstr(k) if type(k) is unicode else k, v)
+            CIstr(k) if type(k) is str else k, v)
 
     def update(self, mapping=(), **kwargs):
         super(LowerDict, self).update(self._process_args(mapping, **kwargs))
 
     def __contains__(self, k):
         return super(LowerDict, self).__contains__(
-            CIstr(k) if type(k) is unicode else k)
+            CIstr(k) if type(k) is str else k)
 
     @classmethod
     def fromkeys(cls, keys, v=None):
         return super(LowerDict, cls).fromkeys((CIstr(k) if type(
-            k) is unicode else k for k in keys), v)
+            k) is str else k for k in keys), v)
 
     def __repr__(self):
         return u'%s(%s)' % (
@@ -621,7 +621,7 @@ class Path(object):
     @property
     def temp(self):
         """Temp file path."""
-        baseDir = GPath(unicode(tempfile.gettempdir(), Path.sys_fs_enc)).join(
+        baseDir = GPath(str(tempfile.gettempdir(), Path.sys_fs_enc)).join(
             u'WryeBash_temp')
         baseDir.makedirs()
         return baseDir.join(self.tail + u'.tmp')
@@ -635,7 +635,7 @@ class Path(object):
             try:
                 traceback.print_exc()
                 print(u'Trying to pass temp dir in...')
-                tempdir = unicode(tempfile.gettempdir(), Path.sys_fs_enc)
+                tempdir = str(tempfile.gettempdir(), Path.sys_fs_enc)
                 return GPath(tempfile.mkdtemp(prefix=prefix, dir=tempdir))
             except UnicodeDecodeError:
                 try:
@@ -651,7 +651,7 @@ class Path(object):
 
     @staticmethod
     def baseTempDir():
-        return GPath(unicode(tempfile.gettempdir(), Path.sys_fs_enc))
+        return GPath(str(tempfile.gettempdir(), Path.sys_fs_enc))
 
     @property
     def backup(self):
@@ -895,7 +895,7 @@ class Path(object):
                 def __exit__(self, exc_type, exc_value, exc_traceback): pass
             return _noop_file(self)
         except UnicodeEncodeError:
-            safe_path = unicode(self._s.encode(u'ascii', u'xmlcharrefreplace'),
+            safe_path = str(self._s.encode(u'ascii', u'xmlcharrefreplace'),
                 u'ascii') + u'_unicode_safe.tmp'
             return self.tempMoveTo(safe_path)
 
@@ -943,37 +943,37 @@ class Path(object):
         if isinstance(other, Path):
             return self._cs == other._cs
         # get unicode or None - will blow on most other types - identical below
-        dec = other if isinstance(other, unicode) else decoder(other)
+        dec = other if isinstance(other, str) else decoder(other)
         return self._cs == (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __ne__(self, other):
         if isinstance(other, Path):
             return self._cs != other._cs
-        dec = other if isinstance(other, unicode) else decoder(other)
+        dec = other if isinstance(other, str) else decoder(other)
         return self._cs != (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __lt__(self, other):
         if isinstance(other, Path):
             return self._cs < other._cs
-        dec = other if isinstance(other, unicode) else decoder(other)
+        dec = other if isinstance(other, str) else decoder(other)
         return self._cs < (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __ge__(self, other):
         if isinstance(other, Path):
             return self._cs >= other._cs
-        dec = other if isinstance(other, unicode) else decoder(other)
+        dec = other if isinstance(other, str) else decoder(other)
         return self._cs >= (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __gt__(self, other):
         if isinstance(other, Path):
             return self._cs > other._cs
-        dec = other if isinstance(other, unicode) else decoder(other)
+        dec = other if isinstance(other, str) else decoder(other)
         return self._cs > (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
     def __le__(self, other):
         if isinstance(other, Path):
             return self._cs <= other._cs
-        dec = other if isinstance(other, unicode) else decoder(other)
+        dec = other if isinstance(other, str) else decoder(other)
         return self._cs <= (os.path.normcase(os.path.normpath(dec)) if dec
             else dec)
 
@@ -1021,7 +1021,7 @@ class CsvReader(object):
 
     def __iter__(self):
         for row in self.reader:
-            yield [unicode(x, u'utf8') for x in row]
+            yield [str(x, u'utf8') for x in row]
 
     def close(self):
         self.reader = None
@@ -1775,7 +1775,7 @@ def deprint(*args,**keyargs):
         # PY3: This should be good to go
         if isinstance(exc_fmt, bytes):
             try:
-                msg += u'\n%s' % unicode(exc_fmt, u'utf-8')
+                msg += u'\n%s' % str(exc_fmt, u'utf-8')
             except UnicodeError:
                 traceback.print_exc()
                 msg += u'\n%r' % exc_fmt
@@ -1796,7 +1796,7 @@ def getMatch(reMatch,group=0):
 def intArg(arg,default=None):
     """Returns argument as an integer. If argument is a string, then it converts it using int(arg,0)."""
     if arg is None: return default
-    elif isinstance(arg, (unicode, bytes)): ##: this smells, hunt down
+    elif isinstance(arg, (str, bytes)): ##: this smells, hunt down
         return int(arg, 0)
     else: return int(arg)
 
@@ -2004,9 +2004,9 @@ class StringTable(dict):
                         else:
                             value = readCString(ins, path) #drops the null byte
                         try:
-                            value = unicode(value, u'utf-8')
+                            value = str(value, u'utf-8')
                         except UnicodeDecodeError:
-                            value = unicode(value,backupEncoding)
+                            value = str(value,backupEncoding)
                         insSeek(pos)
                         self[id_] = value
                     except:
@@ -2359,7 +2359,7 @@ class WryeText(object):
     def genHtml(ins,out=None,*cssDirs):
         """Reads a wtxt input stream and writes an html output stream."""
         # Path or Stream? -----------------------------------------------
-        if isinstance(ins, (Path, unicode)):
+        if isinstance(ins, (Path, str)):
             srcPath = GPath(ins)
             outPath = GPath(out) or srcPath.root+u'.html'
             cssDirs = (srcPath.head,) + cssDirs
@@ -2405,7 +2405,7 @@ class WryeText(object):
             # urllib will automatically take any unicode characters and escape them, so to
             # convert back to unicode for purposes of storing the string, everything will
             # be in cp1252, due to the escapings.
-            anchor = unicode(quote(reWd.sub(u'', text).encode(u'utf8')),
+            anchor = str(quote(reWd.sub(u'', text).encode(u'utf8')),
                              u'cp1252')
             count = 0
             if re.match(u'' r'\d', anchor):
@@ -2413,9 +2413,9 @@ class WryeText(object):
             while anchor in anchorlist and count < 10:
                 count += 1
                 if count == 1:
-                    anchor += unicode(count)
+                    anchor += str(count)
                 else:
-                    anchor = anchor[:-1] + unicode(count)
+                    anchor = anchor[:-1] + str(count)
             anchorlist.append(anchor)
             return u"<a id='%s'>%s</a>" % (anchor,text)
         #--Bold, Italic, BoldItalic
@@ -2450,7 +2450,7 @@ class WryeText(object):
             address = text = match.group(1).strip()
             if u'|' in text:
                 (address,text) = [chunk.strip() for chunk in text.split(u'|',1)]
-                if address == u'#': address += unicode(quote(reWd.sub(
+                if address == u'#': address += str(quote(reWd.sub(
                     u'', text).encode(u'utf8')), u'cp1252')
             if address.startswith(u'!'):
                 newWindow = u' target="_blank"'
@@ -2572,7 +2572,7 @@ class WryeText(object):
             elif maHead:
                 lead,text = maHead.group(1,2)
                 text = re.sub(u' *=*#?$', u'', text.strip())
-                anchor = unicode(quote(reWd.sub(u'', text).encode(u'utf8')),
+                anchor = str(quote(reWd.sub(u'', text).encode(u'utf8')),
                                  u'cp1252')
                 level = len(lead)
                 if anchorHeaders:
@@ -2582,9 +2582,9 @@ class WryeText(object):
                     while anchor in anchorlist and count < 10:
                         count += 1
                         if count == 1:
-                            anchor += unicode(count)
+                            anchor += str(count)
                         else:
-                            anchor = anchor[:-1] + unicode(count)
+                            anchor = anchor[:-1] + str(count)
                     anchorlist.append(anchor)
                     line = (headFormatNA,headFormat)[anchorHeaders] % (level,anchor,text,level)
                     if addContents: contents.append((level,anchor,text))

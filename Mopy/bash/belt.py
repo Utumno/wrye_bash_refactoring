@@ -858,7 +858,7 @@ class WryeParser(ScriptParser.Parser):
     def opE(self, l, r): return l == r
 
     def opEc(self, l, r):
-        if isinstance(l, unicode) and isinstance(r, unicode):
+        if isinstance(l, str) and isinstance(r, str):
             return l.lower() == r.lower()
         else:
             return l == r
@@ -866,7 +866,7 @@ class WryeParser(ScriptParser.Parser):
     def opNE(self, l, r): return l != r
 
     def opNEc(self, l, r):
-        if isinstance(l, unicode) and isinstance(r, unicode):
+        if isinstance(l, str) and isinstance(r, str):
             return l.lower() != r.lower()
         else:
             return l != r
@@ -874,7 +874,7 @@ class WryeParser(ScriptParser.Parser):
     def opGE(self, l, r): return l >= r
 
     def opGEc(self, l, r):
-        if isinstance(l, unicode) and isinstance(r, unicode):
+        if isinstance(l, str) and isinstance(r, str):
             return l.lower() >= r.lower()
         else:
             return l >= r
@@ -882,7 +882,7 @@ class WryeParser(ScriptParser.Parser):
     def opG(self, l, r): return l > r
 
     def opGc(self, l, r):
-        if isinstance(l, unicode) and isinstance(r, unicode):
+        if isinstance(l, str) and isinstance(r, str):
             return l.lower() > r.lower()
         else:
             return l > r
@@ -890,7 +890,7 @@ class WryeParser(ScriptParser.Parser):
     def opLE(self, l, r): return l <= r
 
     def opLEc(self, l, r):
-        if isinstance(l, unicode) and isinstance(r, unicode):
+        if isinstance(l, str) and isinstance(r, str):
             return l.lower() <= r.lower()
         else:
             return l <= r
@@ -898,7 +898,7 @@ class WryeParser(ScriptParser.Parser):
     def opL(self, l, r): return l < r
 
     def opLc(self, l, r):
-        if isinstance(l, unicode) and isinstance(r, unicode):
+        if isinstance(l, str) and isinstance(r, str):
             return l.lower() < r.lower()
         else:
             return l < r
@@ -907,7 +907,7 @@ class WryeParser(ScriptParser.Parser):
     def opIn(self, l, r): return l in r
 
     def opInCase(self, l, r):
-        if isinstance(l, unicode) and isinstance(r, unicode):
+        if isinstance(l, str) and isinstance(r, str):
             return l.lower() in r.lower()
         else:
             return l in r
@@ -1047,7 +1047,7 @@ class WryeParser(ScriptParser.Parser):
         self.cLine -= numLines
         self.ExecCount -= 1
 
-    def fnStr(self, data_): return unicode(data_)
+    def fnStr(self, data_): return str(data_)
 
     def fnInt(self, data_):
         try:
@@ -1068,28 +1068,28 @@ class WryeParser(ScriptParser.Parser):
             return 0
 
     def fnEndsWith(self, String, *args):
-        if not isinstance(String, unicode):
+        if not isinstance(String, str):
             error(_(u"Function 'endswith' only operates on string types."))
         return String.endswith(args)
 
     def fnStartsWith(self, String, *args):
-        if not isinstance(String, unicode):
+        if not isinstance(String, str):
             error(_(u"Function 'startswith' only operates on string types."))
         return String.startswith(args)
 
     def fnLower(self, String):
-        if not isinstance(String, unicode):
+        if not isinstance(String, str):
             error(_(u"Function 'lower' only operates on string types."))
         return String.lower()
 
     def fnFind(self, String, sub, start=0, end=-1):
-        if not isinstance(String, unicode):
+        if not isinstance(String, str):
             error(_(u"Function 'find' only operates on string types."))
         if end < 0: end += len(String) + 1
         return String.find(sub, start, end)
 
     def fnRFind(self, String, sub, start=0, end=-1):
-        if not isinstance(String, unicode):
+        if not isinstance(String, str):
             error(_(u"Function 'rfind' only operates on string types."))
         if end < 0: end += len(String) + 1
         return String.rfind(sub, start, end)
@@ -1353,7 +1353,7 @@ class WryeParser(ScriptParser.Parser):
     def kwdCase(self, value):
         if self.LenFlow() == 0 or self.PeekFlow().type != u'Select':
             error(UNEXPECTED % u'Case')
-        if value in self.PeekFlow().values or unicode(value) in self.PeekFlow().values:
+        if value in self.PeekFlow().values or str(value) in self.PeekFlow().values:
             self.PeekFlow().hitCase = True
             self.PeekFlow().active = True
 
@@ -1528,7 +1528,7 @@ class WryeParser(ScriptParser.Parser):
     def _TestVersion(self, need, file_):
         if file_ and file_.exists():
             have = get_file_version(file_.s)
-            ver = u'.'.join([unicode(i) for i in have])
+            ver = u'.'.join([str(i) for i in have])
             if need == u'None':
                 return [1, ver]
             for have_part, need_part in izip(have, need):

@@ -159,7 +159,7 @@ def setup_locale(cli_lang):
     # Everything has gone smoothly, install the translation and remember what
     # we ended up with as the final locale
     # PY3: drop the unicode=True, gone in py3 (this is always unicode now)
-    trans.install(unicode=True)
+    trans.install(str=True)
     bass.active_locale = target_name
     del _temp_app
     return target_locale
@@ -236,7 +236,7 @@ def dump_translator(out_path, lang):
                             old_line.rstrip(b'\r\n'))
                         if encoding_match:
                             # Encoding names are all ASCII, so this is safe
-                            target_enc = unicode(encoding_match.group(1),
+                            target_enc = str(encoding_match.group(1),
                                                  u'ascii')
                     if re_msg_ids_start.match(old_line):
                         break # Break once we hit the first translatable string
@@ -255,7 +255,7 @@ def dump_translator(out_path, lang):
                         continue
                     elif new_line.startswith(b'msgid "'):
                         # Decode the line and retrieve only the msgid contents
-                        stripped_line = unicode(new_line, target_enc)
+                        stripped_line = str(new_line, target_enc)
                         stripped_line = stripped_line.strip(u'\r\n')[7:-1]
                         # Replace escape sequences - Quote, Tab, Backslash
                         stripped_line = stripped_line.replace(u'\\"', u'"')

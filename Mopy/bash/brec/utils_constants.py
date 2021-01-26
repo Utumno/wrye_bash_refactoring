@@ -37,17 +37,17 @@ def _coerce(value, newtype, base=None, AllowNone=False):
             #--Force standard precision
             return round(struct_unpack('f', struct_pack('f', float(value)))[0], 6)
         elif newtype is bool:
-            if isinstance(value, (unicode, bytes)): ##: investigate
+            if isinstance(value, (str, bytes)): ##: investigate
                 retValue = value.strip().lower()
                 if AllowNone and retValue == u'none': return None
                 return retValue not in (u'',u'none',u'false',u'no',u'0',u'0.0')
             else: return bool(value)
         elif base: retValue = newtype(value, base)
-        elif newtype is unicode: retValue = decoder(value)
+        elif newtype is str: retValue = decoder(value)
         else: retValue = newtype(value)
         if (AllowNone and
             (isinstance(retValue,bytes) and retValue.lower() == b'none') or
-            (isinstance(retValue,unicode) and retValue.lower() == u'none')
+            (isinstance(retValue,str) and retValue.lower() == u'none')
             ):
             return None
         return retValue
@@ -67,14 +67,14 @@ def _make_hashable(target_obj):
         return tuple([_make_hashable(x) for x in target_obj])
     return target_obj
 
-class FixedString(unicode):
+class FixedString(str):
     """An action for MelStructs that will decode and encode a fixed-length
     string. Note that you do not need to specify defaults when using this."""
     __slots__ = (u'str_length',)
     _str_encoding = bolt.pluginEncoding
 
     def __new__(cls, str_length, target_str=b''):
-        if isinstance(target_str, unicode):
+        if isinstance(target_str, str):
             decoded_str = target_str
         else:
             decoded_str = u'\n'.join(
@@ -87,7 +87,7 @@ class FixedString(unicode):
 
     def __call__(self, new_str):
         # 0 is the default, so replace it with whatever we currently have
-        return FixedString(self.str_length, new_str or unicode(self))
+        return FixedString(self.str_length, new_str or str(self))
 
     def dump(self):
         return bolt.encode_complex_string(self, max_size=self.str_length,

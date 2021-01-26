@@ -55,10 +55,10 @@ def _early_setup(debug):
     # properly
     if bass.is_standalone:
         pathToProg = os.path.dirname(
-            unicode(sys.executable, bolt.Path.sys_fs_enc))
+            str(sys.executable, bolt.Path.sys_fs_enc))
     else:
         pathToProg = os.path.dirname(
-            unicode(sys.argv[0], bolt.Path.sys_fs_enc))
+            str(sys.argv[0], bolt.Path.sys_fs_enc))
     if pathToProg:
         os.chdir(pathToProg)
     bolt.deprintOn = debug

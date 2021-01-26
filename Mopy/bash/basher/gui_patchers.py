@@ -509,7 +509,7 @@ class _ChoiceMenuMixin(object):
     def ShowChoiceMenu(self, lb_selection_dex): raise exception.AbstractError
 
 # PY3: drop long, duh
-_label_formats = {unicode: u'%s', float: u'%4.2f', int: u'%d', int: u'%d'}
+_label_formats = {str: u'%s', float: u'%4.2f', int: u'%d', int: u'%d'}
 def _custom_label(label, value): # edit label text with value
     return u'%s: %s' % (label, _label_formats[type(value)] % value)
 
@@ -670,7 +670,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
                     new = balt.askText(
                         self.gConfigPanel, label,
                         title=tweak.tweak_name + _(u' - Custom Tweak Value'),
-                        default=unicode(tweak.choiceValues[index][i]))
+                        default=str(tweak.choiceValues[index][i]))
                     if new is None: #user hit cancel
                         return
                     try:
@@ -693,7 +693,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
                 if new is None: #user hit cancel
                     return
                 value.append(new)
-            elif isinstance(v, unicode):
+            elif isinstance(v, str):
                 label = (_(u'Enter the desired custom tweak text.')
                          + key_display)
                 new = balt.askText(
@@ -721,7 +721,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
                             if len(value) == 1 else
                             _(u'The values you entered (%s) are not valid '
                               u'for this tweak.') % u', '.join(
-                                unicode(s) for s in value))
+                                str(s) for s in value))
             balt.showError(self.gConfigPanel, error_header + u'\n\n' +
                            _(u'Reason: %s') % validation_error,
                            title=tweak.tweak_name + _(u' - Error'))

@@ -347,7 +347,7 @@ class FileInfo(AFile):
                 snapLast = snapNew
                 continue
         #--New
-        snapLast[-1] = (u'%0'+unicode(len(snapLast[-1]))+u'd') % (int(snapLast[-1])+1,)
+        snapLast[-1] = (u'%0'+str(len(snapLast[-1]))+u'd') % (int(snapLast[-1])+1,)
         destName = root+separator+(u'.'.join(snapLast))+ext
         return destDir,destName,(root+u'*'+ext).s
 
@@ -629,8 +629,8 @@ class ModInfo(FileInfo):
         tes4_rec_header = ins.unpackRecHeader()
         if tes4_rec_header.recType != bush.game.Esp.plugin_header_sig:
             raise ModError(self.name, u'Expected %s, but got %s' % (
-                unicode(bush.game.Esp.plugin_header_sig, encoding=u'ascii'),
-                unicode(tes4_rec_header.recType, encoding=u'ascii')))
+                str(bush.game.Esp.plugin_header_sig, encoding=u'ascii'),
+                str(tes4_rec_header.recType, encoding=u'ascii')))
         return tes4_rec_header
 
     def readHeader(self):
@@ -3393,7 +3393,7 @@ def initDefaultSettings():
     inisettings[u'SkippedBashInstallersDirs'] = u''
 
 __type_key_preffix = {  # Path is tooldirs only int does not appear in either!
-    bolt.Path: u's', unicode: u's', list: u's', int: u'i', bool: u'b'}
+    bolt.Path: u's', str: u's', list: u's', int: u'i', bool: u'b'}
 def initOptions(bashIni):
     initTooldirs()
     initDefaultSettings()
@@ -3410,7 +3410,7 @@ def initOptions(bashIni):
             # retrieving ini settings is case insensitive - key: lowecase
             for key, value in bashIni.items(section):
                 usedKey, usedSettings, settingType = defaultOptions.get(
-                    key, (key[1:], unknownSettings, unicode))
+                    key, (key[1:], unknownSettings, str))
                 compDefaultValue = usedSettings.get(usedKey, u'')
                 if settingType in (bolt.Path,list):
                     if value == u'.': continue
@@ -3423,7 +3423,7 @@ def initOptions(bashIni):
                 else:
                     value = settingType(value)
                 comp_val = value
-                if settingType is unicode:
+                if settingType is str:
                     compDefaultValue = compDefaultValue.lower()
                     comp_val = comp_val.lower()
                 elif settingType is list:

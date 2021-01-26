@@ -296,7 +296,7 @@ class Table(WithCharEvents):
             focused_col = self.get_focused_column()
             focused_row = self._native_widget.GetGridCursorRow() + 1
             for r, cell_value in enumerate(all_lines):
-                ret_dict[focused_col][unicode(focused_row + r)] = cell_value
+                ret_dict[focused_col][str(focused_row + r)] = cell_value
         return ret_dict
 
     def get_cell_value(self, col_label, row_label):
@@ -332,7 +332,7 @@ class Table(WithCharEvents):
             col_label = self._native_widget.GetColLabelValue(c)
             for r in xrange(self._native_widget.GetNumberRows()):
                 if self._native_widget.IsInSelection(r, c):
-                    sel_dict[col_label][unicode(r + 1)] = (
+                    sel_dict[col_label][str(r + 1)] = (
                         self._native_widget.GetCellValue(r, c))
         return sel_dict
 

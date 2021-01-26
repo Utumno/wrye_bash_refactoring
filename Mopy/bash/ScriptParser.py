@@ -166,7 +166,7 @@ Types = {UNKNOWN:u'UNKNOWN',
 #  various names as well.
 #------------------------------------------------
 def getType(item, parser=None):
-    if isinstance(item, unicode):
+    if isinstance(item, str):
         if not parser: return STRING
         if item in parser.constants: return CONSTANT
         if item in parser.variables: return VARIABLE
@@ -402,7 +402,7 @@ class Parser(object):
         def __int__(self): return int(self.tkn)
         def __index__(self): return operator.index(self.tkn)
         def __float__(self): return float(self.tkn)
-        def __str__(self): return unicode(self.tkn)
+        def __str__(self): return str(self.tkn)
 
         def __repr__(self): return u'<Token-%s:%s>' % (Types[self.type],self.text)
 

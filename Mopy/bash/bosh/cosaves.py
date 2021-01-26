@@ -505,7 +505,7 @@ class _xSEChunkDATA(_xSEModListChunk):
         if self.chunk_version > 3:
             total_len += len(self.mod_names) # space separators between mods
             # the mod count as a string & space separator between it and mods
-            total_len += len(unicode(len(self.mod_names))) + 1
+            total_len += len(str(len(self.mod_names))) + 1
         else:
             total_len += 256 # space seperators between mods
             total_len += len(u'nomod') * (256 - len(self.mod_names)) # 'nomod's
@@ -517,7 +517,7 @@ class _xSEChunkDATA(_xSEModListChunk):
         _pack_cosave_space_str(out, self.sos_version)
         # Avoid write_mod_names, see reasoning above
         if self.chunk_version > 3:
-            _pack_cosave_space_str(out, unicode(len(self.mod_names)))
+            _pack_cosave_space_str(out, str(len(self.mod_names)))
             for mod_name in self.mod_names:
                 _pack_cosave_space_str(out, mod_name)
         else:
@@ -1508,7 +1508,7 @@ class xSECosave(ACosave):
         :param shift: By how much (in bits) to shift.
         :return: The unichr representation of the result, or an empty
             string."""
-        temp_char = unichr(target_int >> shift & 0xFF)
+        temp_char = chr(target_int >> shift & 0xFF)
         if temp_char not in string.printable:
             temp_char = u''
         return temp_char

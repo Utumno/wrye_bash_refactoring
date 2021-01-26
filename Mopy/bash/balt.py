@@ -341,7 +341,7 @@ def vistaDialog(parent, message, title, checkBoxTxt=None,
     if checkBoxTxt:
         if isinstance(checkBoxTxt, bytes):
             raise RuntimeError(u'Do not pass bytes to vistaDialog!')
-        elif isinstance(checkBoxTxt, unicode):
+        elif isinstance(checkBoxTxt, str):
             dialog.set_check_box(checkBoxTxt,False)
         else:
             dialog.set_check_box(checkBoxTxt[0],checkBoxTxt[1])

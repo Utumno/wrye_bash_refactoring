@@ -447,7 +447,7 @@ def _linux_get_file_version_info(filename):
         len_, val_len, type_ = _read(_WORD, file_obj, count=3)
         info = u''
         for i in xrange(200):
-            info += unichr(_read(_WORD, file_obj))
+            info += chr(_read(_WORD, file_obj))
             if info[-1] == u'\x00': break
         offset = _pad(file_obj.tell()) - pos
         file_obj.seek(pos + offset)
@@ -566,13 +566,13 @@ def _fileOperation(operation, source, target=None, allowUndo=True,
         return {}
     abspath = _os.path.abspath
     # source may be anything - see SHFILEOPSTRUCT - accepts list or item
-    if isinstance(source, (Path, (unicode, bytes))):
+    if isinstance(source, (Path, (str, bytes))):
         source = [abspath(u'%s' % source)]
     else:
         source = [abspath(u'%s' % x) for x in source]
     # target may be anything ...
     target = target if target else u'' # abspath(u''): cwd (must be Mopy/)
-    if isinstance(target, (Path, (unicode, bytes))):
+    if isinstance(target, (Path, (str, bytes))):
         target = [abspath(u'%s' % target)]
     else:
         target = [abspath(u'%s' % x) for x in target]

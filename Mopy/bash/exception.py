@@ -143,7 +143,7 @@ class FileOperationError(OSError):
         # type: (int, unicode) -> None
         self.errno = error_code
         Exception.__init__(self, u'FileOperationError: %s' % (
-                message or unicode(error_code)))
+                message or str(error_code)))
 
 class AccessDeniedError(FileOperationError):
     def __init__(self):
