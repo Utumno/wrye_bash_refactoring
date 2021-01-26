@@ -389,7 +389,7 @@ class ImportSpellStatsPatcher(_APreserver):
             ImportSpellStatsPatcher, self)._parse_csv_sources(progress)
         # Add attribute names to the values
         self._process_csv_sources(
-            {b'SPEL': {f: {a: v for a, v in izip(self.rec_attrs[b'SPEL'], l)}
+            {b'SPEL': {f: {a: v for a, v in zip(self.rec_attrs[b'SPEL'], l)}
                        for f, l in spel_parser.fid_stats.items()}})
 
 #------------------------------------------------------------------------------

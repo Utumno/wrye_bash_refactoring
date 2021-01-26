@@ -515,7 +515,7 @@ def __copyOrMove(operation, source, target, renameOnCollision, parent):
     # renameOnCollision - if True auto-rename on moving collision, else ask
     # TODO(241): renameOnCollision NOT IMPLEMENTED
     doIt = _shutil.copytree if operation == FO_COPY else _shutil.move
-    for fileFrom, fileTo in izip(source, target):
+    for fileFrom, fileTo in zip(source, target):
         if fileFrom.isdir():
             dest_dir = fileTo.join(fileFrom.tail)
             if dest_dir.exists():

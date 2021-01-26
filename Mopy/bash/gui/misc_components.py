@@ -236,11 +236,11 @@ class Table(WithCharEvents):
                 r for r in sel_cells.values()))
             col_labels = list(sel_cells) ##: do we need the list here?
             # First calculate the maximum label lengths we'll have to pad to
-            max_row_length = max(imap(len, row_labels))
+            max_row_length = max(map(len, row_labels))
             max_col_lengths = {}
             for col_label, col_cells in sel_cells.items():
                 max_col_lengths[col_label] = max(
-                    imap(len, iter(col_cells.values())))
+                    map(len, iter(col_cells.values())))
             # We now have enough info to format the header, so do that
             first_header_line = u' ' * max_row_length + u' | '
             first_header_line += u' | '.join(l.ljust(max_col_lengths[l])

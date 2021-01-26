@@ -254,7 +254,7 @@ def find_first_difference(lo_a, acti_a, lo_b, acti_b):
     lindex_b = {p: i for i, p in enumerate(lo_b)}
     # Look for the first difference between the LOs
     low_diff = (None, None)
-    for a, b in izip(lo_a, lo_b):
+    for a, b in zip(lo_a, lo_b):
         if a != b:
             low_diff = (a, b)
             break
@@ -269,7 +269,7 @@ def find_first_difference(lo_a, acti_a, lo_b, acti_b):
     else: low_lo = None # no difference in LO
     # Then do the exact same thing with actives
     low_diff = (None, None)
-    for a, b in izip(acti_a, acti_b):
+    for a, b in zip(acti_a, acti_b):
         if a != b:
             low_diff = (a, b)
             break

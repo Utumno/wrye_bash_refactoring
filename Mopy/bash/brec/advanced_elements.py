@@ -455,7 +455,7 @@ class MelTruncatedStruct(MelStruct):
         unpacked_val = self._pre_process_unpacked(unpacked_val)
         # Apply any actions and then set the attributes according to the values
         # we just unpacked
-        for attr, value, action in izip(self.attrs, unpacked_val,
+        for attr, value, action in zip(self.attrs, unpacked_val,
                                         self.actions):
             if callable(action): value = action(value)
             setattr(record, attr, value)
@@ -472,7 +472,7 @@ class MelTruncatedStruct(MelStruct):
             # If this struct is optional, compare the current values to the
             # defaults and skip the dump conditionally - basically the same
             # thing MelOptStruct does
-            for attr, default in izip(self.attrs, self.defaults):
+            for attr, default in zip(self.attrs, self.defaults):
                 curr_val = getattr(record, attr)
                 if curr_val is not None and curr_val != default:
                     break

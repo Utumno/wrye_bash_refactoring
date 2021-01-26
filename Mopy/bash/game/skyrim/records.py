@@ -3022,7 +3022,7 @@ class MreLgtm(MelRecord):
                 unpacked_val = (unpacked_val[:19]
                                 + (unpacked_val[19] + null4 * 2,)
                                 + unpacked_val[20:])
-                for attr, value, action in izip(self.attrs, unpacked_val,
+                for attr, value, action in zip(self.attrs, unpacked_val,
                                                 self.actions):
                     if action: value = action(value)
                     setattr(record, attr, value)

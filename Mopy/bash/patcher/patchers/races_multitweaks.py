@@ -153,12 +153,12 @@ class RaceTweaker_BiggerOrcsAndNords(_ARaceTweak):
         rec_full = record.full.lower()
         is_orc = u'orc' in rec_full
         return (u'nord' in rec_full or is_orc) and any(
-            getattr(record, a) != v for a, v in izip(
+            getattr(record, a) != v for a, v in zip(
                 self._tweak_attrs, self.choiceValues[self.chosen][0][is_orc]))
 
     def tweak_record(self, record):
         is_orc = u'orc' in record.full.lower()
-        for tweak_attr, tweak_val in izip(
+        for tweak_attr, tweak_val in zip(
                 self._tweak_attrs, self.choiceValues[self.chosen][0][is_orc]):
             setattr(record, tweak_attr, tweak_val)
 

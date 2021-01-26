@@ -431,7 +431,7 @@ class _ModGroups(object):
         column = bosh.modInfos.table.getColumn(u'group')
         mods = mods or list(column) # if mods are None read groups for all mods
         groups = tuple(column.get(x) for x in mods)
-        self.mod_group.update((x, y) for x, y in izip(mods, groups) if y)
+        self.mod_group.update((x, y) for x, y in zip(mods, groups) if y)
 
     @staticmethod
     def assignedGroups():

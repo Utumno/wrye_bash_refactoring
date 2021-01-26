@@ -147,7 +147,7 @@ class _AGmstTweak(MultiTweakItem):
     def _find_chosen_value(self, wanted_eid):
         """Returns the value the user chose for the game setting with the
         specified editor ID. Note that wanted_eid must be lower-case!"""
-        for test_eid, test_val in izip(self.chosen_eids, self.chosen_values):
+        for test_eid, test_val in zip(self.chosen_eids, self.chosen_values):
             if wanted_eid == test_eid.lower():
                 return test_val
         return None
@@ -165,7 +165,7 @@ class _AGmstTweak(MultiTweakItem):
             for target_value in chosen_values:
                 if target_value < 0:
                     return _(u"Oblivion GMST values can't be negative")
-        for target_eid, target_value in izip(self.chosen_eids, chosen_values):
+        for target_eid, target_value in zip(self.chosen_eids, chosen_values):
             if target_eid.startswith(u'f') and not isinstance(
                     target_value, float):
                     return _(u"The value chosen for GMST '%s' must be a "

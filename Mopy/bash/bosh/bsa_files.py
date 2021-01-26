@@ -185,7 +185,7 @@ class _Header(object):
     bsa_magic = b'BSA\x00'
 
     def load_header(self, ins, bsa_name):
-        for f, a in izip(_Header.formats, _Header.__slots__):
+        for f, a in zip(_Header.formats, _Header.__slots__):
             setattr(self, a, struct_unpack(f[0], ins.read(f[1]))[0])
         # error checking
         if self.file_id != self.__class__.bsa_magic:
@@ -214,7 +214,7 @@ class BsaHeader(_Header):
 
     def load_header(self, ins, bsa_name):
         super(BsaHeader, self).load_header(ins, bsa_name)
-        for f, a in izip(BsaHeader.formats, BsaHeader.__slots__):
+        for f, a in zip(BsaHeader.formats, BsaHeader.__slots__):
             setattr(self, a, struct_unpack(f[0], ins.read(f[1]))[0])
         self.archive_flags = self._archive_flags(self.archive_flags)
         # error checking
@@ -239,7 +239,7 @@ class Ba2Header(_Header):
 
     def load_header(self, ins, bsa_name):
         super(Ba2Header, self).load_header(ins, bsa_name)
-        for f, a in izip(Ba2Header.formats, Ba2Header.__slots__):
+        for f, a in zip(Ba2Header.formats, Ba2Header.__slots__):
             setattr(self, a, struct_unpack(f[0], ins.read(f[1]))[0])
         # error checking
         if not self.ba2_files_type in self.file_types:
@@ -253,7 +253,7 @@ class MorrowindBsaHeader(_Header):
     bsa_magic = b'\x00\x01\x00\x00'
 
     def load_header(self, ins, bsa_name):
-        for f, a in izip(MorrowindBsaHeader.formats,
+        for f, a in zip(MorrowindBsaHeader.formats,
                          MorrowindBsaHeader.__slots__):
             setattr(self, a, struct_unpack(f[0], ins.read(f[1]))[0])
         self.version = None # Morrowind BSAs have no version
@@ -310,13 +310,13 @@ class _BsaHashedRecord(_HashedRecord):
 
     def load_record(self, ins):
         super(_BsaHashedRecord, self).load_record(ins)
-        for f, a in izip(self.__class__.formats, self.__class__.__slots__):
+        for f, a in zip(self.__class__.formats, self.__class__.__slots__):
             setattr(self, a, struct_unpack(f[0], ins.read(f[1]))[0])
 
     def load_record_from_buffer(self, memview, start):
         start = super(_BsaHashedRecord, self).load_record_from_buffer(memview,
                                                                       start)
-        for f, a in izip(self.__class__.formats, self.__class__.__slots__):
+        for f, a in zip(self.__class__.formats, self.__class__.__slots__):
             setattr(self, a, _unpack_from(f[0], memview, start)[0])
             start += f[1]
         return start
@@ -356,11 +356,11 @@ class BSAMorrowindFileRecord(_HashedRecord):
     formats = [(f, struct_calcsize(f)) for f in (u'I', u'I')]
 
     def load_record(self, ins):
-        for f, a in izip(self.__class__.formats, self.__class__.__slots__):
+        for f, a in zip(self.__class__.formats, self.__class__.__slots__):
             setattr(self, a, struct_unpack(f[0], ins.read(f[1]))[0])
 
     def load_record_from_buffer(self, memview, start):
-        for f, a in izip(self.__class__.formats, self.__class__.__slots__):
+        for f, a in zip(self.__class__.formats, self.__class__.__slots__):
             setattr(self, a, _unpack_from(f[0], memview, start)[0])
             start += f[1]
         return start
@@ -445,7 +445,7 @@ class Ba2TexChunk(object):
                                                  u'I')]
 
     def load_chunk(self, ins): ##: Centralize this, copy-pasted everywhere
-        for f, a in izip(Ba2TexChunk.formats, Ba2TexChunk.__slots__):
+        for f, a in zip(Ba2TexChunk.formats, Ba2TexChunk.__slots__):
             setattr(self, a, struct_unpack(f[0], ins.read(f[1]))[0])
 
     def __repr__(self):
@@ -532,7 +532,7 @@ class ABsa(AFile):
             extracted.
         :param progress: The progress callback to use. None if unwanted."""
         folder_files_dict = self._map_files_to_folders(
-            imap(str.lower, asset_paths))
+            map(str.lower, asset_paths))
         del asset_paths # forget about this
         # load the bsa - this should be reworked to load only needed records
         self._load_bsa()
@@ -612,7 +612,7 @@ class ABsa(AFile):
         """
         if self._assets is self.__class__._assets:
             self.__load(names_only=True)
-            self._assets = frozenset(imap(os.path.normcase, self._filenames))
+            self._assets = frozenset(map(os.path.normcase, self._filenames))
             del self._filenames[:]
         return self._assets
 
