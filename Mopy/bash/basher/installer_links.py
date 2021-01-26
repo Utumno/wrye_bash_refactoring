@@ -275,7 +275,7 @@ class Installer_Wizard(_Installer_AWizardLink):
                 # Switch away from FOMOD mode, then check the sub-packages that
                 # were selected by the wizard
                 idetails.set_fomod_mode(fomod_enabled=False)
-                for index in xrange(len(sel_package.subNames[1:])):
+                for index in range(len(sel_package.subNames[1:])):
                     select = (sel_package.subNames[index + 1] in
                               ret.select_sub_packages)
                     idetails.gSubList.lb_check_at_index(index, select)
@@ -948,7 +948,7 @@ class Installer_Espm_List(_Installer_Details_Link):
         subs = (_(u'Plugin List for %s:') % self._installer.archive +
                 u'\n[spoiler]\n')
         espm_list = self.window.gEspmList
-        for index in xrange(espm_list.lb_get_items_count()):
+        for index in range(espm_list.lb_get_items_count()):
             subs += [u'   ',u'** '][espm_list.lb_is_checked_at_index(index)] + \
                     espm_list.lb_get_str_item_at_index(index) + u'\n'
         subs += u'[/spoiler]'
@@ -1006,7 +1006,7 @@ class Installer_Subs_ToggleSelection(_Installer_Subs):
     _help = _(u'Deselects all selected sub-packages and vice versa.')
 
     def Execute(self):
-        for index in xrange(self.window.gSubList.lb_get_items_count()):
+        for index in range(self.window.gSubList.lb_get_items_count()):
             # + 1 due to empty string included in subActives by BAIN
             check = not self._installer.subActives[index + 1]
             self.window.gSubList.lb_check_at_index(index, check)
@@ -1022,7 +1022,7 @@ class Installer_Subs_ListSubPackages(_Installer_Subs):
     def Execute(self):
         subs = _(u'Sub-Packages List for %s:') % self._installer.archive
         subs += u'\n[spoiler]\n'
-        for index in xrange(self.window.gSubList.lb_get_items_count()):
+        for index in range(self.window.gSubList.lb_get_items_count()):
             subs += [u'   ', u'** '][self.window.gSubList.lb_is_checked_at_index(
                 index)] + self.window.gSubList.lb_get_str_item_at_index(index) + u'\n'
         subs += u'[/spoiler]'

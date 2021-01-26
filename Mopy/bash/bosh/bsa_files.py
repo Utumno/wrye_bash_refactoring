@@ -431,7 +431,7 @@ class Ba2FileRecordTexture(_BsaHashedRecord):
         super(Ba2FileRecordTexture, self).load_record(ins)
         self.dxgi_format = mk_dxgi_fmt(self.dxgi_format)
         self.tex_chunks = []
-        for x in xrange(self.num_chunks):
+        for x in range(self.num_chunks):
             tex_chunk = Ba2TexChunk()
             tex_chunk.load_chunk(ins)
             self.tex_chunks.append(tex_chunk)
@@ -633,7 +633,7 @@ class BSA(ABsa):
         file_names = self._read_bsa_file(folder_records, read_file_record)
         names_record_index = file_records_index = 0
         for folder_path, bsa_folder in self.bsa_folders.items():
-            for __ in xrange(bsa_folder.folder_record.files_count):
+            for __ in range(bsa_folder.folder_record.files_count):
                 rec = file_records[file_records_index]
                 file_records_index += 1
                 filename = _decode_path(
@@ -645,7 +645,7 @@ class BSA(ABsa):
     def _read_file_records(cls, file_records, bsa_file, folder_path,
                            folder_record, folders=None):
         folders[folder_path] = BSAFolder(folder_record)
-        for __ in xrange(folder_record.files_count):
+        for __ in range(folder_record.files_count):
             rec = cls.file_record_type()
             rec.load_record(bsa_file)
             file_records.append(rec)
@@ -659,7 +659,7 @@ class BSA(ABsa):
         file_names = self._read_bsa_file(folder_records, read_file_record)
         names_record_index = 0
         for folder_path, folder_record in path_folder_record.items():
-            for __ in xrange(folder_record.files_count):
+            for __ in range(folder_record.files_count):
                 filename = _decode_path(
                     file_names[names_record_index], self.bsa_name)
                 _filenames.append(path_sep.join((folder_path, filename)))
@@ -672,7 +672,7 @@ class BSA(ABsa):
             # load the header from input stream
             self.bsa_header.load_header(bsa_file, self.bsa_name)
             # load the folder records from input stream
-            for __ in xrange(self.bsa_header.folder_count):
+            for __ in range(self.bsa_header.folder_count):
                 rec = self.__class__.folder_record_type()
                 rec.load_record(bsa_file)
                 folder_records.append(rec)
@@ -795,7 +795,7 @@ class BA2(ABsa):
             else:
                 file_record_type = Ba2FileRecordTexture
             file_records = []
-            for __ in xrange(my_header.ba2_num_files):
+            for __ in range(my_header.ba2_num_files):
                 rec = file_record_type()
                 rec.load_record(bsa_file)
                 file_records.append(rec)
@@ -804,7 +804,7 @@ class BA2(ABsa):
             file_names_block = memoryview(bsa_file.read())
             # close the file
         current_folder_name = current_folder = None
-        for index in xrange(my_header.ba2_num_files):
+        for index in range(my_header.ba2_num_files):
             name_size = _unpack_from(u'H', file_names_block)[0]
             filename = _decode_path(
                 file_names_block[2:name_size + 2].tobytes(), self.bsa_name)
@@ -831,7 +831,7 @@ class BA2(ABsa):
             file_names_block = memoryview(bsa_file.read())
             # close the file
         _filenames = []
-        for index in xrange(my_header.ba2_num_files):
+        for index in range(my_header.ba2_num_files):
             name_size = _unpack_from(u'H', file_names_block)[0]
             filename = _decode_path(
                 file_names_block[2:name_size + 2].tobytes(), self.bsa_name)
@@ -855,7 +855,7 @@ class MorrowindBsa(ABsa):
             # load the header from input stream
             self.bsa_header.load_header(bsa_file, self.bsa_name)
             # load each file record
-            for x in xrange(self.bsa_header.file_count):
+            for x in range(self.bsa_header.file_count):
                 rec = BSAMorrowindFileRecord()
                 rec.load_record(bsa_file)
                 self.file_records.append(rec)

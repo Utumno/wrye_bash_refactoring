@@ -240,7 +240,7 @@ class CheckListBox(ListBox, WithCharEvents):
     def set_all_checkmarks(self, checked):
         """Sets all checkmarks to the specified state - checked if True,
         unchecked if False."""
-        for i in xrange(self.lb_get_items_count()):
+        for i in range(self.lb_get_items_count()):
             self.lb_check_at_index(i, checked)
 
     def get_checked_strings(self):
@@ -275,5 +275,5 @@ class CheckListBox(ListBox, WithCharEvents):
                     continue
                 self.lb_set_label_at_index(index, lab)
             self.lb_check_at_index(index, ch)
-        for index in xrange(self.lb_get_items_count(), len(names), -1):
+        for index in range(self.lb_get_items_count(), len(names), -1):
             self.lb_delete_at_index(index - 1)

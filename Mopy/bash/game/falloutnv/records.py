@@ -1665,7 +1665,7 @@ class MelWthrColorsFnv(MelArray):
             entry_slots = self._element_old.attrs
             entry_size = struct_calcsize(u'3Bs3Bs3Bs3Bs')
             load_entry = self._element_old.load_mel
-            for x in xrange(size_ // entry_size):
+            for x in range(size_ // entry_size):
                 arr_entry = MelObject()
                 append_entry(arr_entry)
                 arr_entry.__slots__ = entry_slots

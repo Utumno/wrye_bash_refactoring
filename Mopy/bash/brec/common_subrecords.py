@@ -545,7 +545,7 @@ class MelMODS(MelBase):
         count, = insUnpack(__unpacker, 4, *debug_strs)
         mods_data = []
         dataAppend = mods_data.append
-        for x in xrange(count):
+        for x in range(count):
             string = insRead32(*debug_strs)
             fid = ins.unpackRef()
             index, = insUnpack(__unpacker, 4, *debug_strs)

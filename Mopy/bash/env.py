@@ -437,7 +437,7 @@ def _linux_get_file_version_info(filename):
     def _read(_struct_unp, file_obj, offset=0, count=1, absolute=False):
         """Read one or more chunks from the file, either a word or dword."""
         file_obj.seek(offset, not absolute)
-        result = [_struct_unp(file_obj)[0] for x in xrange(count)] ##: array.fromfile(f, n)
+        result = [_struct_unp(file_obj)[0] for x in range(count)] ##: array.fromfile(f, n)
         return result[0] if count == 1 else result
     def _find_version(file_obj, pos, offset):
         """Look through the RT_VERSION and return VS_VERSION_INFO."""
@@ -446,7 +446,7 @@ def _linux_get_file_version_info(filename):
         file_obj.seek(pos + offset)
         len_, val_len, type_ = _read(_WORD, file_obj, count=3)
         info = u''
-        for i in xrange(200):
+        for i in range(200):
             info += chr(_read(_WORD, file_obj))
             if info[-1] == u'\x00': break
         offset = _pad(file_obj.tell()) - pos
@@ -477,7 +477,7 @@ def _linux_get_file_version_info(filename):
         # jump to the datatable and check the third entry
         resources_va = _read(_DWORD, f, offset=98 + 2*8)
         section_table_pos = optional_header_pos + optional_header_size
-        for section_num in xrange(section_count):
+        for section_num in range(section_count):
             section_pos = section_table_pos + 40 * section_num
             f.seek(section_pos)
             if f.read(8).rstrip(b'\x00') != b'.rsrc':  # section name_
@@ -487,11 +487,11 @@ def _linux_get_file_version_info(filename):
             section_resources_pos = raw_data_pos + resources_va - section_va
             num_named, num_id = _read(_WORD, f, count=2, absolute=True,
                                       offset=section_resources_pos + 12)
-            for resource_num in xrange(num_named + num_id):
+            for resource_num in range(num_named + num_id):
                 resource_pos = section_resources_pos + 16 + 8 * resource_num
                 name_ = _read(_DWORD, f, offset=resource_pos, absolute=True)
                 if name_ != 16: continue # RT_VERSION
-                for i in xrange(3):
+                for i in range(3):
                     res_offset = _read(_DWORD, f)
                     if i < 2:
                         res_offset &= 0x7FFFFFFF

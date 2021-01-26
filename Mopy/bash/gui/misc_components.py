@@ -196,7 +196,7 @@ class Table(WithCharEvents):
                     self._native_widget.ClearSelection()
                 else:
                     # Ctrl+A - select all cells
-                    for c in xrange(self._native_widget.GetNumberCols()):
+                    for c in range(self._native_widget.GetNumberCols()):
                         self._native_widget.SelectCol(c, True)
             elif kcode == ord(u'C'):
                 # Ctrl+C - copy contents of selected cells
@@ -328,9 +328,9 @@ class Table(WithCharEvents):
         # May seem inefficient, but the alternative is incredibly complex; plus
         # this takes < 1/2s for a table with several thousand entries
         sel_dict = defaultdict(dict)
-        for c in xrange(self._native_widget.GetNumberCols()):
+        for c in range(self._native_widget.GetNumberCols()):
             col_label = self._native_widget.GetColLabelValue(c)
-            for r in xrange(self._native_widget.GetNumberRows()):
+            for r in range(self._native_widget.GetNumberRows()):
                 if self._native_widget.IsInSelection(r, c):
                     sel_dict[col_label][str(r + 1)] = (
                         self._native_widget.GetCellValue(r, c))

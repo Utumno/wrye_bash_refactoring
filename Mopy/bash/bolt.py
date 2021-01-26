@@ -1991,7 +1991,7 @@ class StringTable(dict):
 
                 id_ = -1
                 offset = -1
-                for x in xrange(numIds):
+                for x in range(numIds):
                     try:
                         progress(x)
                         id_,offset = unpack_many(ins, u'=2I')

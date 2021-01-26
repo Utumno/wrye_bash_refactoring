@@ -582,7 +582,7 @@ class _AVariableContainer(_AVmadComponent):
         new_child = self.child_loader.make_new
         load_child = self.child_loader.load_frag
         append_child = children.append
-        for x in xrange(getattr(record, self.__class__.counter_attr)):
+        for x in range(getattr(record, self.__class__.counter_attr)):
             cont_child = new_child()
             load_child(cont_child, ins, vmad_version, obj_format, read_id)
             append_child(cont_child)
@@ -642,7 +642,7 @@ class ObjectRef(object):
         stream. Needs the current object format and a read ID as well."""
         make_ref = cls.from_file
         return [make_ref(ins, obj_format, read_id) for _x in
-                xrange(ins.unpack(__unpacker, 4, read_id)[0])]
+                range(ins.unpack(__unpacker, 4, read_id)[0])]
 
     @staticmethod
     def dump_array(target_list, __packer=structs_cache[u'I'].pack):
@@ -804,7 +804,7 @@ class MelVmad(MelBase):
             new_alias = self._alias_loader.make_new
             load_alias = self._alias_loader.load_frag
             append_alias = record.qust_aliases.append
-            for x in xrange(ins.unpack(__unpacker, 2, read_id)[0]):
+            for x in range(ins.unpack(__unpacker, 2, read_id)[0]):
                 alias = new_alias()
                 load_alias(alias, ins, vmad_version, obj_format, read_id)
                 append_alias(alias)
@@ -860,7 +860,7 @@ class MelVmad(MelBase):
             new_fragment = self._phase_loader.make_new
             load_fragment = self._phase_loader.load_frag
             append_fragment = record.phase_fragments.append
-            for x in xrange(frag_count):
+            for x in range(frag_count):
                 phase_fragment = new_fragment()
                 load_fragment(phase_fragment, ins, vmad_version, obj_format,
                               read_id)
@@ -964,7 +964,7 @@ class MelVmad(MelBase):
                                                              read_id)
             elif property_type == 12: # string array
                 record.prop_data = [_read_vmad_str16(ins) for _x in
-                                    xrange(ins.unpack(
+                                    range(ins.unpack(
                                         __unpackers[u'I'], 4, read_id)[0])]
             elif property_type == 13: # sint32 array
                 array_len = ins.unpack(__unpackers[u'I'], 4, read_id)[0]
@@ -1173,7 +1173,7 @@ class MelVmad(MelBase):
         new_script = self._script_loader.make_new
         load_script = self._script_loader.load_frag
         append_script = vmad.scripts.append
-        for i in xrange(script_count):
+        for i in range(script_count):
             script = new_script()
             load_script(script, ins, vmad_version, obj_format, *debug_strs)
             append_script(script)

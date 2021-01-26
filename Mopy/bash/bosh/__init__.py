@@ -337,7 +337,7 @@ class FileInfo(AFile):
             snapNew = maSnap.group(1).split(u'.')
             #--Compare shared version numbers
             sharedNums = min(len(snapNew),len(snapLast))
-            for index in xrange(sharedNums):
+            for index in range(sharedNums):
                 (numNew,numLast) = (int(snapNew[index]),int(snapLast[index]))
                 if numNew > numLast:
                     snapLast = snapNew
@@ -2660,7 +2660,7 @@ class ModInfos(FileInfos):
         """Attempt to create a new bashed patch, numbered from 0 to 9.  If
         a lowered number bashed patch exists, will create the next in the
         sequence."""
-        for num in xrange(10):
+        for num in range(10):
             modName = GPath(u'Bashed Patch, %d.esp' % num)
             if modName not in self:
                 self.create_new_mod(modName, selected=selected_mods,

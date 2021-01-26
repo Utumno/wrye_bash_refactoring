@@ -1175,7 +1175,7 @@ class ConfirmationsPage(_AFixedPage):
         # Cut off the internal key extension that may be present
         return {self._confirmation_list.lb_get_str_item_at_index(i).split(
             u'(')[0].strip(): self._confirmation_list.lb_is_checked_at_index(i)
-                for i in xrange(self._confirmation_list.lb_get_items_count())}
+                for i in range(self._confirmation_list.lb_get_items_count())}
 
     def on_apply(self):
         if self._is_changed(u'confirmed_prompts'):

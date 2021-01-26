@@ -545,7 +545,7 @@ class _DDSHeader(object):
         self.dw_pitch_or_linear_size = unpack_int(ins)
         self.dw_depth = unpack_int(ins)
         self.dw_mip_map_count = unpack_int(ins)
-        for x in xrange(len(self.dw_reserved1)):
+        for x in range(len(self.dw_reserved1)):
             self.dw_reserved1[x] = unpack_int(ins)
         self.ddspf.load_format(ins)
         self.dw_caps = unpack_int(ins)
