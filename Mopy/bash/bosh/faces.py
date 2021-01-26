@@ -23,7 +23,7 @@
 
 import io
 import re
-from itertools import izip
+
 
 from . import SaveInfo
 from ._saves import SreNPC, SaveFile

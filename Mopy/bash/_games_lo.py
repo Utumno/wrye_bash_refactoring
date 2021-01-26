@@ -33,7 +33,7 @@ import errno
 import re
 import time
 from collections import defaultdict, OrderedDict
-from itertools import izip
+
 
 # Local
 from . import bass, bolt, env, exception

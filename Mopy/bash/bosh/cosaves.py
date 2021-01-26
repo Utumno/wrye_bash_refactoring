@@ -32,7 +32,7 @@ import binascii
 import io
 import re
 import string
-from itertools import imap
+
 
 from . import bak_file_pattern
 from ..bolt import decoder, encode, struct_unpack, unpack_string, \

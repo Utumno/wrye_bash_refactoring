@@ -28,7 +28,7 @@ from __future__ import division
 import os
 import traceback
 from collections import OrderedDict, defaultdict
-from itertools import izip
+
 
 import wx.adv as wiz  # wxPython wizard class
 

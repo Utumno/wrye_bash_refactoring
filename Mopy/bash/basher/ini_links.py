@@ -25,7 +25,7 @@
 attribute points to BashFrame.iniList singleton.
 """
 
-from itertools import imap
+
 from .. import bass, bosh, balt
 from ..balt import ItemLink, BoolLink, EnabledLink, OneItemLink
 

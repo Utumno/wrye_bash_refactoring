@@ -34,7 +34,7 @@ from __future__ import division, print_function
 import ctypes
 import re
 from collections import defaultdict, Counter
-from itertools import izip
+
 from operator import attrgetter, itemgetter
 
 # Internal

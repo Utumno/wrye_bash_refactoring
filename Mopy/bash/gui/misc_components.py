@@ -29,7 +29,7 @@ import re
 import wx as _wx
 from wx.grid import Grid
 from collections import defaultdict
-from itertools import chain, imap
+from itertools import chain
 
 from .base_components import _AComponent, Color, WithMouseEvents, \
     ImageWrapper, WithCharEvents

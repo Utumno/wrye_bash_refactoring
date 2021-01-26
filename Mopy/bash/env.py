@@ -32,7 +32,7 @@ import shutil as _shutil
 import stat
 from ctypes import byref, c_wchar_p, c_void_p, POINTER, Structure, windll, \
     wintypes
-from itertools import izip
+
 from uuid import UUID
 
 from .bolt import GPath, deprint, Path, decoder, structs_cache

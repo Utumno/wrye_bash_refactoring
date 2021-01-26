@@ -32,7 +32,7 @@ __author__ = u'Infernio'
 
 import copy
 from collections import OrderedDict
-from itertools import chain, izip
+from itertools import chain
 
 from .basic_elements import MelBase, MelNull, MelObject, MelStruct
 from .. import exception

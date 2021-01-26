@@ -23,7 +23,7 @@
 """This module contains the skyrim record classes."""
 from __future__ import unicode_literals
 from collections import OrderedDict
-from itertools import izip
+
 
 from ... import brec, bolt
 from ...bolt import Flags, struct_pack, structs_cache, unpack_str16

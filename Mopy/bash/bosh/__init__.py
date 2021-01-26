@@ -40,7 +40,7 @@ import time
 import traceback
 from collections import OrderedDict, Iterable
 from functools import wraps, partial
-from itertools import imap, izip
+
 
 #--Local
 from ._mergeability import isPBashMergeable, is_esl_capable
