@@ -395,7 +395,7 @@ class Parser(object):
         def __and__(self, other): return Parser.Token(self.tkn & other.tkn)
         def __xor__(self, other): return Parser.Token(self.tkn ^ other.tkn)
         def __or__(self, other): return Parser.Token(self.tkn | other.tkn)
-        def __nonzero__(self): return bool(self.tkn)
+        def __bool__(self): return bool(self.tkn)
         def __neg__(self): return Parser.Token(-self.tkn)
         def __pos__(self): return Parser.Token(+self.tkn)
         def __abs__(self): return abs(self.tkn)
