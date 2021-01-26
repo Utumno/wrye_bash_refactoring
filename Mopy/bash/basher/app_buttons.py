@@ -200,7 +200,7 @@ class _App_Button(StatusBar_Button):
         self._app_button_execute()
 
     def _app_button_execute(self):
-        dir_ = os.getcwdu()
+        dir_ = os.getcwd()
         args = u'"%s"' % self.exePath
         args += u' '.join([u'%s' % arg for arg in self.exeArgs])
         try:
