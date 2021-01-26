@@ -1138,7 +1138,7 @@ class SaveInfo(FileInfo):
         try:
             self.header = get_save_header_type(bush.game.fsName)(self.abs_path)
         except SaveHeaderError as e:
-            raise SaveFileError, (self.name, e.message), sys.exc_info()[2]
+            raise SaveFileError(self.name, e.message).with_traceback(sys.exc_info()[2])
         self._reset_masters()
 
     def do_update(self, raise_on_error=False):
@@ -3163,10 +3163,9 @@ class BSAInfos(FileInfos):
                     # loaded as needed
                     super(BSAInfo, self).__init__(fullpath, load_cache=False)
                 except BSAError as e:
-                    raise FileError, (GPath(fullpath).tail,
+                    raise FileError(GPath(fullpath).tail,
                                       e.__class__.__name__ + u' ' +
-                                      e.message), \
-                        sys.exc_info()[2]
+                                      e.message).with_traceback(sys.exc_info()[2])
                 self._reset_bsa_mtime()
 
             def getFileInfos(self):
