@@ -26,7 +26,7 @@ it runs some initialization functions and then starts the main application
 loop."""
 
 # Imports ---------------------------------------------------------------------
-from __future__ import print_function
+
 import atexit
 import codecs
 import ctypes

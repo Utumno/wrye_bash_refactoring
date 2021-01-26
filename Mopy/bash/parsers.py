@@ -29,7 +29,7 @@ that has to be done when reading mods.
 However, not all parsers fit this pattern - some have to read mods twice,
 others barely even fit into the pattern at all (e.g. FidReplacer)."""
 
-from __future__ import division, print_function
+
 
 import ctypes
 import re

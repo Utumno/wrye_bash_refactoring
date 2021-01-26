@@ -23,7 +23,7 @@
 
 """This module contains oblivion multitweak item patcher classes that belong
 to the Assorted Multitweaker - as well as the tweaker itself."""
-from __future__ import division
+
 import random
 import re
 # Internal

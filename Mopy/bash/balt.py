@@ -24,7 +24,7 @@
 now. See #190, its code should be refactored and land in basher and/or gui."""
 
 # Imports ---------------------------------------------------------------------
-from __future__ import division
+
 
 import io
 import re

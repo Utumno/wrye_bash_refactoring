@@ -2,7 +2,7 @@
 
 # setup.py used to compile the executable with py2exe
 
-from __future__ import absolute_import
+
 import argparse
 import os
 import shutil

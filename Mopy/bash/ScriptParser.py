@@ -59,7 +59,7 @@
 #  TokensToRPN
 #  ExecuteRPN
 #==================================================
-from __future__ import division
+
 
 import operator
 from string import digits, whitespace

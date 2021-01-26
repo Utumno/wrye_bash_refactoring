@@ -23,7 +23,7 @@
 
 """WIP module to encapsulate environment access - currently OS dependent stuff.
 """
-from __future__ import print_function
+
 
 import errno
 import os as _os

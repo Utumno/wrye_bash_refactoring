@@ -29,7 +29,7 @@ stored in the resulting .meta file is of course read through Wrye Bash's
 internal APIs. If there is a bug in there, such a test file most likely won't
 catch it."""
 
-from __future__ import print_function
+
 import argparse
 import os
 import sys

@@ -23,7 +23,7 @@
 """Houses very low-level classes for reading and writing bytes in plugin
 files."""
 
-from __future__ import division, print_function
+
 import os
 
 # no local imports beyond this, imported everywhere in brec
