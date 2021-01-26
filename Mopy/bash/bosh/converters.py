@@ -24,7 +24,7 @@
 
 from __future__ import division
 
-import cPickle as pickle  # PY3
+import pickle as pickle  # PY3
 import io
 import re
 import sys

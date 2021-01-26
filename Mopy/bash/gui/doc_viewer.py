@@ -39,7 +39,7 @@ import wx as _wx
 
 import webbrowser
 from urllib import pathname2url
-from urlparse import urljoin
+from urllib.parse import urljoin
 
 from .base_components import _AComponent
 from .buttons import BackwardButton, ForwardButton, ReloadButton

@@ -29,7 +29,7 @@ stores. bush.game must be set, to properly instantiate the data stores."""
 #--Python
 from __future__ import print_function
 
-import cPickle as pickle  # PY3
+import pickle as pickle  # PY3
 import collections
 import errno
 import io
