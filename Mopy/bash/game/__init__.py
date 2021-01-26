@@ -677,7 +677,7 @@ class GameInfo(object):
     @staticmethod
     def _validate_records():
         """Performs validation on the record syntax for all decoded records."""
-        for rec_class in brec.MreRecord.type_class.itervalues():
+        for rec_class in brec.MreRecord.type_class.values():
             if issubclass(rec_class, brec.MelRecord):
                 rec_class.validate_record_syntax()
 

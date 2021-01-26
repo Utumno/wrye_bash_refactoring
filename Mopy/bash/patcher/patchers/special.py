@@ -184,12 +184,12 @@ class _AListsMerger(ListPatcher):
         for leveler in self.levelers:
             log(u'* ' + self.annotate_plugin(leveler))
         # Save to patch file
-        for list_type, list_label in self._type_to_label.iteritems():
+        for list_type, list_label in self._type_to_label.items():
             if list_type not in self._read_sigs: continue
             log.setHeader(u'=== ' + _(u'Merged %s Lists') % list_label)
             patch_block = self.patchFile.tops[list_type]
             stored_lists = self.type_list[list_type]
-            for stored_list in sorted(stored_lists.values(),
+            for stored_list in sorted(list(stored_lists.values()),
                                       key=attrgetter('eid')):
                 if not stored_list.mergeOverLast: continue
                 list_fid = stored_list.fid
@@ -201,7 +201,7 @@ class _AListsMerger(ListPatcher):
                 self._check_list(stored_list, log)
         #--Discard empty sublists
         if not self.remove_empty_sublists: return
-        for list_type, list_label in self._type_to_label.iteritems():
+        for list_type, list_label in self._type_to_label.items():
             if list_type not in self._read_sigs: continue
             patch_block = self.patchFile.tops[list_type]
             stored_lists = self.type_list[list_type]
@@ -316,7 +316,7 @@ class ContentsCheckerPatcher(Patcher):
     patcher_order = 50
     contType_entryTypes = bush.game.cc_valid_types
     contTypes = set(contType_entryTypes)
-    entryTypes = set(chain.from_iterable(contType_entryTypes.itervalues()))
+    entryTypes = set(chain.from_iterable(iter(contType_entryTypes.values())))
     _read_sigs= tuple(contTypes | entryTypes)
 
     def __init__(self, p_name, p_file):

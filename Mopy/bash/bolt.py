@@ -231,7 +231,7 @@ def conv_obj(o, conv_enc=None):
     'guess and try' logic."""
     if isinstance(o, dict):
         return type(o)(((conv_obj(k, conv_enc), conv_obj(v, conv_enc))
-                        for k, v in o.iteritems()))
+                        for k, v in o.items()))
     elif isinstance(o, (list, set, tuple)):
         return type(o)(conv_obj(e, conv_enc) for e in o)
     elif isinstance(o, bytes):
@@ -1071,7 +1071,7 @@ class Flags(object):
         """Removes all unknown flags if that option was set in __init__."""
         if self._unknown_is_unused:
             final_flags = 0
-            for flg_name, flg_idx in self._names.iteritems():
+            for flg_name, flg_idx in self._names.items():
                 if getattr(self, flg_name):
                     final_flags |= 1 << flg_idx
             self._field = final_flags
@@ -1192,17 +1192,17 @@ class DataDict(object):
     def __iter__(self):
         return iter(self._data)
     def values(self):
-        return self._data.values()
+        return list(self._data.values())
     def items(self):
-        return self._data.items()
+        return list(self._data.items())
     def get(self,key,default=None):
         return self._data.get(key, default)
     def pop(self,key,default=None):
         return self._data.pop(key, default)
     def iteritems(self):
-        return self._data.iteritems()
+        return iter(self._data.items())
     def itervalues(self):
-        return self._data.itervalues()
+        return iter(self._data.values())
 
 #------------------------------------------------------------------------------
 class AFile(object):
@@ -1591,7 +1591,7 @@ class DataTableColumn(object):
     def __iter__(self):
         """Dictionary emulation."""
         column = self.column
-        return (key for key, col_dict in self._table.iteritems() if
+        return (key for key, col_dict in self._table.items() if
                 column in col_dict)
     def items(self):
         """Dictionary emulation."""
@@ -1677,7 +1677,7 @@ class DataTable(DataDict):
 
     def delColumn(self,column):
         """Deletes column of data."""
-        for rowData in self._data.values():
+        for rowData in list(self._data.values()):
             if column in rowData:
                 del rowData[column]
                 self.hasChanged = True

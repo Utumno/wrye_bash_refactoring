@@ -101,7 +101,7 @@ class SettingsDialog(DialogWindow):
         """Marks or unmarks the requesting page as changed, and enables or
         disables the Apply button accordingly."""
         self._changed_state[requesting_page] = is_changed
-        self._apply_btn.enabled = any(self._changed_state.itervalues())
+        self._apply_btn.enabled = any(self._changed_state.values())
 
     def _exec_request_restart(self, requesting_setting, restart_params=()):
         """Schedules a restart request from the specified setting."""
@@ -191,7 +191,7 @@ class _ASettingsPage(WrappingTextMixin, ATreeMixin):
             raise SyntaxError(u'Setting ID (%s) missing from _setting_ids for '
                               u"page '%r'" % (setting_id, self))
         self._setting_states[setting_id] = is_changed
-        self._mark_changed(self, any(self._setting_states.itervalues()))
+        self._mark_changed(self, any(self._setting_states.values()))
 
     def on_apply(self):
         """Called when the OK or Apply button on the settings dialog is
@@ -288,13 +288,13 @@ class ColorsPage(_AFixedPage): ##: _AScrollablePage breaks the color picker??
     def UpdateUIColors():
         """Update the Bash Frame with the new colors"""
         with BusyCursor():
-            for (className,title,panel) in tabInfo.itervalues():
+            for (className,title,panel) in tabInfo.values():
                 if panel is not None:
                     panel.RefreshUIColors()
 
     def UpdateUIButtons(self):
         # Apply All and Default All
-        for key, val in self.changes.items():
+        for key, val in list(self.changes.items()):
             if val == colors[key]:
                 del self.changes[key]
         anyChanged = bool(self.changes)
@@ -340,7 +340,7 @@ class ColorsPage(_AFixedPage): ##: _AScrollablePage breaks the color picker??
         self.UpdateUIButtons()
 
     def on_apply(self):
-        for key,newColor in self.changes.iteritems():
+        for key,newColor in self.changes.items():
             bass.settings[u'bash.colors'][key] = newColor.to_rgb_tuple()
             colors[key] = newColor
         bass.settings.setChanged(u'bash.colors')
@@ -491,7 +491,7 @@ class LanguagePage(_AScrollablePage):
         u'en_US': _(u'English') + u' (English)',
     })
     _localized_to_internal = _LangDict(
-        {v: k for k, v in _internal_to_localized.iteritems()})
+        {v: k for k, v in _internal_to_localized.items()})
 
     def __init__(self, parent, page_desc):
         super(LanguagePage, self).__init__(parent, page_desc)
@@ -744,7 +744,7 @@ class StatusBarPage(_AScrollablePage):
 
     def _link_by_uid(self, link_uid):
         """Returns the status bar Link with the specified UID."""
-        for link_candidate in self._tip_to_links.itervalues():
+        for link_candidate in self._tip_to_links.values():
             if link_candidate.uid == link_uid:
                 return link_candidate
         return None
@@ -998,7 +998,7 @@ class ConfirmationsPage(_AFixedPage):
         u'COPY': _(u'Copy'),
         u'MOVE': _(u'Move'),
     }
-    _label_to_action = {v: k for k, v in _action_to_label.iteritems()}
+    _label_to_action = {v: k for k, v in _action_to_label.items()}
     ##: Maybe hide some of these per game? E.g. Nvidia Fog will never be
     # relevant outside of Oblivion/Nehrim, while Add/Remove ESL Flag makes no
     # sense for non-SSE/FO4 games
@@ -1079,7 +1079,7 @@ class ConfirmationsPage(_AFixedPage):
                  _(u'Scripts'):      u'scripts',
                  _(u'Sigil Stones'): u'SigilStone',
                  _(u'Spells'):       u'SpellRecords',
-                 _(u'Stats'):        u'stats'}.iteritems():
+                 _(u'Stats'):        u'stats'}.items():
         _confirmations[_(u'[Mods] Importing %s from a text '
                          u'file') % k] = u'bash.%s.import.continue' % v
     _setting_ids = {u'confirmed_prompts', u'drop_action', u'internal_keys'}
@@ -1144,7 +1144,7 @@ class ConfirmationsPage(_AFixedPage):
     def _populate_confirmations(self):
         """Repopulates the list of confirmations and ticks them according to
         bass.settings."""
-        sorted_confs = sorted(self._confirmations.iteritems(),
+        sorted_confs = sorted(iter(self._confirmations.items()),
             key=lambda c: c[0])
         if self._show_keys_checkbox.is_checked:
             conf_names = [u'%s (%s)' % c for c in sorted_confs]
@@ -1166,7 +1166,7 @@ class ConfirmationsPage(_AFixedPage):
         """Returns a dict mapping confirmation descriptions to booleans
         indicating whether or not that entry is active in bass.settings."""
         return {conf_name: bass.settings.get(conf_key, False)
-                for conf_name, conf_key in self._confirmations.iteritems()}
+                for conf_name, conf_key in self._confirmations.items()}
 
     @property
     def _selected_confirmations(self):
@@ -1181,8 +1181,8 @@ class ConfirmationsPage(_AFixedPage):
         if self._is_changed(u'confirmed_prompts'):
             conf_states = {self._confirmations[conf_name]: conf_checked
                            for conf_name, conf_checked
-                           in self._selected_confirmations.iteritems()}
-            for conf_key in self._confirmations.itervalues():
+                           in self._selected_confirmations.items()}
+            for conf_key in self._confirmations.values():
                 if bass.settings.get(conf_key, False) != conf_states[conf_key]:
                     bass.settings[conf_key] = conf_states[conf_key]
         if self._is_changed(u'drop_action'):
@@ -1206,7 +1206,7 @@ class GeneralPage(_AScrollablePage):
         _(u'UTF-8'): u'utf-8',
         _(u'Western European (English, French, German, etc)'): u'cp1252',
     }
-    _encodings_reverse = {v: k for k, v in _all_encodings.iteritems()}
+    _encodings_reverse = {v: k for k, v in _all_encodings.items()}
     _setting_ids = {u'alt_name_on', u'deprint_on', u'global_menu_on',
                     u'res_scroll_on', u'managed_game', u'plugin_encoding',
                     u'uac_restart'}

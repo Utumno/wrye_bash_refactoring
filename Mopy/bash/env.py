@@ -226,7 +226,7 @@ def _get_app_links(apps_dir):
 def init_app_links(apps_dir, badIcons, iconList):
     init_params = []
     for path, (target, icon, shortcut_descr) in _get_app_links(
-            apps_dir).iteritems():
+            apps_dir).items():
         if target.lower().find(u'' r'installer\{') != -1: # msi shortcuts: dc0c8de
             target = path
         else:

@@ -89,7 +89,7 @@ class SaveFileHeader(object):
         if save_magic != self.__class__.save_magic:
             raise SaveHeaderError(u'Magic wrong: %r (expected %r)' % (
                 save_magic, self.__class__.save_magic))
-        for attr, (__pack, _unpack) in self.__class__.unpackers.iteritems():
+        for attr, (__pack, _unpack) in self.__class__.unpackers.items():
             setattr(self, attr, _unpack(ins))
         self.load_image_data(ins, load_image)
         self.load_masters(ins)
@@ -233,7 +233,7 @@ class OblivionSaveHeader(SaveFileHeader):
     def dump_header(self, out):
         out.write(self.__class__.save_magic)
         var_fields_size = 0
-        for attr, (_pack, __unpack) in self.unpackers.iteritems():
+        for attr, (_pack, __unpack) in self.unpackers.items():
             ret = _pack(out, getattr(self, attr))
             if ret is not None:
                 var_fields_size += ret

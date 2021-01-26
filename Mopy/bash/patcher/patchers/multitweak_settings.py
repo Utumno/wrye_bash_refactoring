@@ -210,7 +210,7 @@ class _AGmstTweak(MultiTweakItem):
 
     def finish_tweaking(self, patch_file):
         # Create new records for any remaining EDIDs
-        for remaining_eid, was_itpo in self.eid_was_itpo.iteritems():
+        for remaining_eid, was_itpo in self.eid_was_itpo.items():
             if not was_itpo:
                 patch_file.new_gmst(self._find_original_eid(remaining_eid),
                     self._find_chosen_value(remaining_eid))

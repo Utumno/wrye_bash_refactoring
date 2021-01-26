@@ -309,7 +309,7 @@ class Installer_Wizard(_Installer_AWizardLink):
         manuallyApply = []  # List of tweaks the user needs to  manually apply
         lastApplied = None
         new_targets = {}
-        for iniFile, wizardEdits in ret.ini_edits.iteritems():
+        for iniFile, wizardEdits in ret.ini_edits.items():
             basen = os.path.basename(os.path.splitext(iniFile)[0])
             outFile = bass.dirs[u'ini_tweaks'].join(
                 u'%s - Wizard Tweak [%s].ini' % (installer.archive, basen))
@@ -808,7 +808,7 @@ class Installer_CopyConflicts(_SingleInstallable):
             for i,(package, installer) in enumerate(self.idata.sorted_pairs()):
                 curConflicts = set()
                 progress(i, _(u'Scanning Packages...') + u'\n%s' % package)
-                for z, y in installer.refreshDataSizeCrc().iteritems():
+                for z, y in installer.refreshDataSizeCrc().items():
                     if z in src_sizeCrc and installer.ci_dest_sizeCrc[z] != \
                             src_sizeCrc[z]:
                         curConflicts.add(y)
@@ -1205,7 +1205,7 @@ class _InstallerConverter_Link(_InstallerLink):
         for inst in self.iselected_infos():
             crcs_dict[inst.crc].add(inst)
         duplicates = []
-        for crc_, installers in crcs_dict.iteritems():
+        for crc_, installers in crcs_dict.items():
             if len(installers) > 1:
                 duplicates.append((crc_, u'  \n* ' + u'  \n* '.join(
                     sorted(x.archive for x in installers))))

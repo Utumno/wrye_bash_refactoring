@@ -43,7 +43,7 @@ class ImportFaceDialog(DialogWindow):
         self.fileInfo = fileInfo
         if faces and isinstance(next(iter(faces)), (int, long)):
             self.fdata = {u'%08X %s' % (key, face.pcName): face for key, face
-                          in faces.iteritems()}
+                          in faces.items()}
         else:
             self.fdata = faces
         self.list_items = sorted(self.fdata, key=unicode.lower)
@@ -320,7 +320,7 @@ class CreateNewPlugin(DialogWindow):
     @property
     def _chosen_masters(self):
         """Returns a generator yielding all checked masters."""
-        return (k for k, v in self._masters_dict.iteritems() if v)
+        return (k for k, v in self._masters_dict.items() if v)
 
     def _check_master_limit(self):
         """Checks if the current selection of masters exceeds the game's master
@@ -371,7 +371,7 @@ class CreateNewPlugin(DialogWindow):
         lower_search_str = search_str.lower()
         new_m_keys, new_m_values = [], []
         # Case-insensitively filter based on the keys, then update the box
-        for k, v in self._masters_dict.iteritems():
+        for k, v in self._masters_dict.items():
             if lower_search_str in k.lower():
                 new_m_keys.append(k)
                 new_m_values.append(v)

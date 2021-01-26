@@ -277,12 +277,12 @@ def pack_manual(version):
         u'Mopy/bash/tests',
         u'Mopy/redist',
     )
-    for orig, target in files_to_include.items():
+    for orig, target in list(files_to_include.items()):
         cpy(orig, target)
     try:
         pack_7z(archive_, *[u'-xr!' + a for a in ignores])
     finally:
-        for path in files_to_include.values():
+        for path in list(files_to_include.values()):
             rm(path)
 
 @contextmanager
@@ -536,14 +536,14 @@ def hold_files(*files):
     try:
         yield
     finally:
-        for orig, target in file_map.items():
+        for orig, target in list(file_map.items()):
             mv(target, orig)
         rm(tmpdir)
 
 @contextmanager
 def clean_repo():
     repo = pygit2.Repository(ROOT_PATH)
-    if any(v != pygit2.GIT_STATUS_IGNORED for v in repo.status().values()):
+    if any(v != pygit2.GIT_STATUS_IGNORED for v in list(repo.status().values())):
         print(u'Your repository is dirty (you have uncommitted changes).')
     branch_name = repo.head.shorthand
     if not branch_name.startswith((u'rel-', u'release-', u'nightly')):

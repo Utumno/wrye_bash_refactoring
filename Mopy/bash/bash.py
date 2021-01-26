@@ -573,7 +573,7 @@ def _select_game_popup(game_icons, msgtext):
                 Label(scrl_win, msgtext, alignment=TextAlignment.CENTER),
             ])
             # Add the game buttons to the window
-            for game_name, game_icon in sorted(game_icons.iteritems(),
+            for game_name, game_icon in sorted(iter(game_icons.items()),
                                                key=lambda k: k[0].lower()):
                 layout.add(ImageButton(scrl_win, _wx.Bitmap(game_icon),
                                        btn_label=game_name))

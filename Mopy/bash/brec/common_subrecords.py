@@ -107,7 +107,7 @@ class MelCtda(MelUnion):
             func_index: self._build_struct(func_data, ctda_sub_sig, suffix_fmt,
                                            suffix_elements, old_suffix_fmts)
             for func_index, func_data
-            in bush.game.condition_function_data.iteritems()
+            in bush.game.condition_function_data.items()
         }, decider=PartialLoadDecider(
             # Skip everything up to the function index in one go, we'll be
             # discarding this once we rewind anyways.
@@ -179,18 +179,18 @@ class MelCtda(MelUnion):
     # To avoid having to ask 100s of unions to each set their defaults,
     # declare they have fids, etc. Wastes a *lot* of time.
     def hasFids(self, formElements):
-        self.fid_elements = self.element_mapping.values()
+        self.fid_elements = list(self.element_mapping.values())
         formElements.add(self)
 
     def getLoaders(self, loaders):
-        loaders[next(self.element_mapping.itervalues()).mel_sig] = self
+        loaders[next(iter(self.element_mapping.values())).mel_sig] = self
 
     def getSlotsUsed(self):
         return (self.decider_result_attr,) + next(
-            self.element_mapping.itervalues()).getSlotsUsed()
+            iter(self.element_mapping.values())).getSlotsUsed()
 
     def setDefault(self, record):
-        next(self.element_mapping.itervalues()).setDefault(record)
+        next(iter(self.element_mapping.values())).setDefault(record)
 
 class MelCtdaFo3(MelCtda):
     """Version of MelCtda that handles the additional complexities that were
@@ -428,24 +428,24 @@ class MelRaceParts(MelNull):
         # Create loaders for use at runtime
         self._indx_to_loader = {
             part_indx: MelGroup(part_attr, *group_loaders(part_indx))
-            for part_indx, part_attr in indx_to_attr.iteritems()
+            for part_indx, part_attr in indx_to_attr.items()
         }
         self._possible_sigs = {s for element
-                               in self._indx_to_loader.itervalues()
+                               in self._indx_to_loader.values()
                                for s in element.signatures}
 
     def getLoaders(self, loaders):
         temp_loaders = {}
-        for element in self._indx_to_loader.itervalues():
+        for element in self._indx_to_loader.values():
             element.getLoaders(temp_loaders)
         for signature in temp_loaders:
             loaders[signature] = self
 
     def getSlotsUsed(self):
-        return tuple(self._indx_to_attr.itervalues())
+        return tuple(self._indx_to_attr.values())
 
     def setDefault(self, record):
-        for element in self._indx_to_loader.itervalues():
+        for element in self._indx_to_loader.values():
             element.setDefault(record)
 
     def load_mel(self, record, ins, sub_type, size_, *debug_strs):
@@ -457,7 +457,7 @@ class MelRaceParts(MelNull):
                 record, ins, sub_type, size_, *debug_strs)
 
     def dumpData(self, record, out):
-        for part_indx, part_attr in self._indx_to_attr.iteritems():
+        for part_indx, part_attr in self._indx_to_attr.items():
             if hasattr(record, part_attr): # only dump present parts
                 MelUInt32(b'INDX', u'UNUSED').packSub(
                     out, struct_pack(u'=I', part_indx))

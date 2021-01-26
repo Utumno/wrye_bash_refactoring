@@ -68,25 +68,25 @@ class _APreserver(ImportPatcher):
         self._fid_rec_attrs_class = (defaultdict(dict) if self._multi_tag
                                      else defaultdict(tuple))
         self._fid_rec_attrs_class.update({r: a for r, a
-                                          in self._fid_rec_attrs.iteritems()})
+                                          in self._fid_rec_attrs.items()})
         # We want FormID attrs in the full recAttrs as well. They're only
         # separate for checking before we import
         if self._multi_tag: ##: This is hideous
             def collect_attrs(r, tag_dict):
                 return {t: a + self._fid_rec_attrs.get(r, {}).get(t, ())
-                        for t, a in tag_dict.iteritems()}
+                        for t, a in tag_dict.items()}
         else:
             def collect_attrs(r, a):
                 return a + self._fid_rec_attrs.get(r, ())
         self.rec_type_attrs = {r: collect_attrs(r, a)
-                               for r, a in self.rec_attrs.iteritems()}
+                               for r, a in self.rec_attrs.items()}
         # Check if we need to use setattr_deep to set attributes
         if self._multi_tag:
             all_attrs = chain.from_iterable(
-                v for d in self.rec_type_attrs.itervalues()
-                for v in d.itervalues())
+                v for d in self.rec_type_attrs.values()
+                for v in d.values())
         else:
-            all_attrs = chain.from_iterable(self.rec_type_attrs.itervalues())
+            all_attrs = chain.from_iterable(iter(self.rec_type_attrs.values()))
         self._deep_attrs = any(u'.' in a for a in all_attrs)
         # Split srcs based on CSV extension ##: move somewhere else?
         self.csv_srcs = [s for s in p_sources if s.cext == u'.csv']
@@ -117,9 +117,9 @@ class _APreserver(ImportPatcher):
         # Filter out any entries that don't actually have data or don't
         # actually exist (for this game at least)
         filtered_dict = {k.encode(u'ascii'): v for k, v in
-            parsed_sources.iteritems() if k and k in MreRecord.type_class} # FIXME k must be bytes
+            parsed_sources.items() if k and k in MreRecord.type_class} # FIXME k must be bytes
         self.srcClasses.update(filtered_dict)
-        for src_data in filtered_dict.itervalues():
+        for src_data in filtered_dict.values():
             self.id_data.update(src_data)
 
     @property
@@ -135,9 +135,9 @@ class _APreserver(ImportPatcher):
             # For multi-tag importers, we need to look up the applied bash tags
             # and use those to find all applicable attributes
             recAttrs = set(chain.from_iterable(
-                attrs for t, attrs in recAttrs.iteritems() if t in mod_tags))
+                attrs for t, attrs in recAttrs.items() if t in mod_tags))
             fid_attrs = set(chain.from_iterable(
-                attrs for t, attrs in fid_attrs.iteritems() if t in mod_tags))
+                attrs for t, attrs in fid_attrs.items() if t in mod_tags))
         for record in srcFile.tops[top_grup_sig].iter_filtered_records(
                 self.srcClasses): # this is srcClasses of all mods up till now?
             # If we have FormID attributes, check those before importing
@@ -197,7 +197,7 @@ class _APreserver(ImportPatcher):
                             classestemp):
                         fid = record.fid
                         if fid not in temp_id_data: continue
-                        for attr, value in temp_id_data[fid].iteritems():
+                        for attr, value in temp_id_data[fid].items():
                             try:
                                 if value == __attrgetters[attr](record):
                                     continue
@@ -225,7 +225,7 @@ class _APreserver(ImportPatcher):
                 # Skip if we've already copied this record or if we're not
                 # interested in it
                 if fid in copied_records or fid not in id_data: continue
-                for attr, value in id_data[fid].iteritems():
+                for attr, value in id_data[fid].items():
                     if __attrgetters[attr](record) != value:
                         patchBlock.setRecord(record.getTypeCopy())
                         break
@@ -238,10 +238,10 @@ class _APreserver(ImportPatcher):
         for record in records:
             rec_fid = record.fid
             if rec_fid not in id_data: continue
-            for attr, value in id_data[rec_fid].iteritems():
+            for attr, value in id_data[rec_fid].items():
                 if __attrgetters[attr](record) != value: break
             else: continue
-            for attr, value in id_data[rec_fid].iteritems():
+            for attr, value in id_data[rec_fid].items():
                 loop_setattr(record, attr, value)
             keep(rec_fid)
             type_count[top_mod_rec] += 1
@@ -324,9 +324,9 @@ class ImportActorsFactionsPatcher(_APreserver):
             ret_obj.rank = obj_rank
             return ret_obj
         self._process_csv_sources(
-            {r: {f: {u'factions': [make_obj(r, o) for o in a.iteritems()]}
-                 for f, a in d.iteritems()}
-             for r, d in fact_parser.id_stored_info.iteritems()})
+            {r: {f: {u'factions': [make_obj(r, o) for o in a.items()]}
+                 for f, a in d.items()}
+             for r, d in fact_parser.id_stored_info.items()})
 
 #------------------------------------------------------------------------------
 class ImportDestructiblePatcher(_APreserver):
@@ -360,8 +360,8 @@ class ImportNamesPatcher(_APreserver):
             ImportNamesPatcher, self)._parse_csv_sources(progress)
         # Discard the Editor ID and turn the tuples into dictionaries
         self._process_csv_sources(
-            {r: {f: {u'full': a[1]} for f, a in d.iteritems()}
-             for r, d in full_parser.type_id_name.iteritems()})
+            {r: {f: {u'full': a[1]} for f, a in d.items()}
+             for r, d in full_parser.type_id_name.items()})
 
 #------------------------------------------------------------------------------
 class ImportObjectBoundsPatcher(_APreserver):
@@ -390,7 +390,7 @@ class ImportSpellStatsPatcher(_APreserver):
         # Add attribute names to the values
         self._process_csv_sources(
             {b'SPEL': {f: {a: v for a, v in izip(self.rec_attrs[b'SPEL'], l)}
-                       for f, l in spel_parser.fid_stats.iteritems()}})
+                       for f, l in spel_parser.fid_stats.items()}})
 
 #------------------------------------------------------------------------------
 class ImportStatsPatcher(_APreserver):
@@ -401,15 +401,15 @@ class ImportStatsPatcher(_APreserver):
     # Don't patch Editor IDs - those are only in statsTypes for the
     # Export/Import links
     rec_attrs = {r: tuple(x for x in a if x != u'eid')
-                 for r, a in bush.game.statsTypes.iteritems()}
+                 for r, a in bush.game.statsTypes.items()}
     _csv_parser = parsers.ItemStats
 
     def _parse_csv_sources(self, progress):
         stat_parser = super(
             ImportStatsPatcher, self)._parse_csv_sources(progress)
         # See rec_attrs above for an explanation of the Editor ID problem
-        for src_attrs in stat_parser.class_fid_attr_value.itervalues():
-            for attr_values in src_attrs.itervalues():
+        for src_attrs in stat_parser.class_fid_attr_value.values():
+            for attr_values in src_attrs.values():
                 del attr_values[u'eid']
         self._process_csv_sources(stat_parser.class_fid_attr_value)
 
@@ -571,7 +571,7 @@ class ImportCellsPatcher(ImportPatcher):
             Modified cell Blocks are kept, the other are discarded."""
             modified = False
             patch_cell_fid = patchCellBlock.cell.fid
-            for attr,value in cellData[patch_cell_fid].iteritems():
+            for attr,value in cellData[patch_cell_fid].items():
                 curr_value = __attrgetters[attr](patchCellBlock.cell)
                 if attr == u'regions':
                     if set(value).difference(set(curr_value)):
@@ -630,7 +630,7 @@ class ImportGraphicsPatcher(_APreserver):
         for record in records:
             fid = record.fid
             if fid not in id_data: continue
-            for attr, value in id_data[fid].iteritems():
+            for attr, value in id_data[fid].items():
                 rec_attr = __attrgetters[attr](record)
                 if isinstance(rec_attr, unicode) and isinstance(
                         value, unicode):
@@ -646,7 +646,7 @@ class ImportGraphicsPatcher(_APreserver):
                         # aren't __both__ NONE)
                 if rec_attr != value: break
             else: continue
-            for attr, value in id_data[fid].iteritems():
+            for attr, value in id_data[fid].items():
                 setattr(record, attr, value)
             keep(fid)
             type_count[top_mod_rec] += 1

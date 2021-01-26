@@ -432,7 +432,7 @@ def _png(fname): return ImageWrapper(imDirJn(fname))
 
 #--Image lists
 installercons = ImageList(16,16)
-installercons.images.extend({
+installercons.images.extend(iter({
     #--Off/Archive
     u'off.green':  _png(u'checkbox_green_off.png'),
     u'off.grey':   _png(u'checkbox_grey_off.png'),
@@ -491,7 +491,7 @@ installercons.images.extend({
     u'on.yellow.dir.wiz': _png(u'diamond_yellow_inc_wiz.png'),
     #--Broken
     u'corrupt':   _png(u'red_x.png'),
-}.iteritems())
+}.items()))
 
 #--Buttons
 def imageList(template):

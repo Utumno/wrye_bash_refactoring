@@ -167,9 +167,9 @@ class Table(WithCharEvents):
             table."""
         super(Table, self).__init__(parent)
         # Verify that all columns are identically sized
-        column_len = len(next(table_data.itervalues()))
+        column_len = len(next(iter(table_data.values())))
         if any(len(column_data) != column_len for column_data
-               in table_data.itervalues()):
+               in table_data.values()):
             raise SyntaxError(u'Table columns must all have the same size')
         if not all(table_data):
             raise SyntaxError(u'Table rows must be nonempty strings')
@@ -225,7 +225,7 @@ class Table(WithCharEvents):
         elif len(sel_cells) == 1:
             # Selection is limited to a single column, format as a
             # newline-separated list
-            sorted_cells = sorted(next(sel_cells.itervalues()).iteritems(),
+            sorted_cells = sorted(iter(next(iter(sel_cells.values())).items()),
                                   key=lambda t: int(t[0]))
             return u'\n'.join(t[1] for t in sorted_cells)
         else:
@@ -233,14 +233,14 @@ class Table(WithCharEvents):
             # row/column separators, proper spacing and labels
             clip_text = []
             row_labels = set(chain.from_iterable(
-                r for r in sel_cells.itervalues()))
+                r for r in sel_cells.values()))
             col_labels = list(sel_cells) ##: do we need the list here?
             # First calculate the maximum label lengths we'll have to pad to
             max_row_length = max(imap(len, row_labels))
             max_col_lengths = {}
-            for col_label, col_cells in sel_cells.iteritems():
+            for col_label, col_cells in sel_cells.items():
                 max_col_lengths[col_label] = max(
-                    imap(len, col_cells.itervalues()))
+                    imap(len, iter(col_cells.values())))
             # We now have enough info to format the header, so do that
             first_header_line = u' ' * max_row_length + u' | '
             first_header_line += u' | '.join(l.ljust(max_col_lengths[l])
@@ -256,7 +256,7 @@ class Table(WithCharEvents):
             for row_label in sorted(row_labels, key=int):
                 curr_line = row_label.ljust(max_row_length) + u' | '
                 cell_vals = []
-                for col_label, col_cells in sel_cells.iteritems():
+                for col_label, col_cells in sel_cells.items():
                     cell_vals.append(col_cells.get(row_label, u'').ljust(
                         max_col_lengths[col_label]))
                 curr_line += u' | '.join(cell_vals)
@@ -339,8 +339,8 @@ class Table(WithCharEvents):
     def edit_cells(self, cell_edits):
         """Applies a series of as described by the specified dict mapping
         column labels to row labels to cell values."""
-        for col_label, target_cells in cell_edits.iteritems():
-            for row_label, target_val in target_cells.iteritems():
+        for col_label, target_cells in cell_edits.items():
+            for row_label, target_val in target_cells.items():
                 # Skip any that would go out of bounds
                 if int(row_label) - 1 < self._native_widget.GetNumberRows():
                     self.set_cell_value(col_label, row_label, target_val)

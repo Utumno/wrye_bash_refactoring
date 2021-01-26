@@ -162,7 +162,7 @@ class LOOTParser(object):
                 _merge_lists(masterlist, _parse_list(userlist_path))
             self._cached_masterlist = masterlist
             self._cached_regexes = [(re.compile(r, re.I | re.U).match, e)
-                                    for r, e in masterlist.iteritems()
+                                    for r, e in masterlist.items()
                                     if is_regex(r)]
             self._cached_merges = {}
         except (TypeError, yaml.YAMLError):
@@ -666,7 +666,7 @@ def _merge_lists(first_list, second_list):
     :type first_list: LowerDict[unicode, _PluginEntry]
     :param second_list: The list to merge information from.
     :type second_list: LowerDict[unicode, _PluginEntry]"""
-    for plugin_name, second_entry in second_list.iteritems():
+    for plugin_name, second_entry in second_list.items():
         try:
             first_list[plugin_name].merge_with(second_entry)
         except KeyError:

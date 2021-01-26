@@ -432,7 +432,7 @@ class TaskDialog(object):
         if button.value >= BUTTONID_OFFSET:
             button = self.__custom_buttons[button.value - BUTTONID_OFFSET][0]
         else:
-            for key, value in self.stock_button_ids.items():
+            for key, value in list(self.stock_button_ids.items()):
                 if value == button.value:
                     button = key
                     break
@@ -594,7 +594,7 @@ class TaskDialog(object):
                 button = self.__custom_buttons[wparam - BUTTONID_OFFSET][0]
                 args.append(button)
             else:
-                for key, value in self.stock_button_ids.items():
+                for key, value in list(self.stock_button_ids.items()):
                     if value == wparam:
                         button = key
                         break
