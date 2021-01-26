@@ -31,7 +31,7 @@ import os
 import subprocess
 import sys
 from contextlib import contextmanager
-from urllib2 import urlopen
+from urllib.request import urlopen
 
 # verbosity:
 #  quiet (warnings and above)

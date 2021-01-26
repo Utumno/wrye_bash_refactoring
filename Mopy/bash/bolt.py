@@ -49,7 +49,7 @@ from functools import partial
 from itertools import chain
 from keyword import iskeyword
 from operator import attrgetter
-from urllib import quote
+from urllib.parse import quote
 
 import chardet
 
