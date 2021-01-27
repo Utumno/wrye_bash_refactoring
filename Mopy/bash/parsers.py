@@ -1366,29 +1366,25 @@ class SigilStoneDetails(_UsesEffectsMixin):
         if changed: modFile.safeSave()
         return changed
 
-    def readFromText(self,textPath):
+    def _parse_line(self, csv_fields):
         """Imports stats from specified text file."""
-        fid_stats = self.fid_stats
-        with CsvReader(textPath) as ins:
-            for fields in ins:
-                if len(fields) < 12 or fields[1][:2] != u'0x': continue
-                mmod,mobj,eid,full,modPath,modb,iconPath,smod,sobj,uses,\
-                value,weight = fields[:12]
-                mid = self._coerce_fid(mmod, mobj)
-                smod = _coerce(smod,unicode,AllowNone=True)
-                if smod is None: sid = None
-                else: sid = self._coerce_fid(smod, sobj)
-                eid = _coerce(eid,unicode,AllowNone=True)
-                full = _coerce(full,unicode,AllowNone=True)
-                modPath = _coerce(modPath,unicode,AllowNone=True)
-                modb = _coerce(modb,float)
-                iconPath = _coerce(iconPath,unicode,AllowNone=True)
-                uses = _coerce(uses,int)
-                value = _coerce(value,int)
-                weight = _coerce(weight,float)
-                effects = self.readEffects(fields[12:])
-                fid_stats[mid] = [eid,full,modPath,modb,iconPath,sid,uses,
-                                  value,weight,effects]
+        mmod, mobj, eid, full, modPath, modb, iconPath, smod, sobj, uses, \
+            value, weight = csv_fields[:12]
+        mid = self._coerce_fid(mmod, mobj)
+        smod = _coerce(smod,unicode,AllowNone=True)
+        if smod is None: sid = None
+        else: sid = self._coerce_fid(smod, sobj)
+        eid = _coerce(eid,unicode,AllowNone=True)
+        full = _coerce(full,unicode,AllowNone=True)
+        modPath = _coerce(modPath,unicode,AllowNone=True)
+        modb = _coerce(modb,float)
+        iconPath = _coerce(iconPath,unicode,AllowNone=True)
+        uses = _coerce(uses,int)
+        value = _coerce(value,int)
+        weight = _coerce(weight,float)
+        effects = self.readEffects(csv_fields[12:])
+        self.fid_stats[mid] = [eid, full, modPath, modb, iconPath, sid, uses,
+                               value, weight, effects]
 
     def writeToText(self,textPath):
         """Exports stats to specified text file."""
@@ -1772,28 +1768,23 @@ class IngredientDetails(_UsesEffectsMixin):
         if changed: modFile.safeSave()
         return changed
 
-    def readFromText(self,textPath):
-        """Imports stats from specified text file."""
-        fid_stats = self.fid_stats
-        with CsvReader(textPath) as ins:
-            for fields in ins:
-                if len(fields) < 11 or fields[1][:2] != u'0x': continue
-                mmod,mobj,eid,full,modPath,modb,iconPath,smod,sobj,value,\
-                weight = fields[:11]
-                mid = self._coerce_fid(mmod, mobj)
-                smod = _coerce(smod, unicode, AllowNone=True)
-                if smod is None: sid = None
-                else: sid = self._coerce_fid(smod, sobj)
-                eid = _coerce(eid, unicode, AllowNone=True)
-                full = _coerce(full, unicode, AllowNone=True)
-                modPath = _coerce(modPath, unicode, AllowNone=True)
-                modb = _coerce(modb, float)
-                iconPath = _coerce(iconPath, unicode, AllowNone=True)
-                value = _coerce(value, int)
-                weight = _coerce(weight, float)
-                effects = self.readEffects(fields[11:])
-                fid_stats[mid] = [eid,full,modPath,modb,iconPath,sid,value,
-                                  weight,effects]
+    def _parse_line(self, csv_fields):
+        mmod, mobj, eid, full, modPath, modb, iconPath, smod, sobj, value,\
+        weight = csv_fields[:11]
+        mid = self._coerce_fid(mmod, mobj)
+        smod = _coerce(smod, unicode, AllowNone=True)
+        if smod is None: sid = None
+        else: sid = self._coerce_fid(smod, sobj)
+        eid = _coerce(eid, unicode, AllowNone=True)
+        full = _coerce(full, unicode, AllowNone=True)
+        modPath = _coerce(modPath, unicode, AllowNone=True)
+        modb = _coerce(modb, float)
+        iconPath = _coerce(iconPath, unicode, AllowNone=True)
+        value = _coerce(value, int)
+        weight = _coerce(weight, float)
+        effects = self.readEffects(csv_fields[11:])
+        self.fid_stats[mid] = [eid,full, modPath, modb, iconPath, sid, value,
+                               weight, effects]
 
     def writeToText(self,textPath):
         """Exports stats to specified text file."""
