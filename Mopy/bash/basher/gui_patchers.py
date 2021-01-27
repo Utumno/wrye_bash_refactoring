@@ -1343,12 +1343,10 @@ from .patcher_dialog import all_gui_patchers
 # scope
 # Patchers with no options
 for gsp_name, gsp_class in bush.game.gameSpecificPatchers.items():
-    gsp_name = gsp_name.encode(u'ascii') # PY3: drop - py2 compat hack
     globals()[gsp_name] = type(gsp_name, (_PatcherPanel,),
         gsp_class.gui_cls_vars())
 # Simple list patchers
 for gsp_name, gsp_class in bush.game.gameSpecificListPatchers.items():
-    gsp_name = gsp_name.encode(u'ascii') # PY3: drop - py2 compat hack
     gsp_bases = (_ListPatcherPanel,)
     gsp_attrs = gsp_class.gui_cls_vars()
     if u'_csv_key' in gsp_attrs:
@@ -1357,7 +1355,6 @@ for gsp_name, gsp_class in bush.game.gameSpecificListPatchers.items():
     globals()[gsp_name] = type(gsp_name, gsp_bases, gsp_attrs)
 # Import patchers
 for gsp_name, gsp_class in bush.game.game_specific_import_patchers.items():
-    gsp_name = gsp_name.encode(u'ascii') # PY3: drop - py2 compat hack
     gsp_bases = (_ImporterPatcherPanel,)
     gsp_attrs = gsp_class.gui_cls_vars()
     if u'_csv_key' in gsp_attrs:
