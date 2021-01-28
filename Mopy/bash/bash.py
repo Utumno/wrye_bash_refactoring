@@ -69,7 +69,7 @@ def _early_setup(debug):
         global _bugdump_handle
         # _bugdump_handle = io.open(os.path.join(os.getcwdu(),u'BashBugDump.log'),'w',encoding=u'utf-8')
         _bugdump_handle = codecs.getwriter(u'utf-8')(
-            open(os.path.join(os.getcwdu(), u'BashBugDump.log'), u'w'))
+            open(os.path.join(os.getcwd(), u'BashBugDump.log'), u'w'))
         sys.stdout = _bugdump_handle
         sys.stderr = _bugdump_handle
 

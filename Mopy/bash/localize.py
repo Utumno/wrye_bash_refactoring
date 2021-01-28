@@ -70,12 +70,12 @@ def setup_locale(cli_lang):
     # it - so check that next
     target_locale = _wx.Locale(target_language)
     target_name = target_locale.GetCanonicalName()
-    trans_path = os.path.join(os.getcwdu(), u'bash', u'l10n')
+    trans_path = os.path.join(os.getcwd(), u'bash', u'l10n')
     if not os.path.exists(trans_path):
         # HACK: the CI has to run tests from the top dir, which causes us to
         # have a non-Mopy working dir here. Real fix is ditching the fake
         # startup and adding a real headless mode to WB (see #568 and #554)
-        trans_path = os.path.join(os.getcwdu(), u'Mopy', u'bash', u'l10n')
+        trans_path = os.path.join(os.getcwd(), u'Mopy', u'bash', u'l10n')
     supported_l10ns = [l[:-3] for l in os.listdir(trans_path)
                        if l[-3:] == u'.po']
     if not any(l == target_name for l in supported_l10ns):
@@ -172,7 +172,7 @@ def _find_all_bash_modules(bash_path=None, cur_dir=None, _files=None):
     :param cur_dir: The directory to look for modules in. Defaults to cwd.
     :param _files: Internal parameter used to collect file recursively."""
     if bash_path is None: bash_path = u''
-    if cur_dir is None: cur_dir = os.getcwdu()
+    if cur_dir is None: cur_dir = os.getcwd()
     if _files is None: _files = []
     _files.extend([os.path.join(bash_path, m) for m in os.listdir(cur_dir)
                    if m.lower().endswith((u'.py', u'.pyw'))]) ##: glob?

@@ -473,7 +473,7 @@ class Path(object):
 
     @staticmethod
     def getcwd():
-        return Path(os.getcwdu())
+        return Path(os.getcwd())
 
     def setcwd(self):
         """Set cwd."""
