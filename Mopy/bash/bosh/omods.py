@@ -129,7 +129,7 @@ class OmodFile(object):
                         filesizes[name_] = int(maFileSize.group(1))
         # drop the last line entry
         del filesizes[list(filesizes)[-1]]
-        return filesizes, sum(filesizes.itervalues())
+        return filesizes, sum(filesizes.values())
 
     def extractToProject(self,outDir,progress=None):
         """Extract the contents of the omod to a project, with omod conversion data"""

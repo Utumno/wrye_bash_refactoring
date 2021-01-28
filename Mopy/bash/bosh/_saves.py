@@ -562,7 +562,7 @@ class SaveFile(object):
             for modIndex,count in dict_sort(modHisto):
                 log(u'  %d\t%s' % (count,getMaster(modIndex)))
             log(u'  %d\tTotal' % (sum(modHisto.values()),))
-        objRefBases = {k: v for k, v in objRefBases.iteritems() if v[0] > 100}
+        objRefBases = {k: v for k, v in objRefBases.items() if v[0] > 100}
         log.setHeader(_(u'New ObjectRef Bases'))
         if objRefNullBases:
             log(u' Null Bases: %s' % objRefNullBases)

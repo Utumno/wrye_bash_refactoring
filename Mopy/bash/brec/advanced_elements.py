@@ -497,7 +497,7 @@ class MelLists(MelStruct):
 
     def load_mel(self, record, ins, sub_type, size_, *debug_strs):
         unpacked = list(ins.unpack(self._unpacker, size_, *debug_strs))
-        for attr, _slice in self.__class__._attr_indexes.iteritems():
+        for attr, _slice in self.__class__._attr_indexes.items():
             setattr(record, attr, unpacked[_slice])
 
     def pack_subrecord_data(self, record):
@@ -749,7 +749,7 @@ class MelUnion(MelBase):
         :type fallback: MelBase"""
         # Preprocess the element mapping to split tuples
         processed_mapping = {}
-        for decider_val, element in element_mapping.iteritems():
+        for decider_val, element in element_mapping.items():
             if not isinstance(decider_val, tuple):
                 decider_val = (decider_val,)
             for split_val in decider_val:
@@ -766,7 +766,7 @@ class MelUnion(MelBase):
         MelUnion._union_index += 1
         self.fallback = fallback
         self._possible_sigs = {s for element
-                               in self.element_mapping.itervalues()
+                               in self.element_mapping.values()
                                for s in element.signatures}
         if self.fallback:
             self._possible_sigs.update(self.fallback.signatures)
@@ -798,7 +798,7 @@ class MelUnion(MelBase):
         elif not hasattr(record, self.decider_result_attr):
             # We're dealing with a record that was just created, but the
             # decider can't be used - default to some element
-            return next(self.element_mapping.itervalues())
+            return next(iter(self.element_mapping.values()))
         else:
             # We can use the result we decided earlier
             return self._get_element(
@@ -808,7 +808,7 @@ class MelUnion(MelBase):
         # We need to reserve every possible slot, since we can't know what
         # we'll resolve to yet. Use a set to avoid duplicates.
         slots_ret = {self.decider_result_attr}
-        for element in self.element_mapping.itervalues():
+        for element in self.element_mapping.values():
             slots_ret.update(element.getSlotsUsed())
         if self.fallback: slots_ret.update(self.fallback.getSlotsUsed())
         return tuple(slots_ret)
@@ -817,7 +817,7 @@ class MelUnion(MelBase):
         # We need to collect all signatures and assign ourselves for them all
         # to handle unions with different signatures
         temp_loaders = {}
-        for element in self.element_mapping.itervalues():
+        for element in self.element_mapping.values():
             element.getLoaders(temp_loaders)
         if self.fallback: self.fallback.getLoaders(temp_loaders)
         for signature in temp_loaders:
@@ -827,7 +827,7 @@ class MelUnion(MelBase):
         # Ask each of our elements, and remember the ones where we'd have to
         # actually forward the mapFids call. We can't just blindly call
         # mapFids, since MelBase.mapFids is abstract.
-        for element in self.element_mapping.itervalues():
+        for element in self.element_mapping.values():
             temp_elements = set()
             element.hasFids(temp_elements)
             if temp_elements:
@@ -843,7 +843,7 @@ class MelUnion(MelBase):
         # Ask each element - but we *don't* want to set our _union_type
         # attributes here! If we did, then we'd have no way to distinguish
         # between a loaded and a freshly constructed record.
-        for element in self.element_mapping.itervalues():
+        for element in self.element_mapping.values():
             element.setDefault(record)
         if self.fallback: self.fallback.setDefault(record)
 
@@ -870,7 +870,7 @@ class MelUnion(MelBase):
 
     @property
     def static_size(self):
-        all_elements = self.element_mapping.values() + (
+        all_elements = list(self.element_mapping.values()) + (
             [self.fallback] if self.fallback else [])
         first_size = all_elements[0].static_size # pick arbitrary element size
         if any(element.static_size != first_size for element in all_elements):

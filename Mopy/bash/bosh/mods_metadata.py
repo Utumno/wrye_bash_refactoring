@@ -120,7 +120,7 @@ def checkMods(showModList=False, showCRC=False, showVersion=True,
     else:
         shouldMerge = active & modInfos.mergeable
     if bush.game.check_esl:
-        for m, modinf in modInfos.items():
+        for m, modinf in list(modInfos.items()):
             if not modinf.is_esl():
                 continue # we check .esl extension and ESL flagged mods
             if not is_esl_capable(modinf, modInfos, reasons=None):
@@ -462,7 +462,7 @@ class ModCleaner(object):
                         deprint(u'Error scanning %s, file read pos: %i:\n' % (modInfo, ins.tell()), traceback=True)
                         udr = itm = fog = None
                 #--Done
-            ret.append((udr.values() if udr is not None else None,itm,fog))
+            ret.append((list(udr.values()) if udr is not None else None,itm,fog))
         return ret
 
 #------------------------------------------------------------------------------

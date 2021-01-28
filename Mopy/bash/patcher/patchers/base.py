@@ -121,7 +121,7 @@ class MultiTweaker(AMultiTweaker,Patcher):
                         pool_record(record)
                         break # Exit as soon as a tweak is interested
         # Finally, copy all pooled records in one fell swoop
-        for top_grup_sig, pooled_records in rec_pool.iteritems():
+        for top_grup_sig, pooled_records in rec_pool.items():
             if pooled_records: # only copy if we could pool
                 self.patchFile.tops[top_grup_sig].copy_records(pooled_records)
 
@@ -378,7 +378,7 @@ class ImportPatcher(ListPatcher):
     def _plog(self,log,type_count):
         """Most common logging pattern - override as needed."""
         log(self.__class__.logMsg)
-        for type_,count in sorted(type_count.iteritems()):
+        for type_,count in sorted(type_count.items()):
             if count: log(u'* ' + _(u'Modified %(type)s Records: %(count)d')
                           % {u'type': type_, u'count': count})
 

@@ -98,7 +98,7 @@ def isPBashMergeable(modInfo, minfos, reasons):
     #--New record
     newblocks = []
     self_name = modInfo.name
-    for top_type,block in modFile.tops.iteritems():
+    for top_type,block in modFile.tops.items():
         for record in block.iter_records():
             if not record.flags1.ignored and record.fid[0] == self_name:
                 # if new records exist but are deleted just skip em.
@@ -116,7 +116,7 @@ def isPBashMergeable(modInfo, minfos, reasons):
 def _dependent(modInfo, minfos):
     """Get mods for which modInfo is a master mod (excluding BPs and
     mergeable)."""
-    dependent = [mname.s for mname, info in minfos.iteritems() if
+    dependent = [mname.s for mname, info in minfos.items() if
                  not info.isBP() and modInfo.name in info.masterNames and
                  mname not in minfos.mergeable]
     return dependent
@@ -142,7 +142,7 @@ def is_esl_capable(modInfo, _minfos, reasons):
     # Check for new FormIDs greater then 0xFFF
     num_masters = len(modInfo.masterNames)
     has_new_recs = False
-    for _rec_type, rec_headers in record_headers.iteritems():
+    for _rec_type, rec_headers in record_headers.items():
         for header in rec_headers:
             if header.fid >> 24 >= num_masters:
                 if (header.fid & 0xFFFFFF) > 0xFFF:

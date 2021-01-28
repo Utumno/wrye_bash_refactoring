@@ -300,7 +300,7 @@ class ModFile(object):
         with outPath.open(u'wb') as out:
             #--Mod Record
             self.tes4.setChanged()
-            self.tes4.numRecords = sum(block.getNumRecords() for block in self.tops.values())
+            self.tes4.numRecords = sum(block.getNumRecords() for block in list(self.tops.values()))
             self.tes4.getSize()
             self.tes4.dump(out)
             #--Blocks
@@ -346,7 +346,7 @@ class ModFile(object):
         """Convert fids to the specified format - long FormIDs if to_long is
         True, short FormIDs otherwise."""
         mapper = self.getLongMapper() if to_long else self.getShortMapper()
-        for target_top in self.tops.itervalues():
+        for target_top in self.tops.values():
             target_top.convertFids(mapper, to_long)
         self.longFids = to_long
 
@@ -354,7 +354,7 @@ class ModFile(object):
         """Updates set of master names according to masters actually used."""
         if not self.longFids: raise StateError(u"ModFile fids not in long form.")
         masters_set = MasterSet([GPath(bush.game.master_file)])
-        for block in self.tops.values():
+        for block in list(self.tops.values()):
             block.updateMasters(masters_set.add)
         # The file itself is always implicitly available, so discard it here
         masters_set.discard(self.fileInfo.name)

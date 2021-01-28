@@ -797,7 +797,7 @@ class TimestampGame(Game):
             (self._mtime_mods[mtime] - {mod_name}) & active)
 
     def get_free_time(self, start_time, end_time=None):
-        all_mtimes = {x.mtime for x in self.mod_infos.itervalues()}
+        all_mtimes = {x.mtime for x in self.mod_infos.values()}
         end_time = end_time or (start_time + 1000) # 1000 (seconds) is an arbitrary limit
         while start_time < end_time:
             if not start_time in all_mtimes:
@@ -854,7 +854,7 @@ class TimestampGame(Game):
 
     def _rebuild_mtimes_cache(self):
         self._mtime_mods.clear()
-        for mod, info in self.mod_infos.iteritems():
+        for mod, info in self.mod_infos.items():
             self._mtime_mods[int(info.mtime)] |= {mod}
 
     def _persist_active_plugins(self, active, lord):
@@ -975,7 +975,7 @@ class TextfileGame(Game):
                             to = w[ordered] + 1 + j
                             # make room
                             w = {x: (i if i < to else i + 1) for x, i in
-                                 w.iteritems()}
+                                 w.items()}
                             w[x] = to # bubble them up !
                         active_in_lo.remove(ordered)
                         cached_active_copy = cached_active_copy[i + 1:]

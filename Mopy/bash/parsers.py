@@ -310,7 +310,7 @@ class _AParser(_HandleAliases):
         # Counts the number of records that were changed in each record type
         num_changed_records = Counter()
         # We know that the loaded mod only has the tops loaded that we need
-        for rec_type, stored_rec_info in self.id_stored_info.iteritems():
+        for rec_type, stored_rec_info in self.id_stored_info.items():
             rec_block = loaded_mod.tops.get(rec_type, None)
             # Check if this record type makes any sense to patch
             if not stored_rec_info or not rec_block: continue
@@ -408,7 +408,7 @@ class ActorFactions(_AParser):
         return {f.faction: f.rank for f in record.factions}
 
     def _write_record(self, record, new_info, cur_info):
-        for faction, rank in set(new_info.iteritems()) - set(cur_info.iteritems()):
+        for faction, rank in set(new_info.items()) - set(cur_info.items()):
             # Check if this an addition or a change
             for entry in record.factions:
                 if entry.faction == faction:
@@ -698,7 +698,7 @@ class FactionRelations(_AParser):
         return relations
 
     def _write_record(self, record, new_info, cur_info):
-        for rel_fac, rel_attributes in set(new_info.iteritems()) - set(cur_info.iteritems()):
+        for rel_fac, rel_attributes in set(new_info.items()) - set(cur_info.items()):
             # See if this is a new relation or a change to an existing one
             for entry in record.relations:
                 if rel_fac == entry.faction:
@@ -765,11 +765,11 @@ class FidReplacer(_HandleAliases):
         filt_fids.update(newId for newId in self.new_eid
                          if newId[0] in masters_list)
         old_eid_filtered = {oldId: eid for oldId, eid
-                            in self.old_eid.iteritems() if oldId in filt_fids}
+                            in self.old_eid.items() if oldId in filt_fids}
         new_eid_filtered = {newId: eid for newId, eid
-                            in self.new_eid.iteritems() if newId in filt_fids}
+                            in self.new_eid.items() if newId in filt_fids}
         old_new_filtered = {oldId: newId for oldId, newId
-                            in self.old_new.iteritems()
+                            in self.old_new.items()
                             if oldId in filt_fids and newId in filt_fids}
         if not old_new_filtered: return False
         #--Swapper function
@@ -792,7 +792,7 @@ class FidReplacer(_HandleAliases):
         modFile.safeSave()
         entries = [(count, old_eid_filtered[oldId],
                     new_eid_filtered[old_new_filtered[oldId]])
-                   for oldId, count in old_count.iteritems()]
+                   for oldId, count in old_count.items()]
         entries.sort(key=itemgetter(1))
         return u'\n'.join([u'%3d %s >> %s' % entry for entry in entries])
 
@@ -975,7 +975,7 @@ class ItemStats(_HandleAliases):
     def readFromMod(self,modInfo):
         """Reads stats from specified mod."""
         modFile = self._load_plugin(modInfo, keepAll=False)
-        for top_grup_sig, attrs in self.class_attrs.iteritems():
+        for top_grup_sig, attrs in self.class_attrs.items():
             for record in modFile.tops[top_grup_sig].getActiveRecords():
                 self.class_fid_attr_value[top_grup_sig][record.fid].update(
                     izip(attrs, (getattr(record, a) for a in attrs)))
@@ -985,14 +985,14 @@ class ItemStats(_HandleAliases):
         modFile = self._load_plugin(modInfo)
         changed = Counter() #--changed[modName] = numChanged
         for top_grup_sig, fid_attr_value in \
-                self.class_fid_attr_value.iteritems():
+                self.class_fid_attr_value.items():
             attrs = self.class_attrs[top_grup_sig]
             for record in modFile.tops[top_grup_sig].getActiveRecords():
                 longid = record.fid
                 itemStats = fid_attr_value.get(longid,None)
                 if not itemStats: continue
                 oldValues = {a: getattr(record, a) for a in attrs}
-                for stat_key, n_stat in itemStats.iteritems():
+                for stat_key, n_stat in itemStats.items():
                     o_stat = oldValues[stat_key]
                     if isinstance(o_stat, float) or isinstance(n_stat, float):
                         # These are floats, we have to do inexact comparison
@@ -1002,7 +1002,7 @@ class ItemStats(_HandleAliases):
                         break
                 else:
                     continue # attrs are equal, move on to next record
-                for attr, value in itemStats.iteritems():
+                for attr, value in itemStats.items():
                     setattr(record,attr,value)
                 record.setChanged()
                 changed[longid[0]] += 1
@@ -1150,7 +1150,7 @@ class ScriptText(object):
                 del eid_data[eid]
         if makeNew and eid_data:
             tes4 = modFile.tes4
-            for eid, (newText, longid) in eid_data.iteritems():
+            for eid, (newText, longid) in eid_data.items():
                 scriptFid = genFid(tes4.num_masters, tes4.getNextObject())
                 newScript = MreRecord.type_class[b'SCPT'](
                     RecHeader(b'SCPT', 0, 0x40000, scriptFid, 0))
@@ -1200,19 +1200,19 @@ class _UsesEffectsMixin(_HandleAliases):
                    u'"%s","%s"'
     recipientTypeNumber_Name = {None:u'NONE',0:u'Self',1:u'Touch',2:u'Target',}
     recipientTypeName_Number = {y.lower(): x for x, y
-                                in recipientTypeNumber_Name.iteritems()
+                                in recipientTypeNumber_Name.items()
                                 if x is not None}
     actorValueNumber_Name = {x: y for x, y
                              in enumerate(bush.game.actor_values)}
     actorValueNumber_Name[None] = u'NONE'
     actorValueName_Number = {y.lower(): x for x, y
-                             in actorValueNumber_Name.iteritems()
+                             in actorValueNumber_Name.items()
                              if x is not None}
     schoolTypeNumber_Name = {None:u'NONE',0:u'Alteration',1:u'Conjuration',
                              2:u'Destruction',3:u'Illusion',4:u'Mysticism',
                              5:u'Restoration',}
     schoolTypeName_Number = {y.lower(): x for x, y
-                             in schoolTypeNumber_Name.iteritems()
+                             in schoolTypeNumber_Name.items()
                              if x is not None}
 
     def readEffects(self, _effects):
@@ -1447,7 +1447,7 @@ class ItemPrices(_HandleAliases):
         """Reads data from specified mod."""
         modFile = self._load_plugin(modInfo, keepAll=False)
         attrs = self.item_prices_attrs
-        for top_grup_sig, fid_stats in self.class_fid_stats.iteritems():
+        for top_grup_sig, fid_stats in self.class_fid_stats.items():
             for record in modFile.tops[top_grup_sig].getActiveRecords():
                 fid_stats[record.fid] = [getattr(record, a) for a in attrs]
 
@@ -1455,7 +1455,7 @@ class ItemPrices(_HandleAliases):
         """Writes stats to specified mod."""
         modFile = self._load_plugin(modInfo)
         changed = Counter() #--changed[modName] = numChanged
-        for top_grup_sig, fid_stats in self.class_fid_stats.iteritems():
+        for top_grup_sig, fid_stats in self.class_fid_stats.items():
             for record in modFile.tops[top_grup_sig].getActiveRecords():
                 longid = record.fid
                 stats = fid_stats.get(longid,None)
@@ -1517,7 +1517,7 @@ class SpellRecords(_UsesEffectsMixin):
                                      4   : u'Ability',
                                      5   : u'Poison',}
         self.spellTypeName_Number = {y.lower(): x for x, y
-                                     in self.spellTypeNumber_Name.iteritems()
+                                     in self.spellTypeNumber_Name.items()
                                      if x is not None}
         self.levelTypeNumber_Name = {None : u'NONE',
                                      0    : u'Novice',
@@ -1526,7 +1526,7 @@ class SpellRecords(_UsesEffectsMixin):
                                      3    : u'Expert',
                                      4    : u'Master',}
         self.levelTypeName_Number = {y.lower(): x for x, y
-                                     in self.levelTypeNumber_Name.iteritems()
+                                     in self.levelTypeNumber_Name.items()
                                      if x is not None}
         self.types = [b'SPEL']
 

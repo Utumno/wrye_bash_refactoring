@@ -602,7 +602,7 @@ class ListEditor(DialogWindow):
             (lid_data.showSave, _(u'Save'), self.DoSave),
             (lid_data.showCancel, _(u'Cancel'), self.DoCancel),
             ]
-        for k,v in (orderedDict or {}).items():
+        for k,v in list((orderedDict or {}).items()):
             buttonSet.append((True, k, v))
         if sum(bool(x[0]) for x in buttonSet):
             def _btn(btn_label, btn_callback):
@@ -2129,7 +2129,7 @@ class TreeCtrl(_AComponent):
                   wx.TR_HIDE_ROOT)
         root = self._native_widget.AddRoot(title)
         self._native_widget.Bind(wx.EVT_MOTION, self.OnMotion)
-        for item, subitems in items_dict.iteritems():
+        for item, subitems in items_dict.items():
             child = self._native_widget.AppendItem(root, item.s)
             for subitem in subitems:
                 self._native_widget.AppendItem(child, subitem.s)

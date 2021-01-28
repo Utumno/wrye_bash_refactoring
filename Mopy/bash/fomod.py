@@ -363,7 +363,7 @@ class FomodInstaller(object):
                 required_files_elem, self.file_list, self.installer_root)
         user_files = []
         selected_options = [option.option_object
-                            for options in self._previous_pages.values()
+                            for options in list(self._previous_pages.values())
                             for option in options]
         for option in selected_options:
             option_files = option.find(u'files')
@@ -393,14 +393,14 @@ class FomodInstaller(object):
             file_dict[fm_info_dest] = fm_info.file_source
             priority_dict[fm_info_dest] = fm_info.file_priority
         # return everything in strings
-        return {a.s: b.s for a, b in file_dict.iteritems()}
+        return {a.s: b.s for a, b in file_dict.items()}
 
     def _fomod_flags(self):
         """Returns a mapping of 'flag name' -> 'flag value'.
         Useful for either debugging or testing flag dependencies."""
         fm_flag_dict = {}
         fm_flags_list = [option.option_object.find(u'conditionFlags')
-                         for options in self._previous_pages.values()
+                         for options in list(self._previous_pages.values())
                          for option in options]
         for fm_flags in fm_flags_list:
             if fm_flags is None:

@@ -545,7 +545,7 @@ class ABsa(AFile):
         if progress:
             progress.setFull(len(folder_to_assets))
         with open(u'%s' % self.abs_path, u'rb') as bsa_file:
-            for folder, file_records in folder_to_assets.iteritems():
+            for folder, file_records in folder_to_assets.items():
                 if progress:
                     progress(i, u'Extracting %s...\n%s' % (
                         self.bsa_name, folder))
@@ -586,13 +586,13 @@ class ABsa(AFile):
 
     def _map_assets_to_folders(self, folder_files_dict):
         folder_to_assets = collections.OrderedDict()
-        for folder_path, bsa_folder in self.bsa_folders.iteritems():
+        for folder_path, bsa_folder in self.bsa_folders.items():
             if folder_path.lower() not in folder_files_dict: continue
             # Has assets we need to extract. Keep order to avoid seeking
             # back and forth in the file
             folder_to_assets[folder_path] = file_records = []
             filenames = folder_files_dict[folder_path.lower()]
-            for filename, filerecord in bsa_folder.folder_assets.iteritems():
+            for filename, filerecord in bsa_folder.folder_assets.items():
                 if filename.lower() not in filenames: continue
                 file_records.append((filename, filerecord))
         return folder_to_assets
@@ -634,7 +634,7 @@ class BSA(ABsa):
                                    folders=self.bsa_folders)
         file_names = self._read_bsa_file(folder_records, read_file_record)
         names_record_index = file_records_index = 0
-        for folder_path, bsa_folder in self.bsa_folders.iteritems():
+        for folder_path, bsa_folder in self.bsa_folders.items():
             for __ in xrange(bsa_folder.folder_record.files_count):
                 rec = file_records[file_records_index]
                 file_records_index += 1
@@ -660,7 +660,7 @@ class BSA(ABsa):
                                    folders=path_folder_record)
         file_names = self._read_bsa_file(folder_records, read_file_record)
         names_record_index = 0
-        for folder_path, folder_record in path_folder_record.iteritems():
+        for folder_path, folder_record in path_folder_record.items():
             for __ in xrange(folder_record.files_count):
                 filename = _decode_path(
                     file_names[names_record_index], self.bsa_name)
@@ -756,7 +756,7 @@ class BA2(ABsa):
                 # This needs to be last, it uses the header's width and height
                 record.dxgi_format.setup_file(
                     dds_file, use_legacy_formats=True)
-            for folder, file_records in folder_to_assets.iteritems():
+            for folder, file_records in folder_to_assets.items():
                 if progress:
                     progress(i, u'Extracting %s...\n%s' % (
                         self.bsa_name, folder))
@@ -960,8 +960,8 @@ class OblivionBsa(BSA):
         progress.setFull(self.bsa_header.folder_count)
         with open(self.abs_path.s, u'r+b') as bsa_file:
             reset_count = 0
-            for folder_name, folder in self.bsa_folders.iteritems():
-                for file_name, file_info in folder.folder_assets.iteritems():
+            for folder_name, folder in self.bsa_folders.items():
+                for file_name, file_info in folder.folder_assets.items():
                     rebuilt_hash = self.calculate_hash(file_name)
                     if file_info.record_hash != rebuilt_hash:
                         bsa_file.seek(file_info.file_pos)

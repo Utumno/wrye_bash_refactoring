@@ -50,7 +50,7 @@ def _find_vanilla_eyes():
     result."""
     def _conv_fid(rc_fid): return GPath(rc_fid[0]), rc_fid[1]
     ret = {}
-    for race_fid, race_eyes in bush.game.default_eyes.iteritems():
+    for race_fid, race_eyes in bush.game.default_eyes.items():
         new_key = _conv_fid(race_fid)
         new_val = [_conv_fid(eye_fid) for eye_fid in race_eyes]
         ret[new_key] = new_val
@@ -501,7 +501,7 @@ class RaceRecordsPatcher(AMultiTweaker, ListPatcher):
                         pool_record(record)
                         break # Exit as soon as a tweak is interested
         # Finally, copy all pooled records in one fell swoop
-        for top_grup_sig, pooled_records in rec_pool.iteritems():
+        for top_grup_sig, pooled_records in rec_pool.items():
             if pooled_records: # only copy if we could pool
                 self.patchFile.tops[top_grup_sig].copy_records(pooled_records)
 
@@ -587,7 +587,7 @@ class RaceRecordsPatcher(AMultiTweaker, ListPatcher):
             if u'relations' in raceData:
                 relations = raceData[u'relations']
                 oldRelations = {(x.faction, x.mod) for x in race.relations}
-                newRelations = set(relations.iteritems())
+                newRelations = set(relations.items())
                 if newRelations != oldRelations:
                     del race.relations[:]
                     for faction,mod in newRelations:
@@ -656,7 +656,7 @@ class RaceRecordsPatcher(AMultiTweaker, ListPatcher):
                 raceChanged = True
             #--Multiple eye meshes (and playable)?
             if debug:
-                for mesh,eyes in mesh_eye.iteritems():
+                for mesh,eyes in mesh_eye.items():
                     print(mesh)
                     for eye in eyes: print(u' ',strFid(eye))
             if len(mesh_eye) > 1 and (race.flags.playable or race.fid == (

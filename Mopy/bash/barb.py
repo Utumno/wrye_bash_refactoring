@@ -87,7 +87,7 @@ def _init_settings_files(fsName_, root_prefix, mods_folder):
         (dirs[u'mods'].join(u'INI Tweaks'),
          jo(fsName_, mods_folder, u'INI Tweaks')): {},
     }
-    for setting_files in settings_info.itervalues():
+    for setting_files in settings_info.values():
         for settings_file in set(setting_files):
             if settings_file.endswith(u'.dat'): # add corresponding bak file
                 setting_files.add(settings_file + u'.bak')
@@ -104,7 +104,7 @@ class BackupSettings(object):
         self._backup_dest_file = GPath(settings_file) # absolute path to dest 7z file
         self.files = {}
         for (bash_dir, tmpdir), setting_files in _init_settings_files(
-                fsName, root_prefix, mods_folder).iteritems():
+                fsName, root_prefix, mods_folder).items():
             if not setting_files: # we have to backup everything in there
                 setting_files = bash_dir.list()
             tmp_dir = GPath(tmpdir)
@@ -166,7 +166,7 @@ class BackupSettings(object):
 
     def _backup_settings(self, temp_dir):
         # copy all files to ~tmp backup dir
-        for tpath, fpath in self.files.iteritems():
+        for tpath, fpath in self.files.items():
             deprint(u'%s <-- %s' % (tpath, fpath))
             fpath.copyTo(temp_dir.join(tpath))
         # dump the version info and file listing

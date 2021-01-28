@@ -150,7 +150,7 @@ class _DDSPixelFormat(object):
 def _new_pf(**pf_props):
     """Builds a pixel format with the specified non-default properties."""
     ret = _DDSPixelFormat()
-    for prop_name, prop_val in pf_props.viewitems():
+    for prop_name, prop_val in pf_props.items():
         setattr(ret, prop_name, prop_val)
     return ret
 

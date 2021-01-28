@@ -477,7 +477,7 @@ class AssortedTweak_ScriptEffectSilencer(MultiTweakItem):
     def wants_record(self, record):
         # u'' here is on purpose! We're checking the EDID, which gets decoded
         return record.eid == u'SEFF' and any(
-            getattr(record, a) != v for a, v in self._silent_attrs.iteritems())
+            getattr(record, a) != v for a, v in self._silent_attrs.items())
 
     def tweak_record(self, record):
         s_attrs = self._silent_attrs

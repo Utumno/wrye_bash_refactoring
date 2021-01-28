@@ -133,7 +133,7 @@ class _AMerger(ImportPatcher):
             for master in modFile.tes4.masters:
                 if master in mod_id_entries:
                     id_entries.update(mod_id_entries[master])
-            for fid,entries in mod_id_entries[modName].iteritems():
+            for fid,entries in mod_id_entries[modName].items():
                 masterEntries = id_entries.get(fid)
                 if masterEntries is None: continue
                 master_keys = {en_key(x) for x in masterEntries}
