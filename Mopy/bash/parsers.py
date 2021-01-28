@@ -574,9 +574,7 @@ class EditorIds(_HandleAliases):
 
     def writeToMod(self,modInfo):
         """Exports eids to specified mod."""
-        loadFactory = LoadFactory(True, generic=self.types)
-        modFile = ModFile(modInfo,loadFactory)
-        modFile.load(True)
+        modFile = self._load_plugin(modInfo)
         changed = []
         for type_ in self.types:
             id_eid = self.type_id_eid.get(type_, None)
