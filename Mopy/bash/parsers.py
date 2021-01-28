@@ -710,7 +710,7 @@ class FactionRelations(_AParser):
                 target_entry = MelObject()
                 record.relations.append(target_entry)
             # Actually write out the attributes from new_info
-            for rel_attr, rel_val in izip(self.cls_rel_attrs,
+            for rel_attr, rel_val in zip(self.cls_rel_attrs,
                                          (rel_fac,) + rel_attributes): ##: Py3: unpack
                 setattr(target_entry, rel_attr, rel_val)
 
@@ -978,7 +978,7 @@ class ItemStats(_HandleAliases):
         for top_grup_sig, attrs in self.class_attrs.items():
             for record in modFile.tops[top_grup_sig].getActiveRecords():
                 self.class_fid_attr_value[top_grup_sig][record.fid].update(
-                    izip(attrs, (getattr(record, a) for a in attrs)))
+                    zip(attrs, (getattr(record, a) for a in attrs)))
 
     def writeToMod(self,modInfo):
         """Writes stats to specified mod."""
@@ -1015,7 +1015,7 @@ class ItemStats(_HandleAliases):
         longid = self._coerce_fid(modName, objectStr)
         attrs = self.class_attrs[top_grup]
         attr_value = {}
-        for attr, value in izip(attrs, csv_fields[3:3 + len(attrs)]):
+        for attr, value in zip(attrs, csv_fields[3:3 + len(attrs)]):
             attr_value[attr] = self.attr_type[attr](value)
         self.class_fid_attr_value[top_grup.encode(u'ascii')][longid].update(
             attr_value)
@@ -1581,7 +1581,7 @@ class SpellRecords(_UsesEffectsMixin):
                 oldStats.append(effects)
             if oldStats != newStats:
                 changed.append(oldStats[0]) #eid
-                for attr, value in izip(attrs, newStats):
+                for attr, value in zip(attrs, newStats):
                     setattr_deep(record, attr, value)
                 if detailed and len(newStats) > len(attrs):
                     effects = newStats[-1]

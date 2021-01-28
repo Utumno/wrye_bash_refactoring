@@ -277,7 +277,7 @@ class InstallerConverter(object):
     def __setstate__(self, values):
         """Used by unpickler to recreate object. Used for Converters.dat"""
         self.__init__()
-        for a, v in izip(self.persistBCF + self.persistDAT +
+        for a, v in zip(self.persistBCF + self.persistDAT +
                          self.addedPersistDAT, values):
             setattr(self, a, v)
 
@@ -308,10 +308,10 @@ class InstallerConverter(object):
                     return re.sub(u'^(bolt|bosh)$', u'' r'bash.\1',
                                   s.decode(u'utf-8'), flags=re.U)
             translator = _Translator(stream)
-            for a, v in izip(self.persistBCF, pickle.load(translator)):
+            for a, v in zip(self.persistBCF, pickle.load(translator)):
                 setattr(self, a, v)
             if fullLoad:
-                for a, v in izip(self._converter_settings + self.volatile +
+                for a, v in zip(self._converter_settings + self.volatile +
                                  self.addedSettings,
                                  pickle.load(translator)):
                     setattr(self, a, v)
@@ -356,7 +356,7 @@ class InstallerConverter(object):
         else:
             srcCRCs = realCRCs = self.srcCRCs
         nextStep = step = 0.4 / len(srcCRCs)
-        for srcCRC, realCRC in izip(srcCRCs, realCRCs):
+        for srcCRC, realCRC in zip(srcCRCs, realCRCs):
             srcInstaller = crc_installer[srcCRC]
             files = bolt.sortFiles([x[0] for x in srcInstaller.fileSizeCrcs])
             if not files: continue

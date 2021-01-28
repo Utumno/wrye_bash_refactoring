@@ -252,7 +252,7 @@ class CheckListBox(ListBox, WithCharEvents):
         key and value lists. Much faster than set_all_items_keep_pos, but
         discards the current scroll position."""
         self.lb_clear()
-        for i, (k, v) in enumerate(izip(all_keys, all_values)):
+        for i, (k, v) in enumerate(zip(all_keys, all_values)):
             self.lb_append(k)
             self.lb_check_at_index(i, v)
 
@@ -266,7 +266,7 @@ class CheckListBox(ListBox, WithCharEvents):
         if not names:
             self.lb_clear()
             return
-        for index, (lab, ch) in enumerate(izip(names, checkmarks)):
+        for index, (lab, ch) in enumerate(zip(names, checkmarks)):
             if index >= self.lb_get_items_count():
                 self.lb_append(lab)
             else:

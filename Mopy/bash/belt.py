@@ -1505,7 +1505,7 @@ class WryeParser(ScriptParser.Parser):
             ver = u'.'.join([str(i) for i in have])
             if need == u'None':
                 return [1, ver]
-            for have_part, need_part in izip(have, need):
+            for have_part, need_part in zip(have, need):
                 if have_part > need_part:
                     return [1, ver]
                 elif have_part < need_part:

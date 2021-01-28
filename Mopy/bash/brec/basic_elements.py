@@ -642,14 +642,14 @@ class MelStruct(MelBase):
         if self.formAttrs: formElements.add(self)
 
     def setDefault(self,record):
-        for attr, value, action in izip(self.attrs, self.defaults,
+        for attr, value, action in zip(self.attrs, self.defaults,
                                         self.actions):
             if action: value = action(value)
             setattr(record, attr, value)
 
     def load_mel(self, record, ins, sub_type, size_, *debug_strs):
         unpacked = ins.unpack(self._unpacker, size_, *debug_strs)
-        for attr, value, action in izip(self.attrs, unpacked, self.actions):
+        for attr, value, action in zip(self.attrs, unpacked, self.actions):
             setattr(record, attr, action(value) if action else value)
 
     def pack_subrecord_data(self, record):
@@ -658,7 +658,7 @@ class MelStruct(MelBase):
         # this is just a noop.
         values = [
             action(value).dump() if action else value for value, action in
-            izip((getattr(record, a) for a in self.attrs), self.actions)]
+            zip((getattr(record, a) for a in self.attrs), self.actions)]
         return self._packer(*values)
 
     def mapFids(self,record,function,save=False):
@@ -815,7 +815,7 @@ class MelOptStruct(MelStruct):
         # TODO: Unfortunately, checking if the attribute is None is not
         # really effective.  Checking it to be 0,empty,etc isn't effective either.
         # It really just needs to check it against the default.
-        for attr, default in izip(self.attrs, self.defaults):
+        for attr, default in zip(self.attrs, self.defaults):
             oldValue = getattr(record, attr)
             if oldValue is not None and oldValue != default:
                 return super(MelOptStruct, self).pack_subrecord_data(record)

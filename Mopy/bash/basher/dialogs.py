@@ -273,7 +273,7 @@ class CreateNewPlugin(DialogWindow):
         m_keys = [m.s for m in load_order.cached_lo_tuple()]
         m_values = [m == bush.game.master_file for m in m_keys]
         self._masters_box.set_all_items(m_keys, m_values)
-        self._masters_dict = OrderedDict(izip(m_keys, m_values))
+        self._masters_dict = OrderedDict(zip(m_keys, m_values))
         # Only once that's done do we subscribe - avoid all the initial events
         self._masters_box.on_box_checked.subscribe(self._handle_master_checked)
         select_all_btn = SelectAllButton(self,

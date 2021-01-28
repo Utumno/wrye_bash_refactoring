@@ -970,8 +970,8 @@ class MobCell(MobBase):
         u'distant_refs')):
         """Updates any records in 'self' that exist in 'srcBlock'."""
         mergeDiscard = mergeIds.discard
-        self_src_attrs = list(izip(__attrget(self), __attrget(srcBlock)))
-        for attr, (myRecord, record) in izip((u'cell', u'pgrd', u'land'),
+        self_src_attrs = list(zip(__attrget(self), __attrget(srcBlock)))
+        for attr, (myRecord, record) in zip((u'cell', u'pgrd', u'land'),
                                              self_src_attrs):
             if myRecord and record:
                 src_rec_fid = record.fid
@@ -982,7 +982,7 @@ class MobCell(MobBase):
                     record = record.getTypeCopy()
                     setattr(self, attr, record)
                     mergeDiscard(src_rec_fid)
-        for attr, (self_rec_list, src_rec_list) in izip(
+        for attr, (self_rec_list, src_rec_list) in zip(
                 (u'persistent_refs', u'temp_refs', u'distant_refs'),
                 self_src_attrs[3:]):
             fids = {record.fid: i for i, record in enumerate(self_rec_list)}

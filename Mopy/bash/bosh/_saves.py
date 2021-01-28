@@ -548,7 +548,7 @@ class SaveFile(object):
         log.setHeader(_(u'Fids'))
         log(u'  Refed\tChanged\tMI    Mod Name')
         log(u'  %d\t\t     Lost Refs (Fid == 0)' % lostRefs)
-        for modIndex, (irefed,changed) in enumerate(izip(idHist, changeHisto)):
+        for modIndex, (irefed,changed) in enumerate(zip(idHist, changeHisto)):
             if irefed or changed:
                 log(u'  %d\t%d\t%02X   %s' % (irefed,changed,modIndex,getMaster(modIndex)))
         #--Lost Changes

@@ -283,7 +283,7 @@ class _xSEModListChunk(_xSEChunk, _Dumpable, _Remappable):
     def chunk_length(self):
         # 2 bytes per mod name (for the length)
         total_len = len(self.mod_names) * 2
-        total_len += sum(imap(len, self.mod_names))
+        total_len += sum(map(len, self.mod_names))
         return total_len
 
     def dump_to_log(self, log, save_masters):
@@ -432,7 +432,7 @@ class _xSEChunkARVR(_xSEChunk, _Dumpable):
         if self.chunk_version >= 1:
             # Every reference is a byte
             total_len += 4 + len(self.references)
-        total_len += sum(imap(lambda e: e.entry_length(), self.elements))
+        total_len += sum(map(lambda e: e.entry_length(), self.elements))
         return total_len
 
     def dump_to_log(self, log, save_masters):
@@ -509,7 +509,7 @@ class _xSEChunkDATA(_xSEModListChunk):
         else:
             total_len += 256 # space seperators between mods
             total_len += len(u'nomod') * (256 - len(self.mod_names)) # 'nomod's
-        total_len += sum(imap(len, self.mod_names)) # all present mods
+        total_len += sum(map(len, self.mod_names)) # all present mods
         return total_len + len(self.remaining_data) # all other data
 
     def write_chunk(self, out):
@@ -665,7 +665,7 @@ class _xSEChunkPLGN(_xSEChunk, _Dumpable, _Remappable):
             mod_entry.write_entry(out)
 
     def chunk_length(self):
-        return 2 + sum(imap(lambda e: e.entry_length(), self.mod_entries))
+        return 2 + sum(map(lambda e: e.entry_length(), self.mod_entries))
 
     def dump_to_log(self, log, save_masters):
         log(_(u'   Current load order (%u plugins):') % len(self.mod_entries))
