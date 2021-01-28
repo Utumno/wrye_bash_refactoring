@@ -37,7 +37,7 @@ class BoltError(Exception):
 def raise_bolt_error(msg, exc=BoltError):
     extype, ex, tb = sys.exc_info()
     formatted = traceback.format_exception_only(extype, ex)[-1]
-    raise exc, u'%s caused by %s' % (msg, formatted), tb
+    raise exc(u'%s caused by %s' % (msg, formatted)).with_traceback(tb)
 
 # Code errors -----------------------------------------------------------------
 class AbstractError(BoltError):
