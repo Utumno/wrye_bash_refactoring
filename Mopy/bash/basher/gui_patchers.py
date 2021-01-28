@@ -509,7 +509,7 @@ class _ChoiceMenuMixin(object):
     def ShowChoiceMenu(self, lb_selection_dex): raise exception.AbstractError
 
 # PY3: drop long, duh
-_label_formats = {unicode: u'%s', float: u'%4.2f', int: u'%d', long: u'%d'}
+_label_formats = {unicode: u'%s', float: u'%4.2f', int: u'%d', int: u'%d'}
 def _custom_label(label, value): # edit label text with value
     return u'%s: %s' % (label, _label_formats[type(value)] % value)
 
@@ -683,7 +683,7 @@ class _TweakPatcherPanel(_ChoiceMenuMixin, _PatcherPanel):
                                          u"number.") % new,
                                        title=tweak.tweak_name + _(u' - Error'))
                         new = None # invalid float, try again
-            elif isinstance(v, (int, long)):
+            elif isinstance(v, (int, int)):
                 label = (_(u'Enter the desired custom tweak value.')
                          + key_display)
                 new = balt.askNumber(
