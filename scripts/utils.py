@@ -84,7 +84,7 @@ def download_file(url, fpath):
     file_name = os.path.basename(fpath)
     response = urlopen(url)
     meta = response.info()
-    file_size = int(meta.getheaders(u'Content-Length')[0])
+    file_size = int(meta.get(u'Content-Length')[0])
     converted_size = convert_bytes(file_size)
     file_size_dl = 0
     block_sz = 8192
