@@ -141,8 +141,8 @@ class LoadOrder(object):
                 u'_loadOrder': self.loadOrder}
 
     def __setstate__(self, dct):
-        if not isinstance(next(iter(dct)), unicode):# PY3: TTT accepts bytes keys?
-            dct = {(k if type(k) is unicode else k.decode(u'ascii')): v for
+        if not isinstance(next(iter(dct)), str):# PY3: TTT accepts bytes keys?
+            dct = {(k if type(k) is str else k.decode(u'ascii')): v for
                    k, v in dct.items()}
         self.__dict__.update(dct)   # update attributes # __dict__ prints empty
         self._active = frozenset(self._activeOrdered)

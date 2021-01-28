@@ -268,7 +268,7 @@ class DocumentViewer(_AComponent):
     def load_text(self, target_text):
         """Switches to text mode (see switch_to_text()) and sets the
         specified text as the unmodified contents of the text display."""
-        if not isinstance(target_text, unicode): # needs to be unicode by now
+        if not isinstance(target_text, str): # needs to be unicode by now
             raise StateError(u'HtmlDisplay can only load unicode text.')
         self._text_ctrl.text_content = target_text
         self._text_ctrl.modified = False

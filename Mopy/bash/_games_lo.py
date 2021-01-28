@@ -102,7 +102,7 @@ def _parse_plugins_txt_(path, mod_infos, _star):
                 # have a way to double check: modInfos.data
                 for encoding in bolt.encodingOrder:
                     try:
-                        test2 = unicode(modname, encoding)
+                        test2 = str(modname, encoding)
                         mod_gpath_2 = GPath_no_norm(test2)
                         if mod_gpath_2 in mod_infos:
                             mod_g_path = mod_gpath_2
@@ -1089,7 +1089,7 @@ class AsteriskGame(Game):
         if to_drop:
             # If we need to drop some mods, then make a backup first
             self._backup_load_order()
-            msg = (u'Removed ' + u' ,'.join(unicode(s) for s in to_drop) +
+            msg = (u'Removed ' + u' ,'.join(str(s) for s in to_drop) +
                    u' from %s')
         if not exists or to_drop:
             # In either case, write out the LO and deprint it

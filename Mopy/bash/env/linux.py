@@ -131,7 +131,7 @@ def get_file_version(filename):
         len_, val_len, type_ = _read(_WORD, file_obj, count=3)
         info = u''
         for i in xrange(200):
-            info += unichr(_read(_WORD, file_obj))
+            info += chr(_read(_WORD, file_obj))
             if info[-1] == u'\x00': break
         offset = _pad(file_obj.tell()) - pos
         file_obj.seek(pos + offset)

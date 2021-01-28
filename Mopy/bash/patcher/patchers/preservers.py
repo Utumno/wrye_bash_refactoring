@@ -116,7 +116,7 @@ class _APreserver(ImportPatcher):
         from the CSV sources to this patcher's internal data structures."""
         # Filter out any entries that don't actually have data or don't
         # actually exist (for this game at least)
-        filtered_dict = {k.encode(u'ascii') if type(k) is unicode else k: v
+        filtered_dict = {k.encode(u'ascii') if type(k) is str else k: v
                          for k, v in parsed_sources.items()
                          if k and k in MreRecord.type_class} ##: k and ?
         self.srcs_sigs.update(filtered_dict)
@@ -633,8 +633,8 @@ class ImportGraphicsPatcher(_APreserver):
             if fid not in id_data: continue
             for attr, value in id_data[fid].items():
                 rec_attr = __attrgetters[attr](record)
-                if isinstance(rec_attr, unicode) and isinstance(
-                        value, unicode):
+                if isinstance(rec_attr, str) and isinstance(
+                        value, str):
                     if rec_attr.lower() != value.lower():
                         break
                     continue

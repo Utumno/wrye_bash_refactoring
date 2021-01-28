@@ -642,7 +642,7 @@ class Installer_Move(_InstallerLink):
                    _(u'Enter position number.') + u'\n' +
                    _(u'Last: -1; First of Last: -2; Semi-Last: -3.')
                    )
-        newPos = self._askText(message, default=unicode(curPos))
+        newPos = self._askText(message, default=str(curPos))
         if not newPos: return
         try:
             newPos = int(newPos)

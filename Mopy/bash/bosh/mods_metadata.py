@@ -135,7 +135,7 @@ def checkMods(showModList=False, showCRC=False, showVersion=True,
                 u'MustBeActiveIfImported' in modInfos[x].getBashTags()]
     #--Mods with invalid TES4 version
     valid_vers = bush.game.Esp.validHeaderVersions
-    invalidVersion = [(x, unicode(round(modInfos[x].header.version, 6)))
+    invalidVersion = [(x, str(round(modInfos[x].header.version, 6)))
                       for x in active if round(
             modInfos[x].header.version, 6) not in valid_vers]
     #--Look for dirty edits
@@ -236,10 +236,10 @@ def checkMods(showModList=False, showCRC=False, showVersion=True,
         log(_(u'Congratulations, all mods appear clean.'))
     if invalidVersion:
         # Always an ASCII byte string, so this is fine
-        header_sig_ = unicode(bush.game.Esp.plugin_header_sig,
+        header_sig_ = str(bush.game.Esp.plugin_header_sig,
                               encoding=u'ascii')
         ver_list = u', '.join(
-            sorted(unicode(v) for v in bush.game.Esp.validHeaderVersions))
+            sorted(str(v) for v in bush.game.Esp.validHeaderVersions))
         log.setHeader(
             u'=== ' + _(u'Mods with non-standard %s versions') %
             header_sig_)

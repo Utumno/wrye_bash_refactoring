@@ -199,7 +199,7 @@ class IniFile(AFile):
             with self.abs_path.open(u'rb') as f:
                 content = f.read()
             if not as_unicode: return content
-            decoded = unicode(content, self.ini_encoding)
+            decoded = str(content, self.ini_encoding)
             return decoded.splitlines(False) # keepends=False
         except UnicodeDecodeError:
             deprint(u'Failed to decode %s using %s' % (
@@ -574,7 +574,7 @@ class OBSEIniFile(IniFile):
                         if isinstance(value, bytes):
                             raise RuntimeError(u'Do not pass bytes into '
                                                u'saveSettings!')
-                        if isinstance(value, unicode) and value[-1:] == u'\n':
+                        if isinstance(value, str) and value[-1:] == u'\n':
                             line = value.rstrip(u'\n\r') # removes just \n too
                         else:
                             line = format_string % (setting, value)

@@ -247,11 +247,11 @@ class _AListsMerger(ListPatcher):
                         cleaned_lists.add(stored_list.eid)
                         keep(sub_super)
             log.setHeader(u'=== ' + _(u'Empty %s Sublists') % list_label)
-            for list_eid in sorted(removed_empty_sublists, key=unicode.lower):
+            for list_eid in sorted(removed_empty_sublists, key=str.lower):
                 log(u'* ' + list_eid)
             log.setHeader(u'=== ' + _(u'Empty %s Sublists Removed') %
                           list_label)
-            for list_eid in sorted(cleaned_lists, key=unicode.lower):
+            for list_eid in sorted(cleaned_lists, key=str.lower):
                 log(u'* ' + list_eid)
 
     # Methods for patchers to override

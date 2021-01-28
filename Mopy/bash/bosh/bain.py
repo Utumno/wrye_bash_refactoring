@@ -48,7 +48,7 @@ from ..exception import AbstractError, ArgumentError, BSAError, CancelError, \
     InstallerArchiveError, SkipError, StateError, FileError
 from ..ini_files import OBSEIniFile
 
-os_sep = unicode(os.path.sep) # PY3: already unicode
+os_sep = str(os.path.sep) # PY3: already unicode
 
 class Installer(object):
     """Object representing an installer archive, its user configuration, and
@@ -239,7 +239,7 @@ class Installer(object):
 
     @staticmethod
     def number_string(number, marker_string=u''):
-        return unicode(number)
+        return str(number)
 
     def size_string(self, marker_string=u''):
         return round_size(self.size)
@@ -332,7 +332,7 @@ class Installer(object):
             self.extras_dict = {}
             if self.fileRootIdex: # need to add 'root_path' key to extras_dict
                 rescan = True
-        self.extras_dict = {unicode(k): v for k, v in self.extras_dict.items()}
+        self.extras_dict = {str(k): v for k, v in self.extras_dict.items()}
         if not self.abs_path.exists(): # pickled installer deleted outside bash
             return  # don't do anything should be deleted from our data soon
         if not isinstance(self.src_sizeCrcDate, bolt.LowerDict):
@@ -956,7 +956,7 @@ class Installer(object):
         self.type = bain_type
         #--SubNames, SubActives
         if bain_type == 2:
-            self.subNames = sorted(subNameSet,key=unicode.lower)
+            self.subNames = sorted(subNameSet,key=str.lower)
             actives = {x for x, y in izip(self.subNames, self.subActives)
                        if (y or x == u'')}
             if len(self.subNames) == 2: #--If only one subinstall, then make it active.
@@ -1034,7 +1034,7 @@ class Installer(object):
         outFile = outDir.join(u'bash_temp_nonunicode_name.tmp')
         num = 0
         while outFile.exists():
-            outFile += unicode(num)
+            outFile += str(num)
             num += 1
         project = outDir.join(project)
         with project.unicodeSafe() as projectDir:

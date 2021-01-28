@@ -106,7 +106,7 @@ class _MelDistributor(MelNull):
                 elif re_type == tuple:
                     # TODO(inf) Proper name for tuple values
                     if (len(resolved_entry) != 2
-                            or not isinstance(resolved_entry[0], unicode)
+                            or not isinstance(resolved_entry[0], str)
                             or not isinstance(resolved_entry[1], dict)):
                         self._raise_syntax_error(
                             u'Tuples used as values must always have two '
@@ -123,7 +123,7 @@ class _MelDistributor(MelNull):
                             # Ensure that the tuple is correctly formatted
                             if (len(seq_entry) != 2
                                     or not isinstance(seq_entry[0], bytes)
-                                    or not isinstance(seq_entry[1], unicode)):
+                                    or not isinstance(seq_entry[1], str)):
                                 self._raise_syntax_error(
                                     u'Sequential tuples must always have two '
                                     u'elements, a bytestring and a string '
@@ -134,7 +134,7 @@ class _MelDistributor(MelNull):
                                 u'Sequential entries must either be '
                                 u'tuples or bytestrings (actual type: %r)' %
                                 type(seq_entry))
-                elif re_type != unicode:
+                elif re_type != str:
                     self._raise_syntax_error(
                         u'Only dicts, lists, strings and tuples may occur as '
                         u'values (offending type: %r)' % re_type)

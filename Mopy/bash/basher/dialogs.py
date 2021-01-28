@@ -46,7 +46,7 @@ class ImportFaceDialog(DialogWindow):
                           in faces.items()}
         else:
             self.fdata = faces
-        self.list_items = sorted(self.fdata, key=unicode.lower)
+        self.list_items = sorted(self.fdata, key=str.lower)
         #--GUI
         super(ImportFaceDialog, self).__init__(parent, title=title,
                                                sizes_dict=balt.sizes)
@@ -95,7 +95,7 @@ class ImportFaceDialog(DialogWindow):
         self.nameText.label_text = face.pcName
         self.raceText.label_text = face.getRaceName()
         self.genderText.label_text = face.getGenderName()
-        self.statsText.label_text = _(u'Health ') + unicode(face.health)
+        self.statsText.label_text = _(u'Health ') + str(face.health)
         itemImagePath = bass.dirs[u'mods'].join(u'Docs', u'Images',
                                                 u'%s.jpg' % item)
         # TODO(ut): any way to get the picture ? see mod_links.Mod_Face_Import

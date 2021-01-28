@@ -457,7 +457,7 @@ class FomodInstaller(object):
                 if test_func:
                     test_func(self, condition)
             except FailedCondition as e:
-                failed_conditions.extend([a for a in unicode(e).splitlines()])
+                failed_conditions.extend([a for a in str(e).splitlines()])
                 if cond_op == u'And':
                     raise FailedCondition(u'\n'.join(failed_conditions))
         if cond_op == u'Or' and len(failed_conditions) == len(all_conditions):
