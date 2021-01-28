@@ -32,6 +32,7 @@ from ... import load_order, bush
 from ...bolt import GPath, deprint
 from ...brec import MreRecord
 from ...exception import AbstractError
+from ...mod_files import LoadFactory
 from ...parsers import _HandleAliases
 
 # Patchers 1 ------------------------------------------------------------------
@@ -369,6 +370,9 @@ class ImportPatcher(ListPatcher):
     patcher_order = 20
     # Override in subclasses as needed
     logMsg = u'\n=== ' + _(u'Modified Records')
+
+    def _importer_read_fact(self, by_sig=None): # read can have keepAll=False
+        return LoadFactory(keepAll=False, by_sig=by_sig or self._read_sigs)
 
     def _patchLog(self,log,type_count):
         log.setHeader(u'= %s' % self._patcher_name)

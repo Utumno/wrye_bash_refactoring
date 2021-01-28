@@ -42,7 +42,7 @@ from .patcher_dialog import PatchDialog, all_gui_patchers
 from .. import bass, bosh, bolt, balt, bush, mod_files, load_order
 from ..balt import ItemLink, Link, CheckLink, EnabledLink, AppendableLink, \
     TransLink, SeparatorLink, ChoiceLink, OneItemLink, ListBoxes, MenuLink
-from ..bolt import GPath, SubProgress
+from ..bolt import GPath, SubProgress, dict_sort
 from ..bosh import faces
 from ..brec import MreRecord
 from ..exception import AbstractError, BoltError, CancelError
@@ -92,7 +92,7 @@ class Mod_FullLoad(OneItemLink, _LoadLink):
     """Tests all record definitions against a specific mod"""
     _text = _(u'Test Full Record Definitions...')
     _help = _(u'Tests all record definitions against the selected mod')
-    _load_sigs = tuple(MreRecord.type_class)
+    _load_sigs = tuple(MreRecord.type_class) # all available (decoded) records
 
     def Execute(self):
         with balt.Progress(_(u'Loading:') + u'\n%s'
@@ -107,7 +107,8 @@ class Mod_FullLoad(OneItemLink, _LoadLink):
                                 u'available in the BashBugDump.') + u'\n\n' +
                               traceback.format_exc())
                 self._showError(failed_msg, title=_(u'Verification Failed'))
-                bolt.deprint(u'exception:\n', traceback=True)
+                bolt.deprint(u'Exception loading %s:\n' % self._selected_info,
+                             traceback=True)
                 return
         self._showOk(_(u'File fully verified using current record '
                        u'definitions.'), title=_(u'Verification Succeeded'))
@@ -122,10 +123,9 @@ class Mod_RecalcRecordCounts(OneItemLink, _LoadLink):
 
     def Execute(self):
         modFile = self._load_mod(self._selected_info, do_map_fids=False)
-        for topType, block in sorted(modFile.tops.iteritems(),
-                key=lambda t: t[0]):
+        for top_grup_sig, block in dict_sort(modFile.tops):
             bolt.deprint(u'%s GRUP has %u records' % (
-                topType, block.getNumRecords()))
+                top_grup_sig.decode(u'ascii'), block.getNumRecords()))
 
 # File submenu ----------------------------------------------------------------
 # the rest of the File submenu links come from file_links.py
