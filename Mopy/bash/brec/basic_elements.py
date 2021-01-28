@@ -25,7 +25,7 @@ higher-level building blocks can be found in common_subrecords.py."""
 
 from __future__ import division, print_function
 
-from itertools import izip
+
 
 from .utils_constants import FID, null1, _make_hashable, FixedString, \
     _int_unpacker, get_structs

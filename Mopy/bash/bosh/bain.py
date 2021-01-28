@@ -34,7 +34,7 @@ import sys
 import time
 from binascii import crc32
 from functools import partial, wraps
-from itertools import groupby, izip
+from itertools import groupby
 from operator import itemgetter, attrgetter
 
 from . import imageExts, DataStore, BestIniFile, InstallerConverter, ModInfos

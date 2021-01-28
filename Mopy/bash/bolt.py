@@ -46,7 +46,7 @@ import textwrap
 import traceback
 from binascii import crc32
 from functools import partial
-from itertools import chain, izip
+from itertools import chain
 from keyword import iskeyword
 from operator import attrgetter
 from urllib import quote

@@ -21,7 +21,7 @@
 #
 # =============================================================================
 from collections import OrderedDict
-from itertools import izip
+
 
 from . import bEnableWizard, BashFrame
 from .constants import installercons

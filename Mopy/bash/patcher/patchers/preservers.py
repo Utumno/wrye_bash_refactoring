@@ -25,7 +25,7 @@ carries forward changes from the last tagged plugin. The goal is to eventually
 absorb all of them under the _APreserver base class."""
 
 from collections import defaultdict, Counter
-from itertools import chain, izip
+from itertools import chain
 
 # Internal
 from .base import ImportPatcher

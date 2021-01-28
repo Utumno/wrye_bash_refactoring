@@ -29,7 +29,7 @@ import os
 import platform
 import shutil
 import stat
-from itertools import izip
+
 
 # Then check which OS we are running on and import *only* from there
 if os.name == u'nt':

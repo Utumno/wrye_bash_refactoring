@@ -45,7 +45,7 @@ import sys
 import math
 import collections
 import time
-from itertools import izip
+
 # Internal
 from . import bass, bolt, bush, exception
 # Game instance providing load order operations API

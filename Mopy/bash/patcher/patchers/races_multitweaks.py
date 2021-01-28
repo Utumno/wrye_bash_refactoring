@@ -33,7 +33,7 @@ from __future__ import print_function
 import random
 import re
 from collections import defaultdict, Counter
-from itertools import izip
+
 
 # Internal
 from .base import MultiTweakItem, ListPatcher

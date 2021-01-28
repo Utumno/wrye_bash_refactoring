@@ -23,7 +23,7 @@
 """This module contains oblivion multitweak item patcher classes that belong
 to the Settings Multitweaker - as well as the tweaker itself."""
 
-from itertools import izip
+
 
 from ... import bush  # for game
 from ...bolt import floats_equal

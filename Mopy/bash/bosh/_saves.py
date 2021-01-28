@@ -28,7 +28,7 @@ from __future__ import division, print_function
 
 import io
 from collections import Counter, defaultdict
-from itertools import izip, starmap, repeat
+from itertools import starmap, repeat
 
 from .save_headers import OblivionSaveHeader
 from .. import bolt, bush

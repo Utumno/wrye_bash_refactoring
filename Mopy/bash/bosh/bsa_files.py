@@ -35,7 +35,7 @@ import errno
 import os
 import zlib
 from functools import partial
-from itertools import groupby, imap, izip
+from itertools import groupby
 from operator import itemgetter
 from struct import unpack_from as _unpack_from
 

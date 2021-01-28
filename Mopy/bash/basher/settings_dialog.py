@@ -24,7 +24,7 @@ import os
 import subprocess
 import webbrowser
 from collections import defaultdict
-from itertools import izip
+
 
 from . import BashStatusBar, tabInfo
 from .constants import colorInfo, settingDefaults

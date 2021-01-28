@@ -31,7 +31,7 @@ import copy
 import io
 import re
 import traceback
-from itertools import izip
+
 
 # Local
 from . import configIsCBash

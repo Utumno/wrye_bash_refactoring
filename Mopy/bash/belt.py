@@ -28,7 +28,7 @@ from __future__ import division
 import os
 import traceback
 from collections import OrderedDict, defaultdict
-from itertools import izip
+
 
 from . import ScriptParser  # generic parser class
 from . import balt, bass, bolt, bosh, bush, load_order

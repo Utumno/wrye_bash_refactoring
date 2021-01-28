@@ -28,7 +28,7 @@ import cPickle as pickle  # PY3
 import io
 import re
 import sys
-from itertools import izip
+
 
 from .. import bolt, archives, bass
 from ..archives import defaultExt, readExts, compressionSettings, \

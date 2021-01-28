@@ -27,7 +27,7 @@ from __future__ import division, print_function
 
 import io
 from collections import deque
-from itertools import chain, izip
+from itertools import chain
 from operator import itemgetter, attrgetter
 
 # Wrye Bash imports

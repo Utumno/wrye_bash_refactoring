@@ -60,7 +60,7 @@ import sys
 import time
 from collections import OrderedDict, namedtuple
 from functools import partial, reduce
-from itertools import izip
+
 from operator import itemgetter
 
 #--wxPython

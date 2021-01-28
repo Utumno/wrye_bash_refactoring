@@ -25,7 +25,7 @@ some commonly needed records."""
 
 from __future__ import division, print_function
 
-from itertools import izip
+
 from operator import attrgetter
 
 from .advanced_elements import FidNotNullDecider, AttrValDecider, MelArray, \
