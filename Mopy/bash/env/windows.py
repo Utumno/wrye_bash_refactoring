@@ -27,7 +27,7 @@ from __future__ import print_function
 import os
 import re
 import sys
-import _winreg as winreg  # PY3
+import winreg as winreg  # PY3
 from ctypes import byref, c_wchar_p, c_void_p, POINTER, Structure, windll, \
     wintypes, WINFUNCTYPE, c_uint, c_long, Union, c_ushort, c_int, \
     c_longlong, c_ulong, c_wchar, sizeof, wstring_at, ARRAY

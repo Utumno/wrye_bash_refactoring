@@ -34,7 +34,7 @@ import platform
 import shutil
 import sys
 import traceback
-from ConfigParser import ConfigParser
+from configparser import ConfigParser
 # Local
 from . import bass, bolt, exception
 # NO OTHER LOCAL IMPORTS HERE (apart from the ones above) !
@@ -528,7 +528,7 @@ def _show_boot_popup(msg, is_critical=True):
         _tkinter_error_dial(msg, but_kwargs)
 
 def _tkinter_error_dial(msg, but_kwargs):
-    import Tkinter as tkinter  # PY3
+    import tkinter as tkinter  # PY3
     root_widget = tkinter.Tk()
     frame = tkinter.Frame(root_widget)
     frame.pack()

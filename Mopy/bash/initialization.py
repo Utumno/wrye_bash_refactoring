@@ -24,7 +24,7 @@
 functions to initialize bass.dirs that need be initialized high up into the
 boot sequence to be able to backup/restore settings."""
 import os
-from ConfigParser import ConfigParser, MissingSectionHeaderError
+from configparser import ConfigParser, MissingSectionHeaderError
 # Local - don't import anything else
 from . import env
 from .bass import dirs, get_ini_option
