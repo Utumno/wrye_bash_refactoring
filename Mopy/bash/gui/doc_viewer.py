@@ -38,7 +38,7 @@ except ImportError:
 import wx as _wx
 
 import webbrowser
-from urllib import pathname2url
+from urllib.request import pathname2url
 from urllib.parse import urljoin
 
 from .base_components import _AComponent
