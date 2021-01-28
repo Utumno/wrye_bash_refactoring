@@ -774,10 +774,10 @@ class TabDragMixin(object):
                 else:
                     left,right,step = oldPos+1,newPos+1,-1
                 insert = left+step
-                addPages = [(self.GetPage(x),self.GetPageText(x)) for x in xrange(left,right)]
+                addPages = [(self.GetPage(x),self.GetPageText(x)) for x in range(left,right)]
                 addPages.reverse()
                 num = right - left
-                for i in xrange(num):
+                for i in range(num):
                     self.RemovePage(left)
                 for page,title in addPages:
                     self.InsertPage(insert,page,title)
@@ -1204,7 +1204,7 @@ class UIList(wx.Panel):
     # gList columns autosize---------------------------------------------------
     def autosizeColumns(self):
         if self.autoColWidths:
-            colCount = xrange(self.__gList.lc_get_columns_count())
+            colCount = range(self.__gList.lc_get_columns_count())
             for i in colCount:
                 self.__gList.lc_set_column_width(i, -self.autoColWidths)
 

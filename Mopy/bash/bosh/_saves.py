@@ -281,10 +281,10 @@ class SaveFile(object):
             #--Globals
             globalsNum = unpack_short(ins)
             self.globals = [unpack_many(ins, u'If')
-                            for _n in xrange(globalsNum)]
+                            for _n in range(globalsNum)]
             #--Pre-Created (Class, processes, spectator, sky)
             buff = io.BytesIO()
-            for x in xrange(4):
+            for x in range(4):
                 siz = unpack_short(ins)
                 insCopy(buff, siz, 2)
             #--Supposedly part of created info, but sticking it here since
@@ -294,18 +294,18 @@ class SaveFile(object):
             #--Created (ALCH,SPEL,ENCH,WEAP,CLOTH,ARMO, etc.?)
             modReader = ModReader(self.fileInfo.name,ins)
             createdNum = unpack_int(ins)
-            for count in xrange(createdNum):
+            for count in range(createdNum):
                 progress(ins.tell(),_(u'Reading created...'))
                 self.created.append(MreRecord(unpack_header(modReader), modReader))
             #--Pre-records: Quickkeys, reticule, interface, regions
             buff = io.BytesIO()
-            for x in xrange(4):
+            for x in range(4):
                 siz = unpack_short(ins)
                 insCopy(buff, siz, 2)
             self.preRecords = buff.getvalue()
 
             #--Records
-            for count in xrange(recordsNum):
+            for count in range(recordsNum):
                 progress(ins.tell(),_(u'Reading records...'))
                 (rec_id, rec_kind, flags, version, siz) = unpack_many(ins,u'=IBIBH')
                 data = ins.read(siz)

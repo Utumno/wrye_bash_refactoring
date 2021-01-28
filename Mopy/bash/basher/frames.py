@@ -290,7 +290,7 @@ class DocBrowser(WindowFrame):
 
 #------------------------------------------------------------------------------
 _BACK, _FORWARD, _MOD_LIST, _CRC, _VERSION, _SCAN_DIRTY, _COPY_TEXT, \
-_UPDATE = range(8)
+_UPDATE = list(range(8))
 
 def _get_mod_checker_setting(key, default=None):
     return bass.settings.get(u'bash.modChecker.show%s' % key, default)

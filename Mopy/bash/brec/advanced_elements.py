@@ -391,7 +391,7 @@ class MelArray(MelBase):
             self._prelude.load_mel(record, ins, sub_type, self._prelude_size,
                                    *debug_strs)
             size_ -= self._prelude_size
-        for x in xrange(size_ // entry_size):
+        for x in range(size_ // entry_size):
             arr_entry = MelObject()
             append_entry(arr_entry)
             arr_entry.__slots__ = entry_slots

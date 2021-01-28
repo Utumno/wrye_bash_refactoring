@@ -894,7 +894,7 @@ class Save_UpdateNPCLevels(EnabledLink):
                 mapToOrdered = MasterMap(saveFile._masters, ordered)
                 releveledCount = 0
                 #--Loop over change records
-                for recNum in xrange(len(records)):
+                for recNum in range(len(records)):
                     (recId,recType,recFlags,version,data_) = records[recNum]
                     orderedRecId = mapToOrdered(recId,None)
                     if recType != 35 or recId == 7 or orderedRecId not in npc_info: continue

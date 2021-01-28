@@ -764,7 +764,7 @@ class INITweakLineCtrl(INIListCtrl):
                 updated_line_nums.add(lineNo)
         #--Reset line color for other iniContents lines
         background_color = self.iniContents.GetBackgroundColour()
-        for i in xrange(self.iniContents.GetItemCount()):
+        for i in range(self.iniContents.GetItemCount()):
             if i in updated_line_nums: continue
             if self.iniContents.GetItemBackgroundColour(i) != background_color:
                 self.iniContents.SetItemBackgroundColour(i, background_color)
@@ -3006,7 +3006,7 @@ class InstallersDetails(_SashDetailsPanel):
         """Handle check/uncheck of item."""
         installer = self.file_info
         self.gSubList.lb_select_index(lb_selection_dex)
-        for lb_selection_dex in xrange(self.gSubList.lb_get_items_count()):
+        for lb_selection_dex in range(self.gSubList.lb_get_items_count()):
             installer.subActives[lb_selection_dex+1] = self.gSubList.lb_is_checked_at_index(lb_selection_dex)
         if not balt.getKeyState_Shift():
             self.refreshCurrent(installer)
@@ -3053,7 +3053,7 @@ class InstallersDetails(_SashDetailsPanel):
         """Checks or unchecks all subpackage checkmarks and propagates that
         information to BAIN."""
         self.gSubList.set_all_checkmarks(checked=checked)
-        for index in xrange(self.gSubList.lb_get_items_count()):
+        for index in range(self.gSubList.lb_get_items_count()):
             # + 1 due to empty string included in subActives by BAIN
             self.file_info.subActives[index + 1] = checked
 
@@ -3542,7 +3542,7 @@ class _Tab_Link(AppendableLink, CheckLink, EnabledLink):
             iMods = None
             iInstallers = None
             iDelete = None
-            for i in xrange(Link.Frame.notebook.GetPageCount()):
+            for i in range(Link.Frame.notebook.GetPageCount()):
                 pageTitle = Link.Frame.notebook.GetPageText(i)
                 if pageTitle == tabInfo[u'Mods'][1]:
                     iMods = i
@@ -3789,7 +3789,7 @@ class BashStatusBar(DnDStatusBar):
             self._addButton(link)
             button = self.buttons.pop()
             thisIndex, insertBefore = order.index(link.uid), 0
-            for i in xrange(len(self.buttons)):
+            for i in range(len(self.buttons)):
                 otherlink = self.GetLink(index=i)
                 indexOther = order.index(otherlink.uid)
                 if indexOther > thisIndex:

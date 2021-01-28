@@ -270,7 +270,7 @@ class _xSEModListChunk(_xSEChunk, _Dumpable, _Remappable):
 
         :param ins: The input stream to read from.
         :param mod_count: The number of mod names to read."""
-        for x in xrange(mod_count):
+        for x in range(mod_count):
             self.mod_names.append(_unpack_cosave_str16(ins))
 
     def write_mod_names(self, out):
@@ -389,10 +389,10 @@ class _xSEChunkARVR(_xSEChunk, _Dumpable):
         if self.chunk_version >= 1:
             num_references = unpack_int(ins)
             self.references = []
-            for x in xrange(num_references):
+            for x in range(num_references):
                 self.references.append(unpack_byte(ins))
         num_elements = unpack_int(ins)
-        for x in xrange(num_elements):
+        for x in range(num_elements):
             self.elements.append(self._xSEEntryARVR(ins, self.key_type))
 
     @property
@@ -485,10 +485,10 @@ class _xSEChunkDATA(_xSEModListChunk):
             # again, the number of mods is stored literally as a string of
             # digits, e.g. '153'.
             num_plugins = int(_unpack_cosave_space_str(ins))
-            for x in xrange(num_plugins):
+            for x in range(num_plugins):
                 self.mod_names.append(_unpack_cosave_space_str(ins))
         else:
-            for x in xrange(256):
+            for x in range(256):
                 # This chunk always has 256 mods listed, any excess ones
                 # just get the string 'nomod' stored.
                 read_string = _unpack_cosave_space_str(ins)
@@ -655,7 +655,7 @@ class _xSEChunkPLGN(_xSEChunk, _Dumpable, _Remappable):
     def __init__(self, ins, chunk_type):
         super(_xSEChunkPLGN, self).__init__(ins, chunk_type)
         self.mod_entries = []
-        for x in xrange(unpack_short(ins)):
+        for x in range(unpack_short(ins)):
             self.mod_entries.append(self._xSEEntryPLGN(ins))
 
     def write_chunk(self, out):
@@ -744,7 +744,7 @@ class _xSEPluginChunk(_AChunk, _Remappable):
         if light:
             self._read_chunk(ins)
         else:
-            for x in xrange(num_chunks):
+            for x in range(num_chunks):
                 self._read_chunk(ins)
 
     def _read_chunk(self, ins):
@@ -831,7 +831,7 @@ class _PluggyPluginBlock(_PluggyBlock, _Remappable):
         super(_PluggyPluginBlock, self).__init__(record_type)
         plugin_count = unpack_int(ins)
         self.plugins = []
-        for x in xrange(plugin_count):
+        for x in range(plugin_count):
             self.plugins.append(self._PluggyEntryPlugin(ins))
 
     def write_chunk(self, out):
@@ -887,7 +887,7 @@ class _PluggyStringBlock(_PluggyBlock):
         super(_PluggyStringBlock, self).__init__(record_type)
         string_count = unpack_int(ins)
         self.stored_strings = []
-        for x in xrange(string_count):
+        for x in range(string_count):
             self.stored_strings.append(self._PluggyEntryString(ins))
 
     def write_chunk(self, out):
@@ -960,7 +960,7 @@ class _PluggyArrayBlock(_PluggyBlock):
         self.array_flags = unpack_byte(ins)
         self.max_size = unpack_int(ins)
         self.array_entries = []
-        for x in xrange(unpack_int(ins)):
+        for x in range(unpack_int(ins)):
             self.array_entries.append(self._PluggyEntryArray(ins))
 
     def write_chunk(self, out):
@@ -1016,7 +1016,7 @@ class _PluggyNameBlock(_PluggyBlock):
         super(_PluggyNameBlock, self).__init__(record_type)
         name_count = unpack_int(ins)
         self.stored_names = []
-        for x in xrange(name_count):
+        for x in range(name_count):
             self.stored_names.append(self._PluggyEntryName(ins))
 
     def write_chunk(self, out):
@@ -1121,7 +1121,7 @@ class _PluggyHudSBlock(_PluggyBlock):
     def __init__(self, ins, record_type):
         super(_PluggyHudSBlock, self).__init__(record_type)
         self.hud_entries = []
-        for x in xrange(unpack_int(ins)):
+        for x in range(unpack_int(ins)):
             self.hud_entries.append(self._PluggyEntryHudS(ins))
 
     def write_chunk(self, out):
@@ -1235,7 +1235,7 @@ class _PluggyHudTBlock(_PluggyBlock):
     def __init__(self, ins, record_type):
         super(_PluggyHudTBlock, self).__init__(record_type)
         self.hud_entries = []
-        for x in xrange(unpack_int(ins)):
+        for x in range(unpack_int(ins)):
             self.hud_entries.append(self._PluggyEntryHudT(ins))
 
     def write_chunk(self, out):
@@ -1416,7 +1416,7 @@ class xSECosave(ACosave):
         if light:
             self._add_cosave_chunk(_xSEPluginChunk(ins, light))
         else:
-            for x in xrange(my_header.num_plugin_chunks):
+            for x in range(my_header.num_plugin_chunks):
                 self._add_cosave_chunk(_xSEPluginChunk(ins, light))
 
     def write_cosave(self, out_path):

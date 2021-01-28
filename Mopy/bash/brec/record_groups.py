@@ -570,7 +570,7 @@ class MobDial(MobObjects):
                     # We don't warn here because trying to differentiate the
                     # valid and common case from the two error cases would be
                     # too slow. xEdit can do this much better
-                    for i in xrange(len(sorted_infos)):
+                    for i in range(len(sorted_infos)):
                         if curr_info.fid <= sorted_infos[i].fid:
                             # We found a suitable spot, insert it and break
                             sorted_infos.insert(i, curr_info)
