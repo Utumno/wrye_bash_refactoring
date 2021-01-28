@@ -1303,8 +1303,8 @@ class PickleDict(object):
 
     class Mold(Exception):
         def __init__(self, moldedFile):
-            msg = (u'Your settings in %s come from an ancient Bash version. '
-                   u'Please load them in 306 so they are converted '
+            msg = (u'Your settings in %s come from an old Wrye Bash version. '
+                   u'Please load them in 308 so they are converted '
                    u'to the newer format' % moldedFile)
             super(PickleDict.Mold, self).__init__(msg)
 
@@ -1341,7 +1341,7 @@ class PickleDict(object):
                         deprint(u'Unable to load %s (will be moved to "%s")' %(
                                 path, cor_name.tail), traceback=True)
                         continue  # file corrupt - try next file
-                    if firstPickle == b'VDATA2':
+                    if firstPickle == u'VDATA3':
                         self.vdata.update(pickle.load(ins, encoding='bytes'))
                         self.pickled_data.update(pickle.load(
                             ins, encoding='bytes'))
