@@ -22,7 +22,7 @@
 # =============================================================================
 """BAIN Converters aka BCFs"""
 
-from __future__ import division
+
 
 import pickle as pickle  # PY3
 import io

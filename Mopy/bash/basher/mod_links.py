@@ -24,7 +24,7 @@
 """Menu items for the _item_ menu of the mods tab - their window attribute
 points to BashFrame.modList singleton."""
 
-from __future__ import print_function
+
 
 import collections
 import copy

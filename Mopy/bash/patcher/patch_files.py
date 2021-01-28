@@ -20,7 +20,7 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
-from __future__ import print_function
+
 import time
 from collections import defaultdict, Counter
 from itertools import chain

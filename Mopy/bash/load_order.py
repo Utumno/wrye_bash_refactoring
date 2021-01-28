@@ -37,7 +37,7 @@ lo/active from inside Bash.
 delegate to the game_handle.
 """
 
-from __future__ import division
+
 
 __author__ = u'Utumno'
 

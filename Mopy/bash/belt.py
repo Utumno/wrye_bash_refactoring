@@ -23,7 +23,7 @@
 
 """Specific parser for Wrye Bash."""
 
-from __future__ import division
+
 
 import os
 import traceback

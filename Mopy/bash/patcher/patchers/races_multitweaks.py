@@ -28,7 +28,7 @@ is a special patcher. Notice the PBash ones do not log in buildPatch - the
 RacesTweaker patcher was calling their "log" method - now super's _patchLog()
 """
 
-from __future__ import print_function
+
 
 import random
 import re

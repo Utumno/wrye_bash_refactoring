@@ -20,7 +20,7 @@
 #  https://github.com/wrye-bash
 #
 # =============================================================================
-from __future__ import division
+
 import copy
 import re
 from collections import defaultdict
