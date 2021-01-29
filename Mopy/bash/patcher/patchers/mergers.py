@@ -88,7 +88,7 @@ class _AMerger(ImportPatcher):
 
     def initData(self,progress):
         if not self.isActive or not self.srcs: return
-        loadFactory = self._importer_read_fact(by_sig=self._wanted_subrecord)
+        loadFactory = self._patcher_read_fact(by_sig=self._wanted_subrecord)
         progress.setFull(len(self.srcs))
         for index,srcMod in enumerate(self.srcs):
             srcInfo = self.patchFile.p_file_minfos[srcMod]
@@ -303,7 +303,7 @@ class ImportActorsAIPackagesPatcher(ImportPatcher):
         """Get data from source files."""
         if not self.isActive: return
         read_sigs = self._read_sigs
-        loadFactory = self._importer_read_fact()
+        loadFactory = self._patcher_read_fact()
         progress.setFull(len(self.srcs))
         cachedMasters = {}
         mer_del = self.id_merged_deleted
@@ -431,7 +431,7 @@ class ImportActorsSpellsPatcher(ImportPatcher):
         """Get data from source files."""
         if not self.isActive: return
         read_sigs = self._read_sigs
-        loadFactory = self._importer_read_fact()
+        loadFactory = self._patcher_read_fact()
         progress.setFull(len(self.srcs))
         cachedMasters = {}
         mer_del = self.id_merged_deleted

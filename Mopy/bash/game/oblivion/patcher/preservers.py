@@ -43,7 +43,7 @@ class ImportRoadsPatcher(ImportPatcher, _ExSpecial):
     def initData(self,progress):
         """Get cells from source files."""
         if not self.isActive: return
-        loadFactory = self._importer_read_fact()
+        loadFactory = self._patcher_read_fact()
         for srcMod in self.srcs:
             if srcMod not in self.patchFile.p_file_minfos: continue
             srcInfo = self.patchFile.p_file_minfos[srcMod]

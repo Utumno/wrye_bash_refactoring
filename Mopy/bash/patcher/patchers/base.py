@@ -364,15 +364,18 @@ class ReplaceFormIDsPatcher(_HandleAliases, ListPatcher):
             log(u'* %s: %d' % (srcMod,count[srcMod]))
 
 # Patchers: 20 ----------------------------------------------------------------
-class ImportPatcher(ListPatcher):
+class ModLoader(Patcher):
+    """Mixin for patchers loading mods"""
+
+    def _patcher_read_fact(self, by_sig=None): # read can have keepAll=False
+        return LoadFactory(keepAll=False, by_sig=by_sig or self._read_sigs)
+
+class ImportPatcher(ListPatcher, ModLoader):
     """Subclass for patchers in group Importer."""
     patcher_group = u'Importers'
     patcher_order = 20
     # Override in subclasses as needed
     logMsg = u'\n=== ' + _(u'Modified Records')
-
-    def _importer_read_fact(self, by_sig=None): # read can have keepAll=False
-        return LoadFactory(keepAll=False, by_sig=by_sig or self._read_sigs)
 
     def _patchLog(self,log,type_count):
         log.setHeader(u'= %s' % self._patcher_name)

@@ -158,7 +158,7 @@ class _APreserver(ImportPatcher):
     def initData(self, progress, __attrgetters=attrgetter_cache):
         if not self.isActive: return
         id_data = self.id_data
-        loadFactory = self._importer_read_fact(by_sig=self.rec_type_attrs)
+        loadFactory = self._patcher_read_fact(by_sig=self.rec_type_attrs)
         progress.setFull(len(self.srcs) + len(self.csv_srcs))
         cachedMasters = {}
         minfs = self.patchFile.p_file_minfos
@@ -484,7 +484,7 @@ class ImportCellsPatcher(ImportPatcher):
                     master_attr = __attrgetters[attr](cellBlock.cell)
                     if tempCellData[rec_fid][attr] != master_attr:
                         cellData[rec_fid][attr] = tempCellData[rec_fid][attr]
-        loadFactory = self._importer_read_fact()
+        loadFactory = self._patcher_read_fact()
         progress.setFull(len(self.srcs))
         cachedMasters = {}
         minfs = self.patchFile.p_file_minfos
