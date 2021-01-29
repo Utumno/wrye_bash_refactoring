@@ -1070,50 +1070,51 @@ class ScriptText(CsvParser):
         self.eid_data = {}
         self.aliases = aliases or {} #--For aliasing mod names # TODO: unused?
 
-    def writeToText(self, progress, skip, folder, deprefix, fileName, skipcomments,
-            __win_line_sep=u'\r\n'): # scripts line separator - or so we trust
-        """Writes scripts to specified folder.""" ##: must become export_scripts(folder)
+    def export_scripts(self, progress, skip, folder, deprefix, skipcomments):
+        """Writes scripts to specified folder."""
         eid_data = self.eid_data
         skip, deprefix = skip.lower(), deprefix.lower()
         x = len(skip)
         exportedScripts = []
         y = len(eid_data)
-        z = 0
-        num = 0
         r = len(deprefix)
-        for eid in sorted(eid_data, key=lambda eid: (eid, eid_data[eid][1])):
+        for z, eid in enumerate(sorted(eid_data, key=lambda eid: (eid, eid_data[eid][1]))):
             (scpt_txt, longid) = eid_data[eid]
             scpt_txt = decoder(scpt_txt)
             if skipcomments:
-                tmp = []
-                for line in scpt_txt.split(__win_line_sep):
-                    pos = line.find(u';')
-                    if pos == -1: # note ''.find(u';') == -1
-                        tmp.append(line)
-                    elif pos == 0:
-                        continue
-                    else:
-                        if line[:pos].isspace(): continue
-                        tmp.append(line[:pos])
-                if not tmp: continue
-                # '\n'.split('\n') == ['', ''], so final newline preserved
-                scpt_txt = u'\n'.join(tmp)
-            z += 1
+                scpt_txt =  self._filter_comments(scpt_txt)
+                if not scpt_txt: continue
             progress((0.5 + 0.5 / y * z), _(u'Exporting script %s.') % eid)
             if x == 0 or skip != eid[:x].lower():
                 fileName = eid
                 if r >= 1 and deprefix == fileName[:r].lower():
                     fileName = fileName[r:]
-                num += 1
                 outpath = dirs[u'patches'].join(folder).join(
                     fileName + inisettings[u'ScriptFileExt'])
-                with outpath.open(u'wb', encoding=u'utf-8-sig') as out:
-                    formid = u'0x%06X' % longid[1]
-                    out.write(u';%s%s%s' % ((__win_line_sep + u';').join(
-                      (longid[0], formid, eid)), __win_line_sep, scpt_txt))
+                self.writeToText(outpath, longid, eid, scpt_txt)
                 exportedScripts.append(eid)
-        return (_(u'Exported %d scripts from %s:') + u'\n%s') % (
-            num, fileName, u'\n'.join(exportedScripts))
+        return exportedScripts
+
+    @staticmethod
+    def _filter_comments(scpt_txt, __win_line_sep=u'\r\n'):
+        tmp = []
+        for line in scpt_txt.split(__win_line_sep):
+            pos = line.find(u';')
+            if pos == -1:  # note ''.find(u';') == -1
+                tmp.append(line)
+            elif pos == 0:
+                continue
+            else:
+                if line[:pos].isspace(): continue
+                tmp.append(line[:pos])
+        return tmp if not tmp else                 u'\n'.join(tmp)
+
+    def writeToText(self, textPath, longid, eid, scpt_txt,
+                    __win_line_sep=u'\r\n'): # scripts line separator - or so we trust
+        with textPath.open(u'wb', encoding=u'utf-8-sig') as out:
+            header = (__win_line_sep + u';').join(
+                (u'%s' % longid[0], u'0x%06X' % longid[1], eid))
+            out.write(u';%s%s%s' % (header, __win_line_sep, scpt_txt))
 
     def readFromMod(self, modInfo):
         """Reads stats from specified mod."""
@@ -1163,32 +1164,33 @@ class ScriptText(CsvParser):
         if changed or added: modFile.safeSave()
         return changed, added
 
-    def readFromText(self, textPath): ##: must become read_script_folder
+    def read_script_folder(self, textPath, progress):
         """Reads scripts from files in specified mods' directory in bashed
         patches folder."""
-        eid_data = self.eid_data
-        textPath = GPath(textPath)
-        with Progress(_(u'Import Scripts')) as progress:
-            for root_dir, dirs, files in textPath.walk():
-                y = len(files)
-                for z, f in enumerate(files, 1):
-                    if f.cext != inisettings[u'ScriptFileExt']:
-                        progress(((1 / y) * z), _(u'Skipping file %s.') % f)
-                        continue
-                    progress(((1 / y) * z), _(u'Reading file %s.') % f)
-                    with root_dir.join(f).open(
-                            u'r', encoding=u'utf-8-sig') as ins:
-                        lines = ins.readlines()
-                    try:
-                        modName,FormID,eid = lines[0][1:-2],lines[1][1:-2], \
-                                             lines[2][1:-2]
-                    except IndexError:
-                        deprint(u'Skipped %s - malformed script header lines:'
-                                u'\n%s' % (f, u''.join(lines[:3])))
-                        continue
-                    scriptText = u''.join(lines[3:])
-                    eid_data[eid] = (scriptText, FormID)
-        return bool(eid_data)
+        for root_dir, dirs, files in textPath.walk():
+            y = len(files)
+            for z, f in enumerate(files, 1):
+                if f.cext != inisettings[u'ScriptFileExt']:
+                    progress(((1 / y) * z), _(u'Skipping file %s.') % f)
+                    continue
+                progress(((1 / y) * z), _(u'Reading file %s.') % f)
+                self.readFromText(root_dir.join(f))
+        return bool(self.eid_data)
+
+    def readFromText(self, textPath):
+        with textPath.open(u'r', encoding=u'utf-8-sig') as ins:
+            modName = FormID = eid_data = u''
+            try:
+                modName, FormID, eid = next(ins)[1:-2], next(ins)[1:-2], next(
+                    ins)[1:-2]
+                # we need a seek else we get ValueError: Mixing iteration and
+                # read methods would lose data
+                ins.seek(sum(map(len, (modName, FormID, eid))) + 7)
+                scriptText = ins.read() # read the rest in one blob
+                self.eid_data[eid] = (scriptText, FormID)
+            except (IndexError, StopIteration):
+                deprint(u'Skipped %s - malformed script header lines:\n%s' % (
+                    textPath.tail, u''.join((modName, FormID, eid_data))))
 
 #------------------------------------------------------------------------------
 class _UsesEffectsMixin(_HandleAliases):
