@@ -65,7 +65,43 @@ def _key_sort(di, id_eid_=None, keys_dex=(), values_dex=(), by_value=False):
         for k in sorted(di):
             yield k, di[k]
 
-class _HandleAliases(object):
+class CsvParser(object):
+    """Basic read/write csv functionality."""
+
+    def readFromText(self, csv_path):
+        """Reads information from the specified CSV file and stores the result
+        in id_stored_info. You must override _parse_line for this method to
+        work.
+
+        :param csv_path: The path to the CSV file that should be read."""
+        with CsvReader(csv_path) as ins:
+            for fields in ins:
+                try:
+                    self._parse_line(fields)
+                except (IndexError, ValueError, TypeError):
+                    """TypeError/ValueError trying to unpack None/few values"""
+
+    def _parse_line(self, csv_fields):
+        """Parse the specified CSV line and update the parser's instance
+        id_stored_info - both id and stored_info vary in type and meaning.
+
+        :param csv_fields: A line in a CSV file, already split into fields."""
+        raise AbstractError(u'%s must implement _parse_line' % type(self))
+
+    def writeToText(self,textPath):
+        """Exports ____ to specified text file."""
+        header, rowFormat = self._header_row_out()
+        with textPath.open(u'w', encoding=u'utf-8-sig') as out:
+            out.write(header)
+            self._write_rows(out, rowFormat)
+
+    def _write_rows(self, out, rowFormat):
+        raise AbstractError
+
+    def _header_row_out(self):
+        raise AbstractError
+
+class _HandleAliases(CsvParser):
     """WIP aliases handling."""
 
     def __init__(self, aliases_):
@@ -85,39 +121,6 @@ class _HandleAliases(object):
         convertible."""
         if not hex_fid.startswith(u'0x'): raise ValueError
         return self._get_alias(modname), int(hex_fid, 0)
-
-    def readFromText(self, csv_path):
-        """Reads information from the specified CSV file and stores the result
-        in id_stored_info. You must override _parse_line for this method to
-        work.
-
-        :param csv_path: The path to the CSV file that should be read."""
-        with CsvReader(csv_path) as ins:
-            for fields in ins:
-                try:
-                    self._parse_line(fields)
-                except (IndexError, ValueError, TypeError):
-                    """TypeError/ValueError trying to unpack None/few values"""
-
-    def writeToText(self,textPath):
-        """Exports ____ to specified text file."""
-        header, rowFormat = self._header_row_out()
-        with textPath.open(u'w', encoding=u'utf-8-sig') as out:
-            out.write(header)
-            self._write_rows(out, rowFormat)
-
-    def _write_rows(self, out, rowFormat):
-        raise AbstractError
-
-    def _header_row_out(self):
-        raise AbstractError
-
-    def _parse_line(self, csv_fields):
-        """Parse the specified CSV line and update the parser's instance
-        id_stored_info - both id and stored_info vary in type and meaning.
-
-        :param csv_fields: A line in a CSV file, already split into fields."""
-        raise AbstractError
 
     def _load_plugin(self, mod_info, keepAll=True, target_types=None):
         """Loads the specified record types in the specified ModInfo and
@@ -1060,16 +1063,16 @@ class ItemStats(_HandleAliases):
                     write(out, attrs, list(attr_value[a] for a in attrs))
 
 #------------------------------------------------------------------------------
-class ScriptText(object):
+class ScriptText(CsvParser):
     """import & export functions for script text."""
 
     def __init__(self,types=None,aliases=None):
         self.eid_data = {}
         self.aliases = aliases or {} #--For aliasing mod names # TODO: unused?
 
-    def writeToText(self, skip, folder, deprefix, fileName, skipcomments,
+    def writeToText(self, progress, skip, folder, deprefix, fileName, skipcomments,
             __win_line_sep=u'\r\n'): # scripts line separator - or so we trust
-        """Writes scripts to specified folder."""
+        """Writes scripts to specified folder.""" ##: must become export_scripts(folder)
         eid_data = self.eid_data
         skip, deprefix = skip.lower(), deprefix.lower()
         x = len(skip)
@@ -1078,43 +1081,41 @@ class ScriptText(object):
         z = 0
         num = 0
         r = len(deprefix)
-        with Progress(_(u'Export Scripts')) as progress:
-            for eid in sorted(eid_data,
-                              key=lambda eid: (eid, eid_data[eid][1])):
-                (scpt_txt, longid) = eid_data[eid]
-                scpt_txt = decoder(scpt_txt)
-                if skipcomments:
-                    tmp = []
-                    for line in scpt_txt.split(__win_line_sep):
-                        pos = line.find(u';')
-                        if pos == -1: # note ''.find(u';') == -1
-                            tmp.append(line)
-                        elif pos == 0:
-                            continue
-                        else:
-                            if line[:pos].isspace(): continue
-                            tmp.append(line[:pos])
-                    if not tmp: continue
-                    # '\n'.split('\n') == ['', ''], so final newline preserved
-                    scpt_txt = u'\n'.join(tmp)
-                z += 1
-                progress((0.5 + 0.5 / y * z), _(u'Exporting script %s.') % eid)
-                if x == 0 or skip != eid[:x].lower():
-                    fileName = eid
-                    if r >= 1 and deprefix == fileName[:r].lower():
-                        fileName = fileName[r:]
-                    num += 1
-                    outpath = dirs[u'patches'].join(folder).join(
-                        fileName + inisettings[u'ScriptFileExt'])
-                    with outpath.open(u'wb', encoding=u'utf-8-sig') as out:
-                        formid = u'0x%06X' % longid[1]
-                        out.write(u';%s%s%s' % ((__win_line_sep + u';').join(
-                          (longid[0], formid, eid)), __win_line_sep, scpt_txt))
-                    exportedScripts.append(eid)
+        for eid in sorted(eid_data, key=lambda eid: (eid, eid_data[eid][1])):
+            (scpt_txt, longid) = eid_data[eid]
+            scpt_txt = decoder(scpt_txt)
+            if skipcomments:
+                tmp = []
+                for line in scpt_txt.split(__win_line_sep):
+                    pos = line.find(u';')
+                    if pos == -1: # note ''.find(u';') == -1
+                        tmp.append(line)
+                    elif pos == 0:
+                        continue
+                    else:
+                        if line[:pos].isspace(): continue
+                        tmp.append(line[:pos])
+                if not tmp: continue
+                # '\n'.split('\n') == ['', ''], so final newline preserved
+                scpt_txt = u'\n'.join(tmp)
+            z += 1
+            progress((0.5 + 0.5 / y * z), _(u'Exporting script %s.') % eid)
+            if x == 0 or skip != eid[:x].lower():
+                fileName = eid
+                if r >= 1 and deprefix == fileName[:r].lower():
+                    fileName = fileName[r:]
+                num += 1
+                outpath = dirs[u'patches'].join(folder).join(
+                    fileName + inisettings[u'ScriptFileExt'])
+                with outpath.open(u'wb', encoding=u'utf-8-sig') as out:
+                    formid = u'0x%06X' % longid[1]
+                    out.write(u';%s%s%s' % ((__win_line_sep + u';').join(
+                      (longid[0], formid, eid)), __win_line_sep, scpt_txt))
+                exportedScripts.append(eid)
         return (_(u'Exported %d scripts from %s:') + u'\n%s') % (
             num, fileName, u'\n'.join(exportedScripts))
 
-    def readFromMod(self, modInfo, file_):
+    def readFromMod(self, modInfo):
         """Reads stats from specified mod."""
         eid_data = self.eid_data
         loadFactory = LoadFactory(False, by_sig=[b'SCPT'])
@@ -1126,7 +1127,7 @@ class ScriptText(object):
             z = 0
             for record in records:
                 z += 1
-                progress((0.5/y*z),_(u'Reading scripts in %s.')% file_)
+                progress((0.5/y*z),_(u'Reading scripts in %s.')% modInfo)
                 eid_data[record.eid] = (record.script_source, record.fid)
 
     def writeToMod(self, modInfo, makeNew=False):
@@ -1162,7 +1163,7 @@ class ScriptText(object):
         if changed or added: modFile.safeSave()
         return changed, added
 
-    def readFromText(self, textPath):
+    def readFromText(self, textPath): ##: must become read_script_folder
         """Reads scripts from files in specified mods' directory in bashed
         patches folder."""
         eid_data = self.eid_data

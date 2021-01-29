@@ -1981,11 +1981,12 @@ class Mod_Scripts_Export(_Mod_Export_Link):
         #--Export
         #try:
         scriptText = self._parser()
-        scriptText.readFromMod(fileInfo, fileName)
-        exportedScripts = scriptText.writeToText(
-            bass.settings[u'bash.mods.export.skip'], textDir,
-            bass.settings[u'bash.mods.export.deprefix'], fileName,
-            bass.settings[u'bash.mods.export.skipcomments'])
+        scriptText.readFromMod(fileInfo)
+        with balt.Progress(_(u'Export Scripts')) as progress:
+            exportedScripts = scriptText.writeToText(progress,
+                bass.settings[u'bash.mods.export.skip'], textDir,
+                bass.settings[u'bash.mods.export.deprefix'], fileName,
+                bass.settings[u'bash.mods.export.skipcomments'])
         #finally:
         self._showLog(exportedScripts, title=_(u'Export Scripts'),
                       asDialog=True)
