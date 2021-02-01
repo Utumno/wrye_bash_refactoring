@@ -257,6 +257,7 @@ def main(opts):
         # Mark us as high DPI aware before gui/balt are imported
         from . import env
         env.mark_high_dpi_aware()
+        # Call this early before showing any windows if possible
         env.fixup_taskbar_icon()
         # Initialize gui, our wrapper above wx (also balt, temp module)
         from . import gui, balt

@@ -753,9 +753,15 @@ def fixup_taskbar_icon():
        and so use our own icon.
        See:
        https://stackoverflow.com/questions/1551605/how-to-set-applications-taskbar-icon-in-windows-7/1552105#1552105
+
+       Note: this should be called as early as possible, preferably before
+       showing any top level windows.
     """
     appid = u'Wrye Bash'
-    windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
+    try:
+        windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
+    except AttributeError:
+        pass # On a pre-Win7
 
 def mark_high_dpi_aware():
     """Marks the current process as High DPI-aware."""
