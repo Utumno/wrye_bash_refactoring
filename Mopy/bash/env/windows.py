@@ -745,6 +745,18 @@ def getJava(): # PY3: cache this
         java_bin_path = sys_root.join(u'syswow64', u'javaw.exe')
     return java_bin_path
 
+def fixup_taskbar_icon():
+    """On Windows 7+, if taskbar settings for taskbar buttons is set to
+       'Always combine, hide labels', then the taskbar icon will be
+       grouped as a python.exe/pythonw.exe instance and will use that icon.
+       We can tell windows to not consider ourselves part of that group,
+       and so use our own icon.
+       See:
+       https://stackoverflow.com/questions/1551605/how-to-set-applications-taskbar-icon-in-windows-7/1552105#1552105
+    """
+    appid = u'Wrye Bash'
+    windll.shell32.SetCurrentProcessExplicitAppUserModelID(appid)
+
 def mark_high_dpi_aware():
     """Marks the current process as High DPI-aware."""
     try:
